@@ -2,8 +2,6 @@
 
 #include "Event.h"
 
-#include <sstream>
-
 namespace SolutionShelves 
 {
 	class SOLUTION_SHELVES_API WindowResizeEvent : public Event

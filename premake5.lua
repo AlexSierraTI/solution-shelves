@@ -18,6 +18,9 @@ project "SolutionShelves"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
+	pchheader "sspch.h"
+	pchsource "SolutionShelves/src/sspch.cpp"
+
 	files
 	{
 		"%{prj.name}/src/**.h",

@@ -24,16 +24,17 @@
     <ClInclude Include="src\Engine\Events\Event.h">
       <Filter>Engine\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Events\KeyEvent.h">
+      <Filter>Engine\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Events\MouseEvent.h">
+      <Filter>Engine\Events</Filter>
+    </ClInclude>
     <ClInclude Include="src\Engine\Log.h">
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\SolutionShelves.h" />
-    <ClInclude Include="src\Engine\Events\MouseEvent.h">
-      <Filter>Engine\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Engine\Events\KeyEvent.h">
-      <Filter>Engine\Events</Filter>
-    </ClInclude>
+    <ClInclude Include="src\sspch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">
@@ -42,5 +43,6 @@
     <ClCompile Include="src\Engine\Log.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\sspch.cpp" />
   </ItemGroup>
 </Project>
