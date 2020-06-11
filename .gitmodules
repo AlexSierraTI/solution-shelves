@@ -1,3 +1,6 @@
 [submodule "SolutionShelves/vendor/spdlog"]
 	path = SolutionShelves/vendor/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "SolutionShelves/vendor/GLFW"]
+	path = SolutionShelves/vendor/GLFW
+	url = https://github.com/AlexSierraTI/glfw
