@@ -9,3 +9,5 @@
 #else
 	#error Solution Shelves apenas para Windows!
 #endif
+
+#define BIT(x) (1 << x)
