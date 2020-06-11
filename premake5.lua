@@ -10,6 +10,12 @@ workspace "EngineGrafico"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+-- Include directories relative to root folder (solution directory)
+IncludeDir = {}
+IncludeDir["GLFW"] = "SolutionShelves/vendor/GLFW/include"
+
+include "SolutionShelves/vendor/GLFW"
+
 project "SolutionShelves"
 	location "SolutionShelves"
 	kind "SharedLib"
@@ -29,8 +35,15 @@ project "SolutionShelves"
 
 	includedirs
 	{
+		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{prj.name}/src"
+		"%{IncludeDir.GLFW}"
+	}
+	
+	links
+	{
+		"GLFW",
+		"opengl32.lib"
 	}
 	
 	filter "system:windows"
