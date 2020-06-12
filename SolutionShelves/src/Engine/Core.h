@@ -18,4 +18,6 @@
 	#define SS_CORE_ASSERT(x, ...) 
 #endif
 
+#include "sspch.h"
+
 #define BIT(x) (1 << x)

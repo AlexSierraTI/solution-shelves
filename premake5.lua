@@ -54,7 +54,8 @@ project "SolutionShelves"
 		defines 
 		{
 			"SS_PLATFORM_WINDOWS",
-			"SS_BUILD_DLL"
+			"SS_BUILD_DLL",
+			"SS_ENABLE_ASSERTS"
 		}
 	
 		postbuildcommands
