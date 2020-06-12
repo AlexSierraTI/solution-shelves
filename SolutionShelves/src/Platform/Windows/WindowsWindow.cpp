@@ -5,6 +5,8 @@
 #include "Engine/Events/MouseEvent.h"
 #include "Engine/Events/KeyEvent.h"
 
+#include <glad/glad.h>
+
 namespace SolutionShelves
 {
 
@@ -42,7 +44,7 @@ namespace SolutionShelves
 		{
 			// TODO: glfwTerminate on system shutdown
 			int success = glfwInit();
-			SS_CORE_ASSERT(success, "Nao conseguiu inicializar GLFW!");
+			SS_CORE_ASSERT(success, "FALHA ao inicializar GLFW!");
 
 			glfwSetErrorCallback(GLFWErrorCallback);
 
@@ -51,6 +53,8 @@ namespace SolutionShelves
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_Window);
+		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		SS_ASSERT(status, "FALHA ao inicializar GLAD!");
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
 
