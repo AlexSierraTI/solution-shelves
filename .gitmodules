@@ -4,3 +4,6 @@
 [submodule "SolutionShelves/vendor/GLFW"]
 	path = SolutionShelves/vendor/GLFW
 	url = https://github.com/AlexSierraTI/glfw
+[submodule "SolutionShelves/vendor/ImGui"]
+	path = SolutionShelves/vendor/ImGui
+	url = https://github.com/AlexSierraTI/imgui
