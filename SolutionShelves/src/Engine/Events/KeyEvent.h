@@ -54,5 +54,21 @@ namespace SolutionShelves
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
 
+	class SOLUTION_SHELVES_API KeyTypedEvent : public KeyEvent
+	{
+	public:
+		KeyTypedEvent(int keycode)
+			: KeyEvent(keycode) {}
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "KeyTypedEvent: " << m_KeyCode;
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(KeyTyped)
+	};
+
 
 }
