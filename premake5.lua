@@ -65,15 +65,18 @@ project "SolutionShelves"
 
 	filter "configurations:Debug"
 		defines "SS_DEBUG"
+		buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "SS_RELEASE"
-		symbols "On"
+		buildoptions "/MD"
+		optimize "On"
 
 	filter "configurations:Dist"
 		defines "SS_DIST"
-		symbols "On"
+		buildoptions "/MD"
+		optimize "On"
 
 project "Sandbox"
 	location "Sandbox"
@@ -112,12 +115,15 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "SS_DEBUG"
+		buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "SS_RELEASE"
-		symbols "On"
+		buildoptions "/MD"
+		optimize "On"
 
 	filter "configurations:Dist"
 		defines "SS_DIST"
-		symbols "On"
+		buildoptions "/MDd"
+		optimize "On"
