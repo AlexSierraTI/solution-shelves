@@ -117,6 +117,7 @@ project "Sandbox"
 	{
 		"SolutionShelves/vendor/spdlog/include",
 		"SolutionShelves/src",
+		"SolutionShelves/vendor",
 		"%{IncludeDir.glm}"
 	}
 

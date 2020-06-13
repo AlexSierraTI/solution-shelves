@@ -1,5 +1,7 @@
 #include <SolutionShelves.h>
 
+#include "ImGui/imgui.h"
+
 class ExampleLayer : public SolutionShelves::Layer
 {
 public:
@@ -11,7 +13,14 @@ public:
 
 	void OnUpdate() override
 	{
-			
+
+	}
+
+	virtual void OnImGuiRender() override
+	{
+		ImGui::Begin("Test");
+		ImGui::Text("Ola Mundo!");
+		ImGui::End();
 	}
 
 	void OnEvent(SolutionShelves::Event& event) override
@@ -35,7 +44,6 @@ public:
 	SandBox()
 	{
 		PushLayer(new ExampleLayer());
-		PushOverlay(new SolutionShelves::ImGuiLayer());
 	}
 
 	~SandBox()
