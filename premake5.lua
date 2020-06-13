@@ -1,12 +1,17 @@
 workspace "EngineGrafico"
-	architecture "x86_x64"
+	architecture "x86_64"
 
+	filter "system:windows"
+		disablewarnings { "4996", "4251" }
+		
 	configurations
 	{
 		"Debug",
 		"Release",
 		"Dist"
 	}
+	
+	startproject "Sandbox"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
@@ -20,12 +25,13 @@ include "SolutionShelves/vendor/GLFW"
 include "SolutionShelves/vendor/Glad"
 include "SolutionShelves/vendor/ImGui"
 
-startproject "Sandbox"
+
 
 project "SolutionShelves"
 	location "SolutionShelves"
 	kind "SharedLib"
 	language "C++"
+	staticruntime "Off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -58,41 +64,40 @@ project "SolutionShelves"
 	
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines 
 		{
 			"SS_PLATFORM_WINDOWS",
 			"SS_BUILD_DLL",
-			"SS_ENABLE_ASSERTS",
 			"GLFW_INCLUDE_NONE"
 		}
 	
 		postbuildcommands
 		{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
+			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"")
 		}
 
 	filter "configurations:Debug"
 		defines "SS_DEBUG"
-		buildoptions "/MDd"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "SS_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "SS_DIST"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
+	staticruntime "Off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -116,7 +121,6 @@ project "Sandbox"
 	
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines 
@@ -126,15 +130,15 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "SS_DEBUG"
-		buildoptions "/MDd"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "SS_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "SS_DIST"
-		buildoptions "/MDd"
+		runtime "Release"
 		optimize "On"
