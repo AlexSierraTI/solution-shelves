@@ -1,5 +1,5 @@
 workspace "EngineGrafico"
-	architecture "x64"
+	architecture "x86_x64"
 
 	configurations
 	{
@@ -16,10 +16,11 @@ IncludeDir["GLFW"] = "SolutionShelves/vendor/GLFW/include"
 IncludeDir["Glad"] = "SolutionShelves/vendor/Glad/include"
 IncludeDir["ImGui"] = "SolutionShelves/vendor/ImGui"
 
-
 include "SolutionShelves/vendor/GLFW"
 include "SolutionShelves/vendor/Glad"
 include "SolutionShelves/vendor/ImGui"
+
+startproject "Sandbox"
 
 project "SolutionShelves"
 	location "SolutionShelves"

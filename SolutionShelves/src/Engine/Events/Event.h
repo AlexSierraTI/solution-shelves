@@ -42,7 +42,7 @@ namespace SolutionShelves
 		virtual bool Handled() const { return m_Handled; };
 
 
-		inline bool IsInCategory(EventCategory category)
+		bool IsInCategory(EventCategory category)
 		{
 			return GetCategoryFlags() & (int)category;
 		}
