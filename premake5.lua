@@ -21,11 +21,12 @@ IncludeDir["GLFW"] = "SolutionShelves/vendor/GLFW/include"
 IncludeDir["Glad"] = "SolutionShelves/vendor/Glad/include"
 IncludeDir["ImGui"] = "SolutionShelves/vendor/ImGui"
 
-include "SolutionShelves/vendor/GLFW"
-include "SolutionShelves/vendor/Glad"
-include "SolutionShelves/vendor/ImGui"
+group "Dependencias"
+	include "SolutionShelves/vendor/GLFW"
+	include "SolutionShelves/vendor/Glad"
+	include "SolutionShelves/vendor/ImGui"
 
-
+group ""
 
 project "SolutionShelves"
 	location "SolutionShelves"
