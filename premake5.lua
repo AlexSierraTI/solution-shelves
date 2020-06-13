@@ -20,6 +20,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "SolutionShelves/vendor/GLFW/include"
 IncludeDir["Glad"] = "SolutionShelves/vendor/Glad/include"
 IncludeDir["ImGui"] = "SolutionShelves/vendor/ImGui"
+IncludeDir["glm"] = "SolutionShelves/vendor/glm"
 
 group "Dependencias"
 	include "SolutionShelves/vendor/GLFW"
@@ -43,7 +44,9 @@ project "SolutionShelves"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl"
 	}
 
 	includedirs
@@ -52,7 +55,8 @@ project "SolutionShelves"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.glm}"
 	}
 	
 	links
@@ -112,7 +116,8 @@ project "Sandbox"
 	includedirs
 	{
 		"SolutionShelves/vendor/spdlog/include",
-		"SolutionShelves/src"
+		"SolutionShelves/src",
+		"%{IncludeDir.glm}"
 	}
 
 	links
