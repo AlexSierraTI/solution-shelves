@@ -10,12 +10,21 @@ public:
 
 	void OnUpdate() override
 	{
-		SS_INFO("ExampleLayer::Update");
+			
 	}
 
 	void OnEvent(SolutionShelves::Event& event) override
 	{
-		SS_TRACE("{0}", event);
+		if (event.GetEventType() == SolutionShelves::EventType::KeyPressed)
+		{
+			SolutionShelves::KeyPressedEvent& e = (SolutionShelves::KeyPressedEvent&)event;
+			if (e.GetKeyCode() == SS_KEY_TAB)
+				SS_TRACE("Tab apertado!");
+			else
+				SS_TRACE("{0}", (char)(e.GetKeyCode()));
+				
+		}
+		
 	}
 };
 
