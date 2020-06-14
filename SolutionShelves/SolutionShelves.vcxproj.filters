@@ -1338,6 +1338,18 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp">
       <Filter>vendor\glm\glm</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\Buffer.h">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\Texture.h">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\Renderer.h">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">
@@ -1372,6 +1384,18 @@
     </ClCompile>
     <ClCompile Include="src\sspch.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\Buffer.cpp">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\Texture.cpp">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\Renderer.cpp">
+      <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
