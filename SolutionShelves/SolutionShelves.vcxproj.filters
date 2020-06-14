@@ -1365,6 +1365,9 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\Renderer\OrthographicCamera.h">
+      <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">
@@ -1426,6 +1429,9 @@
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp">
       <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\Renderer\OrthographicCamera.cpp">
+      <Filter>src\Engine\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
