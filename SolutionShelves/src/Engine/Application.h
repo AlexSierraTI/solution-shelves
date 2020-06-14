@@ -7,6 +7,8 @@
 #include "Engine/Events/Event.h"
 #include "Engine/Events/ApplicationEvent.h"
 
+#include "Engine/ImGui/ImGuiLayer.h"
+
 namespace SolutionShelves 
 {
 	class SOLUTION_SHELVES_API Application
@@ -29,6 +31,7 @@ namespace SolutionShelves
 		bool OnWindowClose(WindowCloseEvent& e);
 
 		std::unique_ptr<Window> m_Window;
+		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 	private:

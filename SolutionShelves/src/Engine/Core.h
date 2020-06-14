@@ -1,10 +1,14 @@
 #pragma once
 
 #ifdef SS_PLATFORM_WINDOWS
-	#ifdef SS_BUILD_DLL
-		#define SOLUTION_SHELVES_API __declspec(dllexport)
+	#if SS_DYNAMIC_LINK
+		#ifdef SS_BUILD_DLL
+			#define SOLUTION_SHELVES_API __declspec(dllexport)
+		#else
+			#define SOLUTION_SHELVES_API __declspec(dllimport)
+		#endif
 	#else
-		#define SOLUTION_SHELVES_API __declspec(dllimport)
+		#define SOLUTION_SHELVES_API
 	#endif
 #else
 	#error Solution Shelves apenas para Windows!

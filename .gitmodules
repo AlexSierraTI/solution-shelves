@@ -7,3 +7,6 @@
 [submodule "SolutionShelves/vendor/ImGui"]
 	path = SolutionShelves/vendor/ImGui
 	url = https://github.com/AlexSierraTI/imgui
+[submodule "SolutionShelves/vendor/glm"]
+	path = SolutionShelves/vendor/glm
+	url = https://github.com/AlexSierraTI/glm
