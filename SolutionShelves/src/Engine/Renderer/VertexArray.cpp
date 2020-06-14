@@ -11,8 +11,8 @@ namespace SolutionShelves
 	{
 		switch (Renderer::GetAPI())
 		{
-		case RendererAPI::None:      SS_CORE_ASSERT(false, "RendererAPI::None nao suportada!"); return nullptr;
-		case RendererAPI::OpenGL:    return new OpenGLVertexArray();
+		case RendererAPI::API::None:      SS_CORE_ASSERT(false, "RendererAPI::None nao suportada!"); return nullptr;
+		case RendererAPI::API::OpenGL:    return new OpenGLVertexArray();
 		}
 		SS_CORE_ASSERT(false, "RendererAPI desconhecido!");
 		return nullptr;

@@ -11,8 +11,8 @@ namespace SolutionShelves
 	{
 		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::None:      SS_CORE_ASSERT(false, "RendererAPI::None nao suportada!"); return nullptr;
-			case RendererAPI::OpenGL:    return new OpenGLVertexBuffer(vertices, size);
+			case RendererAPI::API::None:      SS_CORE_ASSERT(false, "RendererAPI::None nao suportada!"); return nullptr;
+			case RendererAPI::API::OpenGL:    return new OpenGLVertexBuffer(vertices, size);
 		}
 		SS_CORE_ASSERT(false, "RendererAPI desconhecido!");
 		return nullptr;
@@ -22,8 +22,8 @@ namespace SolutionShelves
 	{
 		switch (Renderer::GetAPI())
 		{
-			case RendererAPI::None:      SS_CORE_ASSERT(false, "RendererAPI::None nao suportada!"); return nullptr;
-			case RendererAPI::OpenGL:    return new OpenGLIndexBuffer(indices, size);
+			case RendererAPI::API::None:      SS_CORE_ASSERT(false, "RendererAPI::None nao suportada!"); return nullptr;
+			case RendererAPI::API::OpenGL:    return new OpenGLIndexBuffer(indices, size);
 		}
 		SS_CORE_ASSERT(false, "RendererAPI desconhecido!");
 		return nullptr;
