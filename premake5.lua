@@ -1,9 +1,6 @@
 workspace "EngineGrafico"
 	architecture "x86_64"
 
-	filter "system:windows"
-		disablewarnings { "4996", "4251" }
-		
 	configurations
 	{
 		"Debug",
