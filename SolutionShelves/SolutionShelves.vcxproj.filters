@@ -46,6 +46,9 @@
     <Filter Include="vendor\glm\glm\gtx">
       <UniqueIdentifier>{B3A6A76B-9F8A-68C1-08EB-6214F4ED5243}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Engine\Core">
+      <UniqueIdentifier>{6dbacec8-ebc4-4cb5-b5a5-16583d5a8180}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine\Application.h">
@@ -1367,6 +1370,9 @@
     </ClInclude>
     <ClInclude Include="src\Engine\Renderer\OrthographicCamera.h">
       <Filter>src\Engine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Core\Timestep.h">
+      <Filter>src\Engine\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
