@@ -2,6 +2,8 @@
 
 #include "ImGui/imgui.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 class ExampleLayer : public SolutionShelves::Layer
 {
 public:
@@ -36,10 +38,10 @@ public:
 
 		float squareVertices[3 * 4] =
 		{
-			-0.75f, -0.75f, 0.0f,
-			-0.75f,  0.75f, 0.0f,
-			 0.75f,  0.75f, 0.0f,
-			 0.75f, -0.75f, 0.0f
+			-0.5f, -0.5f, 0.0f,
+			-0.5f,  0.5f, 0.0f,
+			 0.5f,  0.5f, 0.0f,
+			 0.5f, -0.5f, 0.0f
 		};
 
 		std::shared_ptr<SolutionShelves::VertexBuffer> squareVB;
@@ -61,6 +63,7 @@ public:
 			layout(location = 1) in vec4 a_Color;			
 
 			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 
 			out vec3 v_Position;
 			out vec4 v_Color;
@@ -69,7 +72,7 @@ public:
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 			}
 		)";
 		std::string fragmentSrc = R"(
@@ -96,13 +99,14 @@ public:
 			layout(location = 0) in vec3 a_Position;
 
 			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 
 			out vec3 v_Position;
 
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 			}
 		)";
 		std::string blueShaderFragmentSrc = R"(
@@ -124,6 +128,7 @@ public:
 
 	void OnUpdate(SolutionShelves::Timestep ts) override
 	{
+		// Movendo camêra
 		if (SolutionShelves::Input::IsKeyPressed(SS_KEY_LEFT))
 			m_CameraPosition.x -= m_CameraMoveSpeed * ts;
 		else if (SolutionShelves::Input::IsKeyPressed(SS_KEY_RIGHT))
@@ -134,6 +139,7 @@ public:
 		else if (SolutionShelves::Input::IsKeyPressed(SS_KEY_DOWN))
 			m_CameraPosition.y -= m_CameraMoveSpeed * ts;
 
+		// Rotação camêra
 		if (SolutionShelves::Input::IsKeyPressed(SS_KEY_A))
 			m_CameraRotation += m_CameraRotationSpeed * ts;
 		else if (SolutionShelves::Input::IsKeyPressed(SS_KEY_D))
@@ -148,7 +154,19 @@ public:
 
 		SolutionShelves::Renderer::BeginScene(m_Camera);
 
-		SolutionShelves::Renderer::Submit(m_BlueShader, m_SquareVA);
+		
+		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+
+		for (int y = 0; y < 20; y++)
+		{
+			for (int x = 0; x < 20; x++)
+			{
+				glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+				SolutionShelves::Renderer::Submit(m_BlueShader, m_SquareVA, transform);
+			}
+		}
+		
 		SolutionShelves::Renderer::Submit(m_Shader, m_VertexArray);
 
 		SolutionShelves::Renderer::EndScene();
@@ -174,8 +192,10 @@ private:
 	SolutionShelves::OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition;
 	float m_CameraMoveSpeed = 1.0f;
-	float m_CameraRotationSpeed = 50.0f;
+
 	float m_CameraRotation = 0.0f;
+	float m_CameraRotationSpeed = 50.0f;
+
 };
 
 class SandBox : public SolutionShelves::Application
