@@ -25,9 +25,17 @@ namespace SolutionShelves
 		std::string source = ReadFile(filepath);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
+
+		// Extract name from filepath
+		auto lastSlash = filepath.find_last_of("/\\");
+		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+		auto lastDot = filepath.rfind('.');
+		auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
+		m_Name = filepath.substr(lastSlash, count).c_str();
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc)
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
+		: m_Name(name)
 	{
 		std::unordered_map<GLenum, std::string> shaderSources;
 		shaderSources[GL_VERTEX_SHADER] = vertexSrc;
@@ -95,7 +103,7 @@ namespace SolutionShelves
 	std::string OpenGLShader::ReadFile(const std::string& filepath)
 	{
 		std::string result;
-		std::ifstream in(filepath, std::ios::in, std::ios::binary);
+		std::ifstream in(filepath, std::ios::in | std::ios::binary);
 		if (in)
 		{
 			in.seekg(0, std::ios::end);
@@ -138,7 +146,9 @@ namespace SolutionShelves
 
 	void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
-		std::vector<GLenum> shaders(shaderSources.size());
+		SS_CORE_ASSERT(shaderSources.size() <= 2, "Apenas 2 shaders no momento");
+		std::array<GLenum, 2> shaders;
+		int glShaderIndex = 0;
 
 		for (auto& kv : shaderSources)
 		{
@@ -168,7 +178,7 @@ namespace SolutionShelves
 				SS_CORE_ASSERT(false, "Shader falhou ao compilar");
 				break;
 			}
-			shaders.push_back(shader);
+			shaders[glShaderIndex++] = shader;
 		}
 
 		GLuint program = glCreateProgram();
