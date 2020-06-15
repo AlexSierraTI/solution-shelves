@@ -5,7 +5,7 @@
 
 namespace SolutionShelves
 {
-	Renderer::SceneData* Renderer::m_SceneData = new Renderer::SceneData;
+	Scope<Renderer::SceneData> Renderer::m_SceneData = std::make_unique<Renderer::SceneData>();
 
 	void Renderer::BeginScene(OrthographicCamera& camera)
 	{

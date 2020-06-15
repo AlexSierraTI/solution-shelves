@@ -18,12 +18,12 @@ IncludeDir["GLFW"] = "SolutionShelves/vendor/GLFW/include"
 IncludeDir["Glad"] = "SolutionShelves/vendor/Glad/include"
 IncludeDir["ImGui"] = "SolutionShelves/vendor/ImGui"
 IncludeDir["glm"] = "SolutionShelves/vendor/glm"
+IncludeDir["stb_image"] = "SolutionShelves/vendor/stb_image"
 
 group "Dependencias"
 	include "SolutionShelves/vendor/GLFW"
 	include "SolutionShelves/vendor/Glad"
 	include "SolutionShelves/vendor/ImGui"
-
 group ""
 
 project "SolutionShelves"
@@ -44,6 +44,8 @@ project "SolutionShelves"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/stb_image/**.h",
+		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl"
 	}
@@ -60,7 +62,8 @@ project "SolutionShelves"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb_image}"
 	}
 	
 	links
@@ -122,7 +125,8 @@ project "Sandbox"
 		"SolutionShelves/vendor/spdlog/include",
 		"SolutionShelves/src",
 		"SolutionShelves/vendor",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb_image}"
 	}
 
 	links

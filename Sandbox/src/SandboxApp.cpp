@@ -13,7 +13,7 @@ public:
 	ExampleLayer()
 		: Layer("Teste Layer"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f)
 	{
-		m_VertexArray.reset(SolutionShelves::VertexArray::Create());
+		m_VertexArray = SolutionShelves::VertexArray::Create();
 
 		float vertices[3 * 7] =
 		{
@@ -23,7 +23,7 @@ public:
 		};
 
 		SolutionShelves::Ref<SolutionShelves::VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(SolutionShelves::VertexBuffer::Create(vertices, sizeof(vertices)));
+		vertexBuffer = SolutionShelves::VertexBuffer::Create(vertices, sizeof(vertices));
 		SolutionShelves::BufferLayout layout = {
 			{ SolutionShelves::ShaderDataType::Float3, "a_Position" },
 			{ SolutionShelves::ShaderDataType::Float4, "a_Color" }
@@ -34,29 +34,30 @@ public:
 
 		uint32_t indices[3] = { 0, 1, 2 };
 		SolutionShelves::Ref<SolutionShelves::IndexBuffer> indexBuffer;
-		indexBuffer.reset(SolutionShelves::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		indexBuffer = SolutionShelves::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
-		m_SquareVA.reset(SolutionShelves::VertexArray::Create());
+		m_SquareVA = SolutionShelves::VertexArray::Create();
 
-		float squareVertices[3 * 4] =
+		float squareVertices[5 * 4] =
 		{
-			-0.5f, -0.5f, 0.0f,
-			-0.5f,  0.5f, 0.0f,
-			 0.5f,  0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		};
 
 		SolutionShelves::Ref<SolutionShelves::VertexBuffer> squareVB;
-		squareVB.reset(SolutionShelves::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+		squareVB = SolutionShelves::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
 		squareVB->SetLayout({
-			{ SolutionShelves::ShaderDataType::Float3, "a_Position" }
+			{ SolutionShelves::ShaderDataType::Float3, "a_Position" },
+			{ SolutionShelves::ShaderDataType::Float2, "a_TextCoord" }
 			});
 		m_SquareVA->AddVertexBuffer(squareVB);
 
 		uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
 		SolutionShelves::Ref<SolutionShelves::IndexBuffer> squareIB;
-		squareIB.reset(SolutionShelves::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+		squareIB = SolutionShelves::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
 		m_SquareVA->SetIndexBuffer(squareIB);
 
 		std::string vertexSrc = R"(
@@ -93,7 +94,7 @@ public:
 			}
 		)";
 
-		m_Shader.reset(SolutionShelves::Shader::Create(vertexSrc, fragmentSrc));
+		m_Shader = SolutionShelves::Shader::Create(vertexSrc, fragmentSrc);
 
 
 		std::string flatColorShaderVertexSrc = R"(
@@ -127,8 +128,46 @@ public:
 			}
 		)";
 
-		m_FlatColorShader.reset(SolutionShelves::OpenGLShader::Create(flatColorShaderVertexSrc, flatColorShaderFragmentSrc));
+		m_FlatColorShader = SolutionShelves::OpenGLShader::Create(flatColorShaderVertexSrc, flatColorShaderFragmentSrc);
 
+		std::string textureShaderVertexSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) in vec3 a_Position;
+			layout(location = 1) in vec2 a_TextCoord;
+
+			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
+
+			out vec2 v_TextCoord;
+
+			void main()
+			{
+				v_TextCoord = a_TextCoord;
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
+			}
+		)";
+		std::string textureShaderFragmentSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) out vec4 color;
+			
+			in vec2 v_TextCoord;
+
+			uniform sampler2D u_Texture;
+
+			void main()
+			{
+				color = texture(u_Texture, v_TextCoord);
+			}
+		)";
+
+		m_TextureShader = SolutionShelves::OpenGLShader::Create(textureShaderVertexSrc, textureShaderFragmentSrc);
+
+		m_Texture = SolutionShelves::Texture2D::Create("assets/textures/luana.png");
+
+		std::dynamic_pointer_cast<SolutionShelves::OpenGLShader>(m_TextureShader)->Bind();
+		std::dynamic_pointer_cast<SolutionShelves::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
 	}
 
 	void OnUpdate(SolutionShelves::Timestep ts) override
@@ -173,8 +212,12 @@ public:
 				SolutionShelves::Renderer::Submit(m_FlatColorShader, m_SquareVA, transform);
 			}
 		}
+
+		m_Texture->Bind(0);
+		SolutionShelves::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 		
-		SolutionShelves::Renderer::Submit(m_Shader, m_VertexArray);
+		// Triangulo
+		// SolutionShelves::Renderer::Submit(m_Shader, m_VertexArray);
 
 		SolutionShelves::Renderer::EndScene();
 	}
@@ -195,8 +238,10 @@ private:
 	SolutionShelves::Ref<SolutionShelves::Shader> m_Shader;
 	SolutionShelves::Ref<SolutionShelves::VertexArray> m_VertexArray;
 
-	SolutionShelves::Ref<SolutionShelves::Shader> m_FlatColorShader;
+	SolutionShelves::Ref<SolutionShelves::Shader> m_FlatColorShader, m_TextureShader;
 	SolutionShelves::Ref<SolutionShelves::VertexArray> m_SquareVA;
+
+	SolutionShelves::Ref<SolutionShelves::Texture2D> m_Texture;
 
 	SolutionShelves::OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition;
