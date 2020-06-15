@@ -22,7 +22,7 @@ public:
 			 0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
 		};
 
-		std::shared_ptr<SolutionShelves::VertexBuffer> vertexBuffer;
+		SolutionShelves::Ref<SolutionShelves::VertexBuffer> vertexBuffer;
 		vertexBuffer.reset(SolutionShelves::VertexBuffer::Create(vertices, sizeof(vertices)));
 		SolutionShelves::BufferLayout layout = {
 			{ SolutionShelves::ShaderDataType::Float3, "a_Position" },
@@ -33,7 +33,7 @@ public:
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
 
 		uint32_t indices[3] = { 0, 1, 2 };
-		std::shared_ptr<SolutionShelves::IndexBuffer> indexBuffer;
+		SolutionShelves::Ref<SolutionShelves::IndexBuffer> indexBuffer;
 		indexBuffer.reset(SolutionShelves::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
@@ -47,7 +47,7 @@ public:
 			 0.5f, -0.5f, 0.0f
 		};
 
-		std::shared_ptr<SolutionShelves::VertexBuffer> squareVB;
+		SolutionShelves::Ref<SolutionShelves::VertexBuffer> squareVB;
 		squareVB.reset(SolutionShelves::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
 		squareVB->SetLayout({
 			{ SolutionShelves::ShaderDataType::Float3, "a_Position" }
@@ -55,7 +55,7 @@ public:
 		m_SquareVA->AddVertexBuffer(squareVB);
 
 		uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-		std::shared_ptr<SolutionShelves::IndexBuffer> squareIB;
+		SolutionShelves::Ref<SolutionShelves::IndexBuffer> squareIB;
 		squareIB.reset(SolutionShelves::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
 		m_SquareVA->SetIndexBuffer(squareIB);
 
@@ -181,8 +181,8 @@ public:
 
 	virtual void OnImGuiRender() override
 	{
-		ImGui::Begin("Settings");
-		ImGui::ColorEdit3("Square Color", glm::value_ptr(m_SquareColor));
+		ImGui::Begin("Teste Cores");
+		ImGui::ColorEdit3("Cor dos Quadrados", glm::value_ptr(m_SquareColor));
 		ImGui::End();
 	}
 
@@ -192,11 +192,11 @@ public:
 	}
 
 private:
-	std::shared_ptr<SolutionShelves::Shader> m_Shader;
-	std::shared_ptr<SolutionShelves::VertexArray> m_VertexArray;
+	SolutionShelves::Ref<SolutionShelves::Shader> m_Shader;
+	SolutionShelves::Ref<SolutionShelves::VertexArray> m_VertexArray;
 
-	std::shared_ptr<SolutionShelves::Shader> m_FlatColorShader;
-	std::shared_ptr<SolutionShelves::VertexArray> m_SquareVA;
+	SolutionShelves::Ref<SolutionShelves::Shader> m_FlatColorShader;
+	SolutionShelves::Ref<SolutionShelves::VertexArray> m_SquareVA;
 
 	SolutionShelves::OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition;
