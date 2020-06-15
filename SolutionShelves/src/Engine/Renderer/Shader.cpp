@@ -123,6 +123,12 @@ namespace SolutionShelves
 		glUseProgram(0);
 	}
 
+	void Shader::UploadUniformFloat4(const std::string& name, const glm::vec4 values)
+	{
+		int location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniform4f(location, values.r, values.g, values.b, values.a);
+	}
+
 	void Shader::UploadUniformMat4(const std::string& name, const glm::mat4 matrix)
 	{
 		int location = glGetUniformLocation(m_RendererID, name.c_str());

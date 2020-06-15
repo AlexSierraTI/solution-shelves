@@ -61,9 +61,9 @@ namespace SolutionShelves
 	{
 		while (m_Running)
 		{
-			float time = glfwGetTime(); // Platform::GetTime
-			Timestep timestep = time - m_LastFrameTime;
-			m_LastFrameTime = time;
+			double time = glfwGetTime(); // Platform::GetTime
+			Timestep timestep = (float)time - m_LastFrameTime;
+			m_LastFrameTime = (float)time;
 
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate(timestep);
