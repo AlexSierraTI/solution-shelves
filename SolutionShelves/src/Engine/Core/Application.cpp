@@ -1,7 +1,7 @@
 #include "sspch.h"
 #include "Application.h"
 
-#include "Engine/Log.h"
+#include "Engine/Core/Log.h"
 
 #include "Engine/Renderer/Renderer.h"
 
