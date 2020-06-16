@@ -132,6 +132,7 @@ void Sandbox3D::OnAttach()
 	m_LuanaTexture = SolutionShelves::Texture2D::Create("assets/textures/luana.png");
 
 	textureShader->Bind();
+	textureShader->SetFloat4("u_Color", glm::vec4(1.0f));
 	textureShader->SetInt("u_Texture", 0);
 }
 
