@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Window.h"
+#include "Engine/Core/Window.h"
 #include "Engine/Renderer/GraphicsContext.h"
 
 struct GLFWwindow;
@@ -34,7 +34,7 @@ namespace SolutionShelves
 		struct WindowData
 		{
 			std::string Title = "";
-			unsigned int Width, Height = 0;
+			unsigned int Width = 0, Height = 0;
 			bool VSync = true;
 
 			EventCallbackFn EventCallback = 0;
