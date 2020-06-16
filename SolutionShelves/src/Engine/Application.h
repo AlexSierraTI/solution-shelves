@@ -31,9 +31,11 @@ namespace SolutionShelves
 		inline static Application& Get() { return *s_Instance; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
+		bool OnWindowResize(WindowResizeEvent& e);
 	private:
 		Scope<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
+		bool m_Minimized = false;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 		float m_LastFrameTime = 0.0f;

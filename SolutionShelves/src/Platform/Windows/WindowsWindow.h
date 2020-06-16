@@ -34,7 +34,7 @@ namespace SolutionShelves
 		struct WindowData
 		{
 			std::string Title = "";
-			unsigned int Width, Height = 0;
+			unsigned int Width = 0, Height = 0;
 			bool VSync = true;
 
 			EventCallbackFn EventCallback = 0;
