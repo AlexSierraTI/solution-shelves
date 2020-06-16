@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;SS_PLATFORM_WINDOWS;SS_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\SolutionShelves\vendor\spdlog\include;..\SolutionShelves\src;..\SolutionShelves\vendor;..\SolutionShelves\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\SolutionShelves\vendor\spdlog\include;..\SolutionShelves\src;..\SolutionShelves\vendor;..\SolutionShelves\vendor\glm;..\SolutionShelves\vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -95,7 +95,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;SS_PLATFORM_WINDOWS;SS_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\SolutionShelves\vendor\spdlog\include;..\SolutionShelves\src;..\SolutionShelves\vendor;..\SolutionShelves\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\SolutionShelves\vendor\spdlog\include;..\SolutionShelves\src;..\SolutionShelves\vendor;..\SolutionShelves\vendor\glm;..\SolutionShelves\vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -115,7 +115,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;SS_PLATFORM_WINDOWS;SS_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\SolutionShelves\vendor\spdlog\include;..\SolutionShelves\src;..\SolutionShelves\vendor;..\SolutionShelves\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\SolutionShelves\vendor\spdlog\include;..\SolutionShelves\src;..\SolutionShelves\vendor;..\SolutionShelves\vendor\glm;..\SolutionShelves\vendor\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -137,6 +137,13 @@
     <ProjectReference Include="..\SolutionShelves\SolutionShelves.vcxproj">
       <Project>{DCAF2921-483B-97E5-514C-1ADABD56F3E5}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\Texture.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\textures\Checkerboard.png" />
+    <Image Include="assets\textures\luana.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

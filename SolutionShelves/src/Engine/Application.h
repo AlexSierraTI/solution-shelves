@@ -7,9 +7,9 @@
 #include "Engine/Events/Event.h"
 #include "Engine/Events/ApplicationEvent.h"
 
-#include "Engine/ImGui/ImGuiLayer.h"
+#include "Engine/Core/Timestep.h"
 
-#include "Engine/Renderer/Shader.h"
+#include "Engine/ImGui/ImGuiLayer.h"
 
 namespace SolutionShelves 
 {
@@ -31,14 +31,12 @@ namespace SolutionShelves
 		inline static Application& Get() { return *s_Instance; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
-
-		std::unique_ptr<Window> m_Window;
+	private:
+		Scope<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
-
-		unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
-		std::unique_ptr<Shader> m_Shader;
+		float m_LastFrameTime = 0.0f;
 	private:
 		static Application* s_Instance;
 	};
