@@ -7,6 +7,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Sandbox2D.h"
+
+#include "Engine/Core/EntryPoint.h"
+
 class ExampleLayer : public SolutionShelves::Layer
 {
 public:
@@ -180,8 +184,8 @@ public:
 
 	virtual void OnImGuiRender() override
 	{
-		ImGui::Begin("Teste Cores");
-		ImGui::ColorEdit3("Cor dos Quadrados", glm::value_ptr(m_SquareColor));
+		ImGui::Begin("Cor sb");
+		ImGui::ColorEdit3("Cor", glm::value_ptr(m_SquareColor));
 		ImGui::End();
 	}
 
@@ -211,7 +215,8 @@ class SandBox : public SolutionShelves::Application
 public:
 	SandBox()
 	{
-		PushLayer(new ExampleLayer());
+		// PushLayer(new ExampleLayer());
+		PushLayer(new Sandbox2D());
 	}
 
 	~SandBox()
