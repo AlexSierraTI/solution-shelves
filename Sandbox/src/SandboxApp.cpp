@@ -11,7 +11,7 @@ class ExampleLayer : public SolutionShelves::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Teste Layer"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f)
+		: Layer("Teste Layer"), m_CameraController(1280.0f / 720.0f, true)
 	{
 		m_VertexArray = SolutionShelves::VertexArray::Create();
 
@@ -139,31 +139,15 @@ public:
 
 	void OnUpdate(SolutionShelves::Timestep ts) override
 	{
-		// Movendo camêra
-		if (SolutionShelves::Input::IsKeyPressed(SS_KEY_LEFT))
-			m_CameraPosition.x -= m_CameraMoveSpeed * ts;
-		else if (SolutionShelves::Input::IsKeyPressed(SS_KEY_RIGHT))
-			m_CameraPosition.x += m_CameraMoveSpeed * ts;
-
-		if (SolutionShelves::Input::IsKeyPressed(SS_KEY_UP))
-			m_CameraPosition.y += m_CameraMoveSpeed * ts;
-		else if (SolutionShelves::Input::IsKeyPressed(SS_KEY_DOWN))
-			m_CameraPosition.y -= m_CameraMoveSpeed * ts;
-
-		// Rotação camêra
-		if (SolutionShelves::Input::IsKeyPressed(SS_KEY_A))
-			m_CameraRotation += m_CameraRotationSpeed * ts;
-		else if (SolutionShelves::Input::IsKeyPressed(SS_KEY_D))
-			m_CameraRotation -= m_CameraRotationSpeed * ts;
+		// Update
+		m_CameraController.OnUpdate(ts);
 
 
+		// Render
 		SolutionShelves::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		SolutionShelves::RenderCommand::Clear();
 
-		m_Camera.SetPosition(m_CameraPosition);
-		m_Camera.SetRotation(m_CameraRotation);
-
-		SolutionShelves::Renderer::BeginScene(m_Camera);
+		SolutionShelves::Renderer::BeginScene(m_CameraController.GetCamera());
 
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 		
@@ -201,9 +185,9 @@ public:
 		ImGui::End();
 	}
 
-	void OnEvent(SolutionShelves::Event& event) override
+	void OnEvent(SolutionShelves::Event& e) override
 	{
-
+		m_CameraController.OnEvent(e);
 	}
 
 private:
@@ -217,15 +201,9 @@ private:
 	SolutionShelves::Ref<SolutionShelves::Texture2D> m_Texture;
 	SolutionShelves::Ref<SolutionShelves::Texture2D> m_LuanaTexture;
 
-	SolutionShelves::OrthographicCamera m_Camera;
+	SolutionShelves::OrthographicCameraController m_CameraController;
 	glm::vec3 m_CameraPosition;
-	float m_CameraMoveSpeed = 1.0f;
-
-	float m_CameraRotation = 0.0f;
-	float m_CameraRotationSpeed = 50.0f;
-
 	glm::vec3 m_SquareColor = { 0.2f, 0.3f, 0.8f };
-
 };
 
 class SandBox : public SolutionShelves::Application
