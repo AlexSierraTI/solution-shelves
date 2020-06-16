@@ -112,7 +112,9 @@ project "Sandbox"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/assets/shaders/**.glsl",
+		"%{prj.name}/assets/textures/**.png"
 	}
 
 	defines
@@ -122,6 +124,10 @@ project "Sandbox"
 
 	includedirs
 	{
+		"%{prj.name}/src",
+		"%{prj.name}/assets",
+		"%{prj.name}/assets/shaders",
+		"%{prj.name}/assets/textures",
 		"SolutionShelves/vendor/spdlog/include",
 		"SolutionShelves/src",
 		"SolutionShelves/vendor",
