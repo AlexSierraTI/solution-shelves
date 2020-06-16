@@ -1,10 +1,7 @@
 #include "Sandbox2D.h"
 
-#include "Platform/OpenGL/OpenGLShader.h"
-
 #include "ImGui/imgui.h"
 
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 Sandbox2D::Sandbox2D()
@@ -30,11 +27,12 @@ void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 
 
 	// Render
-	SolutionShelves::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
-	SolutionShelves::RenderCommand::Clear();
+	// SolutionShelves::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+	// SolutionShelves::RenderCommand::Clear();
 
 	SolutionShelves::Renderer2D::BeginScene(m_CameraController.GetCamera());
-	SolutionShelves::Renderer2D::DrawQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.8f, 0.2f, 0.3f, 1.0f });
+	SolutionShelves::Renderer2D::DrawQuad({ -1.0f,  0.0f }, { 0.8f, 0.8f },  { 0.8f, 0.2f, 0.3f, 1.0f });
+	SolutionShelves::Renderer2D::DrawQuad({  0.5f, -0.5f }, { 0.5f, 0.75f }, { 0.2f, 0.3f, 0.8f, 1.0f });
 	SolutionShelves::Renderer2D::EndScene();
 }
 

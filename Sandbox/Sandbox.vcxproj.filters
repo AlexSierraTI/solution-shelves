@@ -3,6 +3,7 @@
   <ItemGroup>
     <ClCompile Include="src\SandboxApp.cpp" />
     <ClCompile Include="src\Sandbox2D.cpp" />
+    <ClCompile Include="src\Sandbox3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="assets">
@@ -17,6 +18,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Sandbox2D.h" />
+    <ClInclude Include="src\Sandbox3D.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\FlatColor.glsl">
