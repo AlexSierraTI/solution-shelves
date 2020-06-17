@@ -10,7 +10,7 @@ class SandBox : public SolutionShelves::Application
 public:
 	SandBox()
 	{
-		PushLayer(new Sandbox3D());
+		// PushLayer(new Sandbox3D());
 		PushLayer(new Sandbox2D());
 	}
 
