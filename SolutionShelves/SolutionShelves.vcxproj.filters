@@ -52,6 +52,9 @@
     <Filter Include="vendor\stb_image">
       <UniqueIdentifier>{0DA0BA59-F998-D9AB-22CB-BE300E23B9B7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Engine\Profiling">
+      <UniqueIdentifier>{89994009-1b3a-42de-8280-1f1cd0a03a91}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine\Core\Application.h">
@@ -1391,6 +1394,9 @@
     </ClInclude>
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Profiling\Instrumentor.h">
+      <Filter>src\Engine\Profiling</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

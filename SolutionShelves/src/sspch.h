@@ -14,6 +14,7 @@
 #include <unordered_set>
 
 #include "Engine/Core/Log.h"
+#include "Engine/Profiling/Instrumentor.h"
 
 #ifdef SS_PLATFORM_WINDOWS
 	#include <Windows.h>
