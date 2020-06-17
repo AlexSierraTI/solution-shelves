@@ -77,8 +77,12 @@ bin-int/
 # Files
 *.user
 *.log
-Sandbox/imgui.ini
 **.sln
 **.vcxproj
 **.vcxproj.filters
 **.vcxproj.user
+
+Sandbox/imgui.ini
+Sandbox/SolutionShelvesProfile-Runtime.json
+Sandbox/SolutionShelvesProfile-Shutdown.json
+Sandbox/SolutionShelvesProfile-Startup.json
