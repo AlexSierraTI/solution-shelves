@@ -7,6 +7,8 @@
 #include <string>
 #include <thread>
 
+#include "SolutionShelves.h"
+
 namespace SolutionShelves
 {
 
