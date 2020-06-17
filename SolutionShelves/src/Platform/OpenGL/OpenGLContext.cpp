@@ -11,6 +11,8 @@ namespace SolutionShelves
 
 	void OpenGLContext::Init() 
 	{
+		SS_PROFILE_FUNCTION();
+
 		glfwMakeContextCurrent(m_WindowHandle);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		SS_CORE_ASSERT(status, "Falha ao inicializar Glad!");
@@ -23,6 +25,8 @@ namespace SolutionShelves
 
 	void OpenGLContext::SwapBuffers()
 	{
+		SS_PROFILE_FUNCTION();
+
 		glfwSwapBuffers(m_WindowHandle);
 	}
 

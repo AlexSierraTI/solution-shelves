@@ -11,5 +11,6 @@ namespace SolutionShelves
 
 	Layer::~Layer()
 	{
+		
 	}
 }

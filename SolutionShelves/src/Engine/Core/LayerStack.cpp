@@ -25,6 +25,12 @@ namespace SolutionShelves
 		m_Layers.emplace_back(overlay);
 	}
 
+	bool LayerStack::LayerExists(Layer* layer)
+	{
+		auto it = std::find(m_Layers.begin(), m_Layers.end(), layer);
+		return (it != m_Layers.end());
+	}
+
 	void LayerStack::PopLayer(Layer* layer)
 	{
 		auto it = std::find(m_Layers.begin(), m_Layers.end(), layer);

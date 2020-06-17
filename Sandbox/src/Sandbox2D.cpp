@@ -4,12 +4,6 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Util.h"
-
-#include <chrono>
-
-#define PROFILE_SCOPE(name) Timer timer##__LINE__(name, [&](ProfileResult profileResult) { m_ProfileResults.push_back(profileResult); })
-
 Sandbox2D::Sandbox2D()
 	: Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f, true)
 {
@@ -17,33 +11,35 @@ Sandbox2D::Sandbox2D()
 
 void Sandbox2D::OnAttach()
 {
+	SS_PROFILE_FUNCTION();
+
 	m_CheckerboardTexture = SolutionShelves::Texture2D::Create("assets/textures/Checkerboard.png");
 	m_LuanaTexture = SolutionShelves::Texture2D::Create("assets/textures/luana.png");
 }
 
 void Sandbox2D::OnDetach()
 {
+	SS_PROFILE_FUNCTION();
+
 
 }
 
 void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 {
-	SS_PROFILE_FUNCTION();
 	// Update
-	{
-		SS_PROFILE_SCOPE("CameraController::OnUpdate");
-		m_CameraController.OnUpdate(ts);
-	}
+	m_CameraController.OnUpdate(ts);
 
 	// Render
 	{
 		SS_PROFILE_SCOPE("Renderer Prep");
+
 		SolutionShelves::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		SolutionShelves::RenderCommand::Clear();
 	}
 
 	{
 		SS_PROFILE_SCOPE("Renderer Draw");
+
 		SolutionShelves::Renderer2D::BeginScene(m_CameraController.GetCamera());
 		SolutionShelves::Renderer2D::DrawQuad({ -1.0f,  0.0f }, { 0.8f,  0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
 		SolutionShelves::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f,  0.75f }, { m_SquareColor });

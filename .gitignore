@@ -76,4 +76,9 @@ bin-int/
 
 # Files
 *.user
+*.log
 Sandbox/imgui.ini
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
