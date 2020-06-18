@@ -1,10 +1,9 @@
 #include "sspch.h"
 #include "ImGuiLayer.h"
 
-#include "imgui.h"
-
-#include "examples/imgui_impl_glfw.h"
-#include "examples/imgui_impl_opengl3.h"
+#include <imgui.h>
+#include <examples/imgui_impl_glfw.h>
+#include <examples/imgui_impl_opengl3.h>
 
 #include "Engine/Core/Application.h"
 
@@ -16,10 +15,6 @@ namespace SolutionShelves
 {
 	ImGuiLayer::ImGuiLayer()
 		: Layer("ImGuiLayer")
-	{
-	}
-
-	ImGuiLayer::~ImGuiLayer()
 	{
 	}
 
@@ -66,6 +61,13 @@ namespace SolutionShelves
 		ImGui::DestroyContext();
 	}
 
+	void ImGuiLayer::OnEvent(Event& e)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		e.Handled |= e.IsInCategory(EventCategory::EventCategoryMouse) & io.WantCaptureMouse;
+		e.Handled |= e.IsInCategory(EventCategory::EventCategoryKeyboard) & io.WantCaptureKeyboard;
+	}
+	
 	void ImGuiLayer::Begin()
 	{
 		SS_PROFILE_FUNCTION();

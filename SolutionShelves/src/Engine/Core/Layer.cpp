@@ -9,8 +9,4 @@ namespace SolutionShelves
 		
 	}
 
-	Layer::~Layer()
-	{
-		
-	}
 }

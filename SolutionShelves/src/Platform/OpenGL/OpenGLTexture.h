@@ -26,9 +26,8 @@ namespace SolutionShelves
 		}
 	private:
 		std::string m_Path;
-		uint32_t m_Width = 0;
-		uint32_t m_Height = 0;
-		uint32_t m_RendererID = 0;
+		uint32_t m_Width, m_Height;
+		uint32_t m_RendererID;
 		GLenum m_InternalFormat, m_DataFormat;
 	};
 }

@@ -1,7 +1,7 @@
 #include "sspch.h"
 #include "Log.h"
 
-#include "spdlog/sinks/wincolor_sink.h"
+#include <spdlog/sinks/wincolor_sink.h>
 
 namespace SolutionShelves
 {

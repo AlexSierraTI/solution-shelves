@@ -69,6 +69,4 @@ namespace SolutionShelves
 
 		EVENT_CLASS_TYPE(KeyTyped)
 	};
-
-
 }

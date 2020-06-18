@@ -39,9 +39,20 @@ namespace SolutionShelves
 		std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;
 		uint32_t TextureSlotIndex = 1; // 0 = white texture
 
-		glm::vec4 QuadVertexPositions[4];
-
+		glm::vec4 QuadVertexPositions[4] = 
+		{
+			{ -0.5f, -0.5f, 0.0f, 1.0f },
+			{  0.5f, -0.5f, 0.0f, 1.0f },
+			{  0.5f,  0.5f, 0.0f, 1.0f },
+			{ -0.5f,  0.5f, 0.0f, 1.0f }
+		};
+		
 		Renderer2D::Statistics Stats;
+
+		Renderer2DData()
+		{
+		}
+
 	};
 
 	static Renderer2DData s_Data;
@@ -169,7 +180,7 @@ namespace SolutionShelves
 
 		constexpr size_t quadVertexCount = 4;
 		const float textureIndex = 0.0f; // White Texture
-		constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
+		constexpr glm::vec2 textureCoords[quadVertexCount] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 		const float tilingFactor = 1.0f;
 
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
@@ -224,7 +235,8 @@ namespace SolutionShelves
 				FlushAndReset();
 
 			textureIndex = (float)s_Data.TextureSlotIndex;
-			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
+			int tIndex = s_Data.TextureSlotIndex % 32;
+			s_Data.TextureSlots[tIndex] = texture;
 			s_Data.TextureSlotIndex++;
 		}
 
@@ -257,7 +269,7 @@ namespace SolutionShelves
 
 		constexpr size_t quadVertexCount = 4;
 		const float textureIndex = 0.0f; // White Texture
-		constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
+		constexpr glm::vec2 textureCoords[quadVertexCount] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
 		const float tilingFactor = 1.0f;
 
 		if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices)
@@ -313,7 +325,8 @@ namespace SolutionShelves
 				FlushAndReset();
 
 			textureIndex = (float)s_Data.TextureSlotIndex;
-			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
+			int tIndex = s_Data.TextureSlotIndex % 32;
+			s_Data.TextureSlots[tIndex] = texture;
 			s_Data.TextureSlotIndex++;
 		}
 

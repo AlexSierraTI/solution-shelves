@@ -41,10 +41,10 @@ namespace SolutionShelves
 	{
 		SS_PROFILE_FUNCTION();
 
-		std::unordered_map<GLenum, std::string> shaderSources;
-		shaderSources[GL_VERTEX_SHADER] = vertexSrc;
-		shaderSources[GL_FRAGMENT_SHADER] = fragmentSrc;
-		Compile(shaderSources);
+		std::unordered_map<GLenum, std::string> sources;
+		sources[GL_VERTEX_SHADER] = vertexSrc;
+		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
+		Compile(sources);
 	}
 
 	OpenGLShader::~OpenGLShader()
