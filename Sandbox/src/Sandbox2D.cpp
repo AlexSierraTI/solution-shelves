@@ -41,10 +41,11 @@ void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 		SS_PROFILE_SCOPE("Renderer Draw");
 
 		SolutionShelves::Renderer2D::BeginScene(m_CameraController.GetCamera());
-		// SolutionShelves::Renderer2D::DrawRotateQuad({ -1.0f,  0.0f }, { 0.8f,  0.8f }, glm::radians(60.0f), { 0.8f, 0.2f, 0.3f, 1.0f });
+		// SolutionShelves::Renderer2D::DrawRotatedQuad({ -1.0f,  0.0f }, { 0.8f,  0.8f }, glm::radians(60.0f), { 0.8f, 0.2f, 0.3f, 1.0f });
 		SolutionShelves::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f,  0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
-		SolutionShelves::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f,  0.75f }, { 0.2f, 0.3f, 0.8f, 1.0f });
-		// SolutionShelves::Renderer2D::DrawQuad({ 0.0f,  0.0f, -0.1f }, { 10.0f,  10.0f }, m_CheckerboardTexture, 10.0f);
+		SolutionShelves::Renderer2D::DrawQuad({  0.5f, -0.5f }, { 0.5f,  0.75f }, { 0.2f, 0.3f, 0.8f, 1.0f });
+		SolutionShelves::Renderer2D::DrawQuad({  0.0f,  0.0f, -0.1f }, { 10.0f,  10.0f }, m_CheckerboardTexture, 10.0f);
+		SolutionShelves::Renderer2D::DrawQuad({ -0.5f, -0.5f, 1.0f }, {  1.0f,   1.0f }, m_LuanaTexture);
 		SolutionShelves::Renderer2D::EndScene();
 	}
 }
@@ -53,9 +54,9 @@ void Sandbox2D::OnImGuiRender()
 {
 	SS_PROFILE_FUNCTION();
 
-	ImGui::Begin("Cor sb2d");
-	ImGui::ColorEdit4("Cor", glm::value_ptr(m_SquareColor));
-	ImGui::End();
+	// ImGui::Begin("Cor sb2d");
+	// ImGui::ColorEdit4("Cor", glm::value_ptr(m_SquareColor));
+	// ImGui::End();
 }
 
 void Sandbox2D::OnEvent(SolutionShelves::Event& e)
