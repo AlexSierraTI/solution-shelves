@@ -4,6 +4,8 @@
 
 #include "ParticleSystem.h"
 
+#include "Pratica.h"
+
 class Sandbox2D : public SolutionShelves::Layer
 {
 public:
@@ -26,5 +28,6 @@ private:
 	ParticleSystem m_ParticleSystem;
 	ParticleProps m_Particle;
 
+	std::unique_ptr<Pratica> m_Pratica = nullptr;
 };
 
