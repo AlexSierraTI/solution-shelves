@@ -5,5 +5,6 @@
 
 namespace SolutionShelves
 {
-	Scope<RendererAPI> RenderCommand::s_RendererAPI = std::make_unique<OpenGLRendererAPI>();
+	Scope<RendererAPI> RenderCommand::s_RendererAPI = RendererAPI::Create();
+
 }

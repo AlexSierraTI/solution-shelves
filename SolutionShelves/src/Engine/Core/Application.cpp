@@ -16,6 +16,8 @@ namespace SolutionShelves
 
 	Application::Application()
 	{
+		SS_PROFILE_FUNCTION();
+
 		SS_ASSERT(!s_Instance, "Application ja existe!");
 		s_Instance = this;
 
@@ -31,51 +33,91 @@ namespace SolutionShelves
 
 	Application::~Application()
 	{
+		SS_PROFILE_FUNCTION();
+
+		Renderer::Shutdown();
 	}
 
 	void Application::PushLayer(Layer* layer)
 	{
+		SS_PROFILE_FUNCTION();
+
 		m_LayerStack.PushLayer(layer);
 		layer->OnAttach();
 	}
 
 	void Application::PushOverlay(Layer* layer)
 	{
+		SS_PROFILE_FUNCTION();
+
 		m_LayerStack.PushOverlay(layer);
 		layer->OnAttach();
 	}
 
+	void Application::PopLayer(Layer* layer)
+	{
+		SS_PROFILE_FUNCTION();
+
+		SS_ASSERT(m_LayerStack.LayerExists(layer), "Layer inexistente!");
+		layer->OnDetach();
+		m_LayerStack.PopLayer(layer);
+	}
+
+	void Application::PopOverlay(Layer* layer)
+	{
+		SS_PROFILE_FUNCTION();
+
+		SS_ASSERT(m_LayerStack.LayerExists(layer), "Overlay inexistente!");
+		layer->OnDetach();
+		m_LayerStack.PopOverlay(layer);
+	}
+
 	void Application::OnEvent(Event& e)
 	{
+		SS_PROFILE_FUNCTION();
+
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
 
 		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
 		{
-			(*it)->OnEvent(e);
-			if (e.Handled())
+			if (e.Handled) 
 				break;
+			(*it)->OnEvent(e);
 		}
 	}
 
 	void Application::Run()
 	{
+		SS_PROFILE_FUNCTION();
+
 		while (m_Running)
 		{
+			SS_PROFILE_SCOPE("RunLoop");
+
 			double time = glfwGetTime(); // Platform::GetTime
 			Timestep timestep = (float)time - m_LastFrameTime;
 			m_LastFrameTime = (float)time;
 
 			if (!m_Minimized)
 			{
-				for (Layer* layer : m_LayerStack)
-					layer->OnUpdate(timestep);
+				{
+					SS_PROFILE_SCOPE("LayerStack OnUpdate");
+
+					for (Layer* layer : m_LayerStack)
+						layer->OnUpdate(timestep);
+				}
 			}
 
+
 			m_ImGuiLayer->Begin();
-			for (Layer* layer : m_LayerStack)
-				layer->OnImGuiRender();
+			{
+				SS_PROFILE_SCOPE("LayerStack OnImGuiRender");
+
+				for (Layer* layer : m_LayerStack)
+					layer->OnImGuiRender();
+			}
 			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();
@@ -89,6 +131,8 @@ namespace SolutionShelves
 	}
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
+		SS_PROFILE_FUNCTION();
+
 		if (e.GetWidth() == 0 || e.GetHeight() == 0)
 		{
 			m_Minimized = true;

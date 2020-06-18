@@ -132,6 +132,7 @@ void Sandbox3D::OnAttach()
 	m_LuanaTexture = SolutionShelves::Texture2D::Create("assets/textures/luana.png");
 
 	textureShader->Bind();
+	textureShader->SetFloat4("u_Color", glm::vec4(1.0f));
 	textureShader->SetInt("u_Texture", 0);
 }
 
@@ -153,6 +154,7 @@ void Sandbox3D::OnUpdate(SolutionShelves::Timestep ts)
 
 	glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
+	/////
 	m_FlatColorShader->Bind();
 	m_FlatColorShader->SetFloat3("u_Color", m_SquareColor);
 
@@ -165,7 +167,9 @@ void Sandbox3D::OnUpdate(SolutionShelves::Timestep ts)
 			SolutionShelves::Renderer::Submit(m_FlatColorShader, m_SquareVA, transform);
 		}
 	}
+	/////
 
+	/////
 	auto textureShader = m_ShaderLibrary.Get("Texture");
 
 	m_Texture->Bind(0);
@@ -173,9 +177,11 @@ void Sandbox3D::OnUpdate(SolutionShelves::Timestep ts)
 
 	m_LuanaTexture->Bind(0);
 	SolutionShelves::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+	/////
 
 	// Triangulo
 	// SolutionShelves::Renderer::Submit(m_Shader, m_VertexArray);
+	/////
 
 	SolutionShelves::Renderer::EndScene();
 }

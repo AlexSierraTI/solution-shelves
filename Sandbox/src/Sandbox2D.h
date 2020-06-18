@@ -16,11 +16,9 @@ public:
 	void OnEvent(SolutionShelves::Event& e) override;
 private:
 	SolutionShelves::OrthographicCameraController m_CameraController;
+	SolutionShelves::Ref<SolutionShelves::Texture2D> m_CheckerboardTexture;
+	SolutionShelves::Ref<SolutionShelves::Texture2D> m_LuanaTexture;
 
-	// Temp 
-	SolutionShelves::Ref<SolutionShelves::VertexArray> m_SquareVA;
-	SolutionShelves::Ref<SolutionShelves::Shader> m_FlatColorShader;
-	
 	glm::vec4 m_SquareColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 };
 

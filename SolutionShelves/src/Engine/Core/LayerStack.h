@@ -9,11 +9,14 @@ namespace SolutionShelves
 	class SOLUTION_SHELVES_API LayerStack
 	{
 	public:
-		LayerStack();
+		LayerStack() = default;
 		~LayerStack();
 
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
+
+		bool LayerExists(Layer* layer);
+
 		void PopLayer(Layer* layer);
 		void PopOverlay(Layer* overlay);
 

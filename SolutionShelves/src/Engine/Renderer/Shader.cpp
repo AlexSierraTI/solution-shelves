@@ -12,7 +12,7 @@ namespace SolutionShelves
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::None:      SS_CORE_ASSERT(false, "RendererAPI::None nao suportada!"); return nullptr;
-		case RendererAPI::API::OpenGL:    return std::make_shared<OpenGLShader>(filepath);
+		case RendererAPI::API::OpenGL:    return CreateRef<OpenGLShader>(filepath);
 		}
 		SS_CORE_ASSERT(false, "RendererAPI desconhecido!");
 		return nullptr;
@@ -23,7 +23,7 @@ namespace SolutionShelves
 		switch (Renderer::GetAPI())
 		{
 			case RendererAPI::API::None:      SS_CORE_ASSERT(false, "RendererAPI::None nao suportada!"); return nullptr;
-			case RendererAPI::API::OpenGL:    return std::make_shared<OpenGLShader>(name, vertexSrc, fragmentSrc);
+			case RendererAPI::API::OpenGL:    return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
 		}
 		SS_CORE_ASSERT(false, "RendererAPI desconhecido!");
 		return nullptr;
