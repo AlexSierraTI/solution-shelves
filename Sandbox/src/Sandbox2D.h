@@ -23,6 +23,7 @@ private:
 	SolutionShelves::Ref<SolutionShelves::Texture2D> m_LuanaTexture;
 	SolutionShelves::Ref<SolutionShelves::Texture2D> m_SpriteSheet;
 	SolutionShelves::Ref<SolutionShelves::SubTexture2D> m_TextureStairs, m_TextureBarrel, m_TextureTree;
+	SolutionShelves::Ref<SolutionShelves::FrameBuffer> m_FrameBuffer;
 
 	glm::vec4 m_SquareColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 

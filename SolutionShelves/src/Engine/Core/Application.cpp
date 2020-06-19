@@ -23,6 +23,7 @@ namespace SolutionShelves
 
 		m_Window = Scope<Window>(Window::Create());
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		
 		m_Window->SetVSync(false);
 
 		Renderer::Init();
@@ -70,6 +71,11 @@ namespace SolutionShelves
 		SS_ASSERT(m_LayerStack.LayerExists(layer), "Overlay inexistente!");
 		layer->OnDetach();
 		m_LayerStack.PopOverlay(layer);
+	}
+
+	void Application::Close()
+	{
+		m_Running = false;
 	}
 
 	void Application::OnEvent(Event& e)
