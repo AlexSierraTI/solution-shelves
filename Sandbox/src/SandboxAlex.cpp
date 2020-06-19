@@ -7,7 +7,7 @@
 SandboxAlex::SandboxAlex()
 	: Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f, true)
 {
-	m_Application = std::make_unique<Fps>(800, 600, 4);
+	m_Application = std::make_unique<Fps>(1280, 720, 4);
 }
 
 void SandboxAlex::OnAttach()
@@ -20,8 +20,6 @@ void SandboxAlex::OnDetach()
 
 void SandboxAlex::OnUpdate(SolutionShelves::Timestep ts)
 {
-	// m_CameraController.OnUpdate(ts);
-
 	SolutionShelves::Renderer2D::ResetStats();
 
 	SolutionShelves::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
@@ -47,6 +45,5 @@ void SandboxAlex::OnImGuiRender()
 
 void SandboxAlex::OnEvent(SolutionShelves::Event& e)
 {
-	// m_CameraController.OnEvent(e);
 	m_Application->OnEvent(e);
 }

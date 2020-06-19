@@ -17,10 +17,14 @@ void Sandbox2D::OnAttach()
 	m_LuanaTexture = SolutionShelves::Texture2D::Create("assets/textures/luana.png");
 	m_SpriteSheet = SolutionShelves::Texture2D::Create("assets/game/textures/RPGpack_sheet_2X.png");
 
+	m_TextureStairs = SolutionShelves::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 7.0f, 6.0f }, { 128.0f, 128.0f });
+	m_TextureBarrel = SolutionShelves::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 8.0f, 2.0f }, { 128.0f, 128.0f });
+	m_TextureTree = SolutionShelves::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 2.0f, 1.0f }, { 128.0f, 128.0f }, { 1, 2 });
+
 	m_Particle.ColorBegin = { 254 / 255.0f, 212 / 255.0f, 123 / 255.0f, 1.0f };
 	m_Particle.ColorEnd = { 254 / 255.0f, 109 / 255.0f, 41 / 255.0f, 1.0f };
 	m_Particle.SizeBegin = 0.5f, m_Particle.SizeVariation = 0.3f, m_Particle.SizeEnd = 0.0f;
-	m_Particle.LifeTime = 2.0f;
+	m_Particle.LifeTime = 4.0f;
 	m_Particle.Velocity = { 0.0f, 0.0f };
 	m_Particle.VelocityVariation = { 3.0f, 1.0f };
 	m_Particle.Position = { 0.0f, 0.0f };
@@ -38,7 +42,7 @@ void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 	// Update
 	m_CameraController.OnUpdate(ts);
 
-	
+
 	// Render
 	SolutionShelves::Renderer2D::ResetStats();
 
@@ -48,18 +52,14 @@ void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 		SolutionShelves::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		SolutionShelves::RenderCommand::Clear();
 	}
-#if 0
-	{
-		static float rotation = 0.0f;
-		rotation += ts * 50.0f;
 
+	{
 		SS_PROFILE_SCOPE("Renderer Draw");
 		SolutionShelves::Renderer2D::BeginScene(m_CameraController.GetCamera());
-		SolutionShelves::Renderer2D::DrawRotatedQuad({ 1.0f,  0.0f }, { 0.8f,  0.8f }, glm::radians(-45.0f) , { 0.8f, 0.2f, 0.3f, 1.0f });
+		SolutionShelves::Renderer2D::DrawRotatedQuad({ 1.0f,  0.0f }, { 0.8f,  0.8f }, glm::radians(-45.0f), { 0.8f, 0.2f, 0.3f, 1.0f });
 		SolutionShelves::Renderer2D::DrawQuad({ -1.0f,  0.0f }, { 0.8f,  0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
-		SolutionShelves::Renderer2D::DrawQuad({  0.5f, -0.5f }, { 0.5f,  0.75f }, { 0.2f, 0.3f, 0.8f, 1.0f });
-		SolutionShelves::Renderer2D::DrawQuad({  0.0f,  0.0f, -0.2f }, { 20.0f,  20.0f }, m_CheckerboardTexture, 10.0f);
-		SolutionShelves::Renderer2D::DrawRotatedQuad({ -2.0f,  0.0f, 0.15f }, { 1.0f,  1.0f }, glm::radians(rotation), m_LuanaTexture, 1.0f);
+		SolutionShelves::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f,  0.75f }, { 0.2f, 0.3f, 0.8f, 1.0f });
+		SolutionShelves::Renderer2D::DrawQuad({ 0.0f,  0.0f, -0.2f }, { 20.0f,  20.0f }, m_CheckerboardTexture, 10.0f);
 		SolutionShelves::Renderer2D::EndScene();
 
 		SolutionShelves::Renderer2D::BeginScene(m_CameraController.GetCamera());
@@ -74,7 +74,7 @@ void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 		}
 		SolutionShelves::Renderer2D::EndScene();
 	}
-#endif
+
 
 	if (SolutionShelves::Input::IsMouseButtonPressed(SS_MOUSE_BUTTON_LEFT))
 	{
@@ -87,17 +87,26 @@ void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 		x = (x / width) * bounds.GetWidth() - bounds.GetWidth() * 0.5f;
 		y = bounds.GetHeight() * 0.5f - (y / height) * bounds.GetHeight();
 		m_Particle.Position = { x + pos.x, y + pos.y };
-		for (int i = 0; i < 25; i++)
+		for (int i = 0; i < 10; i++)
 			m_ParticleSystem.Emit(m_Particle);
 	}
 
-	SolutionShelves::Renderer2D::BeginScene(m_CameraController.GetCamera());
-	SolutionShelves::Renderer2D::DrawQuad({ 0.0f,  0.0f, 0.0f }, { 1.0f,  1.0f }, m_SpriteSheet);
-	SolutionShelves::Renderer2D::EndScene();
-
-	
 	m_ParticleSystem.OnUpdate(ts);
 	m_ParticleSystem.OnRender(m_CameraController.GetCamera());
+
+	SolutionShelves::Renderer2D::BeginScene(m_CameraController.GetCamera());
+	SolutionShelves::Renderer2D::DrawQuad({ 0.0f,  0.0f, 0.5f }, { 1.0f,  1.0f }, m_TextureStairs);
+	SolutionShelves::Renderer2D::DrawQuad({ 1.0f,  0.0f, 0.5f }, { 1.0f,  1.0f }, m_TextureBarrel);
+	SolutionShelves::Renderer2D::DrawQuad({ -1.0f,  0.0f, 0.5f }, { 1.0f,  2.0f }, m_TextureTree);
+
+	SolutionShelves::Renderer2D::EndScene();
+
+	static float rotation = 0.0f;
+	rotation += rotation >= 360.0f ? rotation = 0.0f : ts * 50.0f;
+
+	SolutionShelves::Renderer2D::BeginScene(m_CameraController.GetCamera());
+	SolutionShelves::Renderer2D::DrawRotatedQuad({ -2.0f,  0.0f, 0.15f }, { 1.0f,  1.0f }, glm::radians(rotation), m_LuanaTexture, 1.0f);
+	SolutionShelves::Renderer2D::EndScene();
 
 }
 
@@ -105,16 +114,16 @@ void Sandbox2D::OnImGuiRender()
 {
 	SS_PROFILE_FUNCTION();
 
-	 ImGui::Begin("Config");
+	ImGui::Begin("Config");
 
-	 auto stats = SolutionShelves::Renderer2D::GetStats();
-	 ImGui::Text("Renderer2D Stats: ");
-	 ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-	 ImGui::Text("Quads: %d", stats.QuadCount);
-	 ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-	 ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+	auto stats = SolutionShelves::Renderer2D::GetStats();
+	ImGui::Text("Renderer2D Stats: ");
+	ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+	ImGui::Text("Quads: %d", stats.QuadCount);
+	ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
+	ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 
-	 ImGui::End();
+	ImGui::End();
 }
 
 void Sandbox2D::OnEvent(SolutionShelves::Event& e)

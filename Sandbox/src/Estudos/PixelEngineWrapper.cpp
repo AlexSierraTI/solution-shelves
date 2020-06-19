@@ -18,9 +18,6 @@ void PixelEngineWrapper::OnRender(SolutionShelves::OrthographicCameraController&
 	SolutionShelves::Renderer2D::BeginScene(cameraController.GetCamera());
 
 	auto bounds = cameraController.GetBounds();
-	const float boundSize = 2.0f;
-	const float boundHalfSize = 1.0f;
-
 	auto windowWidth = SolutionShelves::Application::Get().GetWindow().GetWidth();
 	auto windowHeight = SolutionShelves::Application::Get().GetWindow().GetHeight();
 	auto pos = cameraController.GetCamera().GetPosition();
@@ -28,9 +25,7 @@ void PixelEngineWrapper::OnRender(SolutionShelves::OrthographicCameraController&
 	float pixelPosStartX = ((float)windowWidth - m_Width) / 2;
 	float pixelPosStartY = ((float)windowHeight - m_Height) / 2;
 	float normalPosStartX = (pixelPosStartX / windowWidth) * bounds.GetWidth() - bounds.GetWidth() * 0.5f;    // | SEGREDO DE TUDO
-	// float normalPosStartX = (pixelPosStartX / windowWidth) * boundSize - boundHalfSize;
 	float normalPosStartY = bounds.GetHeight() * 0.5f - (pixelPosStartY / windowHeight) * bounds.GetHeight(); // | SEGREDO DE TUDO
-	// float normalPosStartY = boundHalfSize - (pixelPosStartY / windowHeight) * boundSize;
 	float normalPixelSizeX = ((-normalPosStartX) * 2) / (float)m_ScreenWidth;
 	float normalPixelSizeY = ((-normalPosStartY) * 2) / (float)m_ScreenHeight;
 
