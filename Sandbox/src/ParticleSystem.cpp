@@ -44,7 +44,7 @@ void ParticleSystem::OnRender(SolutionShelves::OrthographicCamera& camera)
 		glm::vec4 color = glm::lerp(particle.ColorEnd, particle.ColorBegin, life);
 
 		float size = glm::lerp(particle.SizeEnd, particle.SizeBegin, life);
-		glm::vec3 position = { particle.Position.x, particle.Position.y, 0.2f };
+		glm::vec3 position = { particle.Position.x, particle.Position.y, -0.1f };
 		SolutionShelves::Renderer2D::DrawRotatedQuad(position, { size,  size }, particle.Rotation, color);
 
 	}
