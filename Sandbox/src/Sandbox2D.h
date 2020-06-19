@@ -29,5 +29,7 @@ private:
 	ParticleSystem m_ParticleSystem;
 	ParticleProps m_Particle;
 
+	size_t m_MapWidth, m_MapHeight;
+	std::unordered_map<char, SolutionShelves::Ref<SolutionShelves::SubTexture2D>> s_TextureMap;
 };
 

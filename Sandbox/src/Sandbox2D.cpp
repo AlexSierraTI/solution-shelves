@@ -4,6 +4,24 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+static const uint32_t s_MapWidth = 24;
+static const char* s_MapTiles = 
+"WWWWWWWWWWWWWWWWWWWWWWWW"
+"WWWWWWDDDDDDDDWWWWWWWWWW"
+"WWWWWDDDDDDDDDDDWWWWCWWW"
+"WWWWDDDDDDDDDDDDDDDDWWWW"
+"WWWDDDDDDDDDDDDDDDDDWWWW"
+"WWDDDDDWWWDDDDDDDDDDWWWW"
+"WDDDDDDWWWDDDDDDDDDDDWWW"
+"WWDDDDDDDDDDDDDDDDDDDDWW"
+"WWWDDDDDDDDDDDDDDDDDDWWW"
+"WWWWWDDDDDDDDDDDDDWWWWWW"
+"WWWWWWDDDDDDDDDDDDWWWWWW"
+"WWWWWWWWWDDDDDDDWWWWWWWW"
+"WWWWWWWWWWWDDDWWWWWWWWWW"
+"WWWWWWWWWWWWWWWWWWWWWWWW";
+
+
 Sandbox2D::Sandbox2D()
 	: Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f, true)
 {
@@ -21,6 +39,12 @@ void Sandbox2D::OnAttach()
 	m_TextureBarrel = SolutionShelves::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 8.0f, 2.0f }, { 128.0f, 128.0f });
 	m_TextureTree = SolutionShelves::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 2.0f, 1.0f }, { 128.0f, 128.0f }, { 1, 2 });
 
+	m_MapWidth = (uint32_t)s_MapWidth;
+	m_MapHeight = strlen(s_MapTiles) / s_MapWidth;
+
+	s_TextureMap['D'] = SolutionShelves::SubTexture2D::CreateFromCoords(m_SpriteSheet, {  6.0f, 11.0f }, { 128.0f, 128.0f });
+	s_TextureMap['W'] = SolutionShelves::SubTexture2D::CreateFromCoords(m_SpriteSheet, { 11.0f, 11.0f }, { 128.0f, 128.0f });
+
 	m_Particle.ColorBegin = { 254 / 255.0f, 212 / 255.0f, 123 / 255.0f, 1.0f };
 	m_Particle.ColorEnd = { 254 / 255.0f, 109 / 255.0f, 41 / 255.0f, 1.0f };
 	m_Particle.SizeBegin = 0.5f, m_Particle.SizeVariation = 0.3f, m_Particle.SizeEnd = 0.0f;
@@ -28,6 +52,7 @@ void Sandbox2D::OnAttach()
 	m_Particle.Velocity = { 0.0f, 0.0f };
 	m_Particle.VelocityVariation = { 3.0f, 1.0f };
 	m_Particle.Position = { 0.0f, 0.0f };
+	m_CameraController.SetZoomLevel(5.0f);
 }
 
 void Sandbox2D::OnDetach()
@@ -53,6 +78,7 @@ void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 		SolutionShelves::RenderCommand::Clear();
 	}
 
+#if 0
 	{
 		SS_PROFILE_SCOPE("Renderer Draw");
 		SolutionShelves::Renderer2D::BeginScene(m_CameraController.GetCamera());
@@ -75,6 +101,7 @@ void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 		SolutionShelves::Renderer2D::EndScene();
 	}
 
+#endif
 
 	if (SolutionShelves::Input::IsMouseButtonPressed(SS_MOUSE_BUTTON_LEFT))
 	{
@@ -95,9 +122,25 @@ void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 	m_ParticleSystem.OnRender(m_CameraController.GetCamera());
 
 	SolutionShelves::Renderer2D::BeginScene(m_CameraController.GetCamera());
-	SolutionShelves::Renderer2D::DrawQuad({ 0.0f,  0.0f, 0.5f }, { 1.0f,  1.0f }, m_TextureStairs);
-	SolutionShelves::Renderer2D::DrawQuad({ 1.0f,  0.0f, 0.5f }, { 1.0f,  1.0f }, m_TextureBarrel);
-	SolutionShelves::Renderer2D::DrawQuad({ -1.0f,  0.0f, 0.5f }, { 1.0f,  2.0f }, m_TextureTree);
+	
+	for (size_t y = 0; y < m_MapHeight; y++)
+	{
+		for (size_t x = 0; x < m_MapWidth; x++)
+		{
+			char tileType = s_MapTiles[x + y * m_MapWidth];
+			SolutionShelves::Ref<SolutionShelves::SubTexture2D> texture;
+			if (s_TextureMap.find(tileType) != s_TextureMap.end())
+				texture = s_TextureMap[tileType];
+			else
+				texture = m_TextureBarrel;
+
+			SolutionShelves::Renderer2D::DrawQuad({ x - m_MapWidth / 2.0f, m_MapHeight - y - m_MapHeight / 2.0f, 0.5f }, { 1.0f,  1.0f }, texture);
+		}
+	}
+
+	// SolutionShelves::Renderer2D::DrawQuad({ 0.0f,  0.0f, 0.5f }, { 1.0f,  1.0f }, m_TextureStairs);
+	// SolutionShelves::Renderer2D::DrawQuad({ 1.0f,  0.0f, 0.5f }, { 1.0f,  1.0f }, m_TextureBarrel);
+	// SolutionShelves::Renderer2D::DrawQuad({ -1.0f,  0.0f, 0.5f }, { 1.0f,  2.0f }, m_TextureTree);
 
 	SolutionShelves::Renderer2D::EndScene();
 
@@ -105,7 +148,7 @@ void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 	rotation += rotation >= 360.0f ? rotation = 0.0f : ts * 50.0f;
 
 	SolutionShelves::Renderer2D::BeginScene(m_CameraController.GetCamera());
-	SolutionShelves::Renderer2D::DrawRotatedQuad({ -2.0f,  0.0f, 0.15f }, { 1.0f,  1.0f }, glm::radians(rotation), m_LuanaTexture, 1.0f);
+	SolutionShelves::Renderer2D::DrawRotatedQuad({ -2.0f,  1.0f, 0.15f }, { 1.0f,  1.0f }, glm::radians(rotation), m_LuanaTexture, 1.0f);
 	SolutionShelves::Renderer2D::EndScene();
 
 }
