@@ -7,7 +7,6 @@
 Sandbox2D::Sandbox2D()
 	: Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f, true)
 {
-	m_Pratica = std::make_unique<Pratica>(640, 480, 32);
 }
 
 void Sandbox2D::OnAttach()
@@ -48,7 +47,7 @@ void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 		SolutionShelves::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		SolutionShelves::RenderCommand::Clear();
 	}
-	/*
+
 	{
 		static float rotation = 0.0f;
 		rotation += ts * 50.0f;
@@ -92,10 +91,6 @@ void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 	
 	m_ParticleSystem.OnUpdate(ts);
 	m_ParticleSystem.OnRender(m_CameraController.GetCamera());
-	*/
-
-	m_Pratica->OnUpdate(ts);
-	m_Pratica->OnRender(m_CameraController);
 
 }
 
@@ -118,5 +113,4 @@ void Sandbox2D::OnImGuiRender()
 void Sandbox2D::OnEvent(SolutionShelves::Event& e)
 {
 	m_CameraController.OnEvent(e);
-	m_Pratica->OnEvent(e);
 }

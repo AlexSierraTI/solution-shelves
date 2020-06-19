@@ -2,6 +2,7 @@
 
 #include "Sandbox2D.h"
 #include "Sandbox3D.h"
+#include "SandboxAlex.h"
 
 #include "Engine/Core/EntryPoint.h"
 
@@ -12,6 +13,7 @@ public:
 	{
 		// PushLayer(new Sandbox3D());
 		PushLayer(new Sandbox2D());
+		//PushLayer(new SandboxAlex);
 	}
 
 	~SandBox()
