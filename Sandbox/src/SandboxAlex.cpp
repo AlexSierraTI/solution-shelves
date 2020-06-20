@@ -7,7 +7,7 @@
 SandboxAlex::SandboxAlex()
 	: Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f, true)
 {
-	m_Application = std::make_unique<Fps>(1280, 720, 4);
+	m_Application = std::make_unique<Fps>(800, 600, 8);
 }
 
 void SandboxAlex::OnAttach()
@@ -31,6 +31,7 @@ void SandboxAlex::OnUpdate(SolutionShelves::Timestep ts)
 
 void SandboxAlex::OnImGuiRender()
 {
+	/*
 	ImGui::Begin("Config");
 
 	auto stats = SolutionShelves::Renderer2D::GetStats();
@@ -41,6 +42,7 @@ void SandboxAlex::OnImGuiRender()
 	ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 
 	ImGui::End();
+	*/
 }
 
 void SandboxAlex::OnEvent(SolutionShelves::Event& e)

@@ -11,37 +11,31 @@ PixelEngineWrapper::PixelEngineWrapper(uint32_t width, uint32_t height, uint32_t
 {
 	m_ScreenBuffer.resize(m_ScreenBufferLenght);
 	ClearScreen({ 0.3f, 0.3f, 0.3f, 1.0f });
+	SolutionShelves::FrameBufferSpecification fbSpec;
+	fbSpec.Width = 1280;
+	fbSpec.Height = 720;
+	m_FrameBuffer = SolutionShelves::FrameBuffer::Create(fbSpec);
 }
 
 void PixelEngineWrapper::OnRender(SolutionShelves::OrthographicCameraController& cameraController)
 {
+	cameraController.SetZoomLevel(30.0f);
 	SolutionShelves::Renderer2D::BeginScene(cameraController.GetCamera());
+	m_FrameBuffer->Bind();
 
-	auto bounds = cameraController.GetBounds();
-	auto windowWidth = SolutionShelves::Application::Get().GetWindow().GetWidth();
-	auto windowHeight = SolutionShelves::Application::Get().GetWindow().GetHeight();
-	auto pos = cameraController.GetCamera().GetPosition();
+	SolutionShelves::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+	SolutionShelves::RenderCommand::Clear();
 
-	float pixelPosStartX = ((float)windowWidth - m_Width) / 2;
-	float pixelPosStartY = ((float)windowHeight - m_Height) / 2;
-	float normalPosStartX = (pixelPosStartX / windowWidth) * bounds.GetWidth() - bounds.GetWidth() * 0.5f;    // | SEGREDO DE TUDO
-	float normalPosStartY = bounds.GetHeight() * 0.5f - (pixelPosStartY / windowHeight) * bounds.GetHeight(); // | SEGREDO DE TUDO
-	float normalPixelSizeX = ((-normalPosStartX) * 2) / (float)m_ScreenWidth;
-	float normalPixelSizeY = ((-normalPosStartY) * 2) / (float)m_ScreenHeight;
-
-	glm::vec2 size = { normalPixelSizeX, normalPixelSizeY };
 
 	for (uint32_t y = 0; y < m_ScreenHeight; y++)
 	{
 		for (uint32_t x = 0; x < m_ScreenWidth; x++)
 		{
 			uint32_t posIndex = y * m_ScreenWidth + x;
-			float xNormal = normalPosStartX + (x * normalPixelSizeX);
-			float yNormal = normalPosStartY + (y * normalPixelSizeY);
-			glm::vec3 position = { xNormal + pos.x, yNormal + pos.y, 0.0f };
-			SolutionShelves::Renderer2D::DrawQuad(position, size, m_ScreenBuffer[posIndex].Color);
+			SolutionShelves::Renderer2D::DrawQuad({ x - m_ScreenWidth / 2.0f, m_ScreenHeight - y - m_ScreenHeight / 2.0f, 0.5f }, { 1.0f,  1.0f }, m_ScreenBuffer[posIndex].Color);
 		}
 	}
+	m_FrameBuffer->Unbind();
 	SolutionShelves::Renderer2D::EndScene();
 }
 

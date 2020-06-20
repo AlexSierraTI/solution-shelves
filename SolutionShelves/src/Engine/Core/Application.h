@@ -16,7 +16,7 @@ namespace SolutionShelves
 	class SOLUTION_SHELVES_API Application
 	{
 	public:
-		Application();
+		Application(const std::string& name = "Solution Shelves App");
 		virtual ~Application();
 
 		void Run();
@@ -29,9 +29,11 @@ namespace SolutionShelves
 		void PopLayer(Layer* layer);
 		void PopOverlay(Layer* layer);
 
-		inline Window& GetWindow() { return *m_Window; }
+		Window& GetWindow() { return *m_Window; }
 
-		inline static Application& Get() { return *s_Instance; }
+		void Close();
+		
+		static Application& Get() { return *s_Instance; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);

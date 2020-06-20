@@ -25,6 +25,7 @@ public:
 private:
 	void ClearScreen(const glm::vec4& color);
 private:
+	SolutionShelves::Ref<SolutionShelves::FrameBuffer> m_FrameBuffer;
 	std::vector<Pixel> m_ScreenBuffer;
 	uint32_t m_Width, m_Height, m_PixelSize, m_ScreenBufferLenght;
 	uint32_t m_ScreenWidth, m_ScreenHeight;
