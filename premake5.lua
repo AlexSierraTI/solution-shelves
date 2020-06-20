@@ -112,27 +112,67 @@ project "Sandbox"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/assets/shaders/**.glsl",
-		"%{prj.name}/assets/textures/**.png"
-	}
-
-	defines
-	{
-		"_CRT_SECURE_NO_WARNINGS"
+		"%{prj.name}/src/**.cpp"
 	}
 
 	includedirs
 	{
-		"%{prj.name}/src",
-		"%{prj.name}/assets",
-		"%{prj.name}/assets/shaders",
-		"%{prj.name}/assets/textures",
 		"SolutionShelves/vendor/spdlog/include",
 		"SolutionShelves/src",
 		"SolutionShelves/vendor",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.glm}"
+	}
+
+	links
+	{
+		"SolutionShelves"
+	}
+	
+	filter "system:windows"
+		systemversion "latest"
+
+		defines 
+		{
+			"SS_PLATFORM_WINDOWS"
+		}
+
+	filter "configurations:Debug"
+		defines "SS_DEBUG"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		defines "SS_RELEASE"
+		runtime "Release"
+		optimize "on"
+
+	filter "configurations:Dist"
+		defines "SS_DIST"
+		runtime "Release"
+		optimize "on"
+
+project "SolutionShelves-Editor"
+	location "SolutionShelves-Editor"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files
+	{
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp"
+	}
+
+	includedirs
+	{
+		"SolutionShelves/vendor/spdlog/include",
+		"SolutionShelves/src",
+		"SolutionShelves/vendor",
+		"%{IncludeDir.glm}"
 	}
 
 	links

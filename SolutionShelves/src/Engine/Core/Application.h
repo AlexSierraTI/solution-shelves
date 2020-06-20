@@ -16,7 +16,7 @@ namespace SolutionShelves
 	class SOLUTION_SHELVES_API Application
 	{
 	public:
-		Application();
+		Application(const std::string& name = "Solution Shelves App");
 		virtual ~Application();
 
 		void Run();

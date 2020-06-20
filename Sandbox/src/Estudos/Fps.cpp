@@ -24,20 +24,21 @@ Fps::Fps(uint32_t width, uint32_t height, uint32_t pixelSize)
 {
 	map += L"################";
 	map += L"#              #";
-	map += L"#              #";
-	map += L"#         #    #";
-	map += L"#         #    #";
-	map += L"#              #";
-	map += L"#              #";
-	map += L"#              #";
-	map += L"#              #";
-	map += L"#              #";
-	map += L"#              #";
+	map += L"#  ##########  #";
+	map += L"#      #  #    #";
+	map += L"#      #  ###  #";
+	map += L"#      #       #";
+	map += L"#####  #   #####";
+	map += L"#  #   #       #";
+	map += L"#  #   #   #####";
+	map += L"#      #       #";
+	map += L"#  ########    #";
 	map += L"#              #";
 	map += L"#       ########";
-	map += L"#              #";
-	map += L"#              #";
+	map += L"#   #          #";
+	map += L"#   #          #";
 	map += L"################";
+
 }
 
 void Fps::OnUpdate(SolutionShelves::Timestep ts)
