@@ -25,14 +25,14 @@ Fps::Fps(uint32_t width, uint32_t height, uint32_t pixelSize)
 	map += L"################";
 	map += L"#              #";
 	map += L"#  ##########  #";
-	map += L"#      #  #    #";
-	map += L"#      #  ###  #";
-	map += L"#      #       #";
-	map += L"#####  #   #####";
-	map += L"#  #   #       #";
-	map += L"#  #   #   #####";
-	map += L"#      #       #";
-	map += L"#  ########    #";
+	map += L"#         #    #";
+	map += L"#         ###  #";
+	map += L"#              #";
+	map += L"#####      #####";
+	map += L"#  #           #";
+	map += L"#  #       #####";
+	map += L"#              #";
+	map += L"#              #";
 	map += L"#              #";
 	map += L"#       ########";
 	map += L"#   #          #";
@@ -46,6 +46,8 @@ void Fps::OnUpdate(SolutionShelves::Timestep ts)
 	turnDelta = rotateSpeed * ts;
 	moveDelta = moveSpeed * ts;
 
+	int playerCurrentPos = (int)fPlayerY * nMapWidth + (int)fPlayerX;
+
 	if (SolutionShelves::Input::IsKeyPressed(SS_KEY_A))
 		fPlayerA -= turnDelta;
 
@@ -56,12 +58,25 @@ void Fps::OnUpdate(SolutionShelves::Timestep ts)
 	{
 		fPlayerX += glm::sin(fPlayerA) * moveDelta;
 		fPlayerY += glm::cos(fPlayerA) * moveDelta;
+
+		if (map[playerCurrentPos] == '#')
+		{
+			fPlayerX -= glm::sin(fPlayerA) * moveDelta;
+			fPlayerY -= glm::cos(fPlayerA) * moveDelta;
+		}
+
 	}
 
 	if (SolutionShelves::Input::IsKeyPressed(SS_KEY_S))
 	{
 		fPlayerX -= glm::sin(fPlayerA) * moveDelta;
 		fPlayerY -= glm::cos(fPlayerA) * moveDelta;
+		
+		if (map[playerCurrentPos] == '#')
+		{
+			fPlayerX += glm::sin(fPlayerA) * moveDelta;
+			fPlayerY += glm::cos(fPlayerA) * moveDelta;
+		}
 	}
 
 	for (uint32_t x = 0; x < Fps::ScreenWidth(); x++)
@@ -70,16 +85,16 @@ void Fps::OnUpdate(SolutionShelves::Timestep ts)
 
 		float fDistanceToWall = 0;
 		bool bHitWall = false;
+		bool bBoundary = false;
 
-		float fEyeX = glm::sin(fRayAngle);
-		float fEyeY = glm::cos(fRayAngle);
+		glm::vec2 fEye = { glm::sin(fRayAngle), glm::cos(fRayAngle) };
 
 		while (!bHitWall && fDistanceToWall < fDepth)
 		{
 			fDistanceToWall += 0.1f;
 
-			int nTestX = (int)(fPlayerX + fEyeX * fDistanceToWall);
-			int nTestY = (int)(fPlayerY + fEyeY * fDistanceToWall);
+			int nTestX = (int)(fPlayerX + fEye.x * fDistanceToWall);
+			int nTestY = (int)(fPlayerY + fEye.y * fDistanceToWall);
 
 			if (nTestX < 0 || nTestX >= nMapWidth || nTestY < 0 || nTestY >= nMapHeight)
 			{
@@ -90,6 +105,26 @@ void Fps::OnUpdate(SolutionShelves::Timestep ts)
 			{
 				uint64_t index = ((uint64_t)nTestY * (uint64_t)nMapWidth + (uint64_t)nTestX) % map.length();
 				bHitWall = map[index] == '#';
+			}
+			if (bHitWall) 
+			{
+				vector<pair<float, float>> p; 
+				for (int tx = 0; tx < 2; tx++)
+					for (int ty = 0; ty < 2; ty++)
+					{
+						float vy = (float)nTestY + ty - fPlayerY;
+						float vx = (float)nTestX + tx - fPlayerX;
+						float d = sqrt(vx*vx + vy*vy);
+						float dot = (fEye.x * vx /d) + (fEye.y * vy / d);
+						p.push_back(make_pair(d, dot));
+					}
+
+				sort(p.begin(), p.end(), [](const pair<float, float>& left, const pair<float, float>& right) { return left.first < right.first; });
+
+				float fBound = 0.01;
+				if (glm::acos(p.at(0).second) < fBound) bBoundary = true;
+				if (glm::acos(p.at(1).second) < fBound) bBoundary = true;
+				// if (glm::acos(p.at(3).second) < fBound) bBoundary = true;
 			}
 		}
 
@@ -109,6 +144,8 @@ void Fps::OnUpdate(SolutionShelves::Timestep ts)
 		else if (fDistanceToWall < fDepth / 2.0f)	nShade = { 0.2f, 0.0f, 0.1f, 1.0f };
 		else if (fDistanceToWall < fDepth )			nShade = { 0.1f, 0.0f, 0.1f, 1.0f };
 		else										nShade = { 0.0f, 0.0f, 0.1f, 1.0f }; //Longe
+
+		if (bBoundary) nShade = { 0.0f, 0.0f, 0.0f, 0.8f }; // Perto
 
 
 		for (uint32_t y = 0; y < Fps::ScreenHeight(); y++)
