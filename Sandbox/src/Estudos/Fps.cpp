@@ -13,10 +13,10 @@ wstring map;
 float fFOV = glm::radians(45.0f);
 float fDepth = 16.0f;
 
-float moveSpeed = 3.0f;
+float moveSpeed = 5.0f;
 float moveDelta = 0.0f;
 
-float rotateSpeed = 0.7f;
+float rotateSpeed = 1.4f;
 float turnDelta = 0.0f;
 
 Fps::Fps(uint32_t width, uint32_t height, uint32_t pixelSize)

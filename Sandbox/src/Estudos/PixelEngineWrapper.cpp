@@ -19,7 +19,8 @@ PixelEngineWrapper::PixelEngineWrapper(uint32_t width, uint32_t height, uint32_t
 
 void PixelEngineWrapper::OnRender(SolutionShelves::OrthographicCameraController& cameraController)
 {
-	cameraController.SetZoomLevel(30.0f);
+	cameraController.SetZoomLevel(70.0f);
+
 	SolutionShelves::Renderer2D::BeginScene(cameraController.GetCamera());
 	m_FrameBuffer->Bind();
 

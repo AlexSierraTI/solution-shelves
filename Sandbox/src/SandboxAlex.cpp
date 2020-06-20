@@ -7,7 +7,7 @@
 SandboxAlex::SandboxAlex()
 	: Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f, true)
 {
-	m_Application = std::make_unique<Fps>(800, 600, 8);
+	m_Application = std::make_unique<Fps>(800, 450, 4);
 }
 
 void SandboxAlex::OnAttach()
