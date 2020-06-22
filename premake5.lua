@@ -54,7 +54,8 @@ project "SolutionShelves"
 	
 	defines
 	{
-		"_CRT_SECURE_NO_WARNINGS"
+		"_CRT_SECURE_NO_WARNINGS",
+		"GL_WITH_GLAD"
 	}
 
 	includedirs

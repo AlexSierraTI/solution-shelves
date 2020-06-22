@@ -356,6 +356,6 @@ namespace PokerSS
 	glm::vec2 GameLayer::CalculateLayoutPosition(float x, float y)
 	{
 		float aspectRatio = (float)SolutionShelves::Application::Get().GetWindow().GetWidth() / (float)SolutionShelves::Application::Get().GetWindow().GetHeight();
-		return { x / m_MapWidth * (2 * aspectRatio) - aspectRatio, 1.0f - y / m_MapHeight * (2 * 1)};
+		return { x / m_MapWidth * (2.0f * aspectRatio) - aspectRatio, 1.0f - y / m_MapHeight * (2.0f * 1.0f)};
 	}
 }

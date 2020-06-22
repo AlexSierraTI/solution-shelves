@@ -8,6 +8,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <freetype-gl.h>
+
 namespace SolutionShelves
 {
 
@@ -458,6 +460,17 @@ namespace SolutionShelves
 		s_Data.QuadIndexCount += 6;
 
 		s_Data.Stats.QuadCount++;
+	}
+
+	void Renderer2D::DrawString(const std::string text, const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
+	{
+		DrawString(text, { position.x, position.y, 0.0f }, size, color);
+	}
+
+	void Renderer2D::DrawString(const std::string text, const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
+	{
+
+
 	}
 
 	void Renderer2D::ResetStats()
