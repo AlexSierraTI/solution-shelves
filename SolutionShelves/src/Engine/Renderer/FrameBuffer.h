@@ -11,6 +11,11 @@ namespace SolutionShelves
 		uint32_t Samples = 1;
 
 		bool SwapChainTarget = false;
+
+		FrameBufferSpecification()
+			: Width(0), Height(0)
+		{
+		}
 	};
 
 	class FrameBuffer

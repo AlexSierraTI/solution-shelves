@@ -19,11 +19,13 @@ IncludeDir["Glad"] = "SolutionShelves/vendor/Glad/include"
 IncludeDir["ImGui"] = "SolutionShelves/vendor/ImGui"
 IncludeDir["glm"] = "SolutionShelves/vendor/glm"
 IncludeDir["stb_image"] = "SolutionShelves/vendor/stb_image"
+IncludeDir["freetypegl"] = "SolutionShelves/vendor/freetype-gl"
 
 group "Dependencias"
 	include "SolutionShelves/vendor/GLFW"
 	include "SolutionShelves/vendor/Glad"
 	include "SolutionShelves/vendor/ImGui"
+	include "SolutionShelves/vendor/freetype-gl"
 group ""
 
 project "SolutionShelves"
@@ -63,7 +65,8 @@ project "SolutionShelves"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.freetypegl}"
 	}
 	
 	links
@@ -71,6 +74,7 @@ project "SolutionShelves"
 		"GLFW",
 		"Glad",
 		"ImGui",
+		"freetype-gl",
 		"opengl32.lib"
 	}
 	
