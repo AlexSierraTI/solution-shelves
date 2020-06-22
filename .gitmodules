@@ -10,3 +10,6 @@
 [submodule "SolutionShelves/vendor/glm"]
 	path = SolutionShelves/vendor/glm
 	url = https://github.com/AlexSierraTI/glm
+[submodule "SolutionShelves/vendor/freetype-gl"]
+	path = SolutionShelves/vendor/freetype-gl
+	url = https://github.com/AlexSierraTI/freetype-gl
