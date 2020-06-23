@@ -2,9 +2,11 @@
 
 namespace PokerSS
 {
-	Player::Player(const std::string& name, const glm::vec2& position, Orientation orientation)
-		: m_Name(name), m_Position(position), m_Orientation(orientation)
+	Player::Player(const std::string& name)
+		: m_Name(name)
 	{
+		m_Position = { 0.0f, 0.0f };
+		m_Orientation = Orientation::DOWN;
 		m_DealerChipPosition = { 0.0f, 0.0f, 0.1f };
 		m_DealerChipSize = { 0.155f, 0.155f };
 		m_PlayerSize = { 0.35f, 0.35f };
@@ -67,11 +69,19 @@ namespace PokerSS
 	void Player::SetPosition(const glm::vec2& position)
 	{
 		m_Position = position;
+		CalculateRenderPositions();
+	}
+
+	void Player::SetOrientation(Orientation orientation)
+	{
+		m_Orientation = orientation;
+		CalculateRenderPositions();
 	}
 
 	void Player::SetDealer(bool isDealer)
 	{
 		m_Dealer = isDealer;
+		CalculateRenderPositions();
 	}
 
 	void Player::AddCard(const SolutionShelves::Ref<Card> card)

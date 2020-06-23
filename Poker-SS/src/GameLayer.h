@@ -1,9 +1,9 @@
 #pragma once
 
-#include <SolutionShelves.h>
+#include "Core/Base.h"
 
-#include "EntityManager.h"
-#include "EntityList.h"
+#include "Core/EntityManager.h"
+#include "Core/EntityList.h"
 
 namespace PokerSS
 {
@@ -17,16 +17,22 @@ namespace PokerSS
 
 		void OnUpdate(SolutionShelves::Timestep ts) override;
 		virtual void OnImGuiRender() override;
+
 		void OnEvent(SolutionShelves::Event& e) override;
 		bool OnMouseButtonPressed(SolutionShelves::MouseButtonPressedEvent& e);
 
-		void SetDealer(const std::string& dealerName);
+		void SetDealer(uint32_t pos);
+
+		void AddPlayer(const std::string& name);
 	private:
-		void CreateCamera(uint32_t width, uint32_t height);
+		void SetCamera();
 		void CreateDeck();
-		glm::vec2 CalculateLayoutPosition(float x, float y);
+		void CalculateLayoutPositions();
 	private:
-		std::string m_DealerName;
+		uint64_t m_Frames;
+		float m_DeltaTs;
+
+		uint32_t m_DealerCurrent;
 
 		SolutionShelves::Scope<SolutionShelves::OrthographicCamera> m_Camera;
 
@@ -40,12 +46,12 @@ namespace PokerSS
 		SolutionShelves::Ref<SolutionShelves::Texture2D> m_CardBackSpriteSheet;
 
 		// Layout
-		float m_MapWidth;
-		float m_MapHeight;
+		float m_AspectRatio;
+		glm::vec4 m_Bounds;
 
 		// Entities
 		SolutionShelves::Ref<OldWest> m_LevelOldWest;
-		std::unordered_map<std::string, SolutionShelves::Ref<Player>> m_PlayerList;
+		std::vector<SolutionShelves::Ref<Player>> m_PlayerList;
 
 		// Deck
 		std::queue<SolutionShelves::Ref<Card>> m_Deck;

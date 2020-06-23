@@ -6,56 +6,27 @@
 
 namespace PokerSS
 {
-	static const uint32_t s_MapWidth = 10;
-	static const char* s_MapTiles =
-		"##########" // 9 
-		"##########" // 8      
-		"##########" // 7
-		"##########" // 6
-		"##########" // 5
-		"##########" // 4
-		"##########" // 3     
-		"##########" // 2
-		"##########" // 1
-		"##########" // 0
-		;
-
-
 	GameLayer::GameLayer()
-		: SolutionShelves::Layer("Sandbox2D")
+		: SolutionShelves::Layer("Sandbox2D"), m_Camera(nullptr)
 	{
+		// FPS
+		m_Frames = 0;
+		m_DeltaTs = 0.0f;
+
 		auto& window = SolutionShelves::Application::Get().GetWindow();
-		CreateCamera(window.GetWidth(), window.GetHeight());
+		m_ViewportSize = { (float)window.GetWidth(), (float)window.GetHeight() };
+		SetCamera();
 
 		// Loading Spritesheets
 		m_CardSpriteSheet = SolutionShelves::Texture2D::Create("assets/textures/playingCards.png");
 		m_CardBackSpriteSheet = SolutionShelves::Texture2D::Create("assets/textures/playingCardBacks.png");
-
-
-		// Calculando Layout
-		m_MapWidth = (float)s_MapWidth;
-		m_MapHeight = (float)strlen(s_MapTiles) / (float)s_MapWidth;
-
 		
-		glm::vec2 v_Pos1 = CalculateLayoutPosition(5.0f, 9.0f);
-		glm::vec2 v_Pos2 = CalculateLayoutPosition(0.5f, 5.0f);
-		glm::vec2 v_Pos3 = CalculateLayoutPosition(5.0f, 1.0f);
-		glm::vec2 v_Pos4 = CalculateLayoutPosition(9.5f, 5.0f);
-		
-		/*
-		glm::vec2 v_Pos1 = {  0.0f, -0.3f };
-		glm::vec2 v_Pos2 = { -0.6f,  0.0f };
-		glm::vec2 v_Pos3 = {  0.0f,  0.3f };
-		glm::vec2 v_Pos4 = {  0.6f,  0.0f };
-		*/
-		
-		m_PlayerList["Marcos"] = SolutionShelves::CreateRef<Player>("Marcos", v_Pos1, Orientation::UP);
-		m_PlayerList["Joao"]   = SolutionShelves::CreateRef<Player>("Joao",   v_Pos2, Orientation::RIGHT);
-		m_PlayerList["Sergio"] = SolutionShelves::CreateRef<Player>("Sergio", v_Pos3, Orientation::DOWN);
-		m_PlayerList["Ueta"]   = SolutionShelves::CreateRef<Player>("Ueta",   v_Pos4, Orientation::LEFT);
+		AddPlayer("Marcos");
+		AddPlayer("Joao");
+		AddPlayer("Sergio");
+		AddPlayer("Ueta");
 
-		m_DealerName = "";
-		SetDealer(m_PlayerList["Marcos"]->GetName());
+		SetDealer(m_DealerCurrent);
 
 		m_EntityManager = SolutionShelves::CreateScope<EntityManager>();
 
@@ -67,30 +38,21 @@ namespace PokerSS
 		// Players
 		for (auto& it : m_PlayerList) 
 		{
-			it.second->EnableRender();
-			m_EntityManager->PushEntity(it.second);
+			it->EnableRender();
+			m_EntityManager->PushEntity(it);
 		}
 
-		// Deck / Deal
+		// Deck 
 		CreateDeck();
-		const uint32_t i_StartingHandSize = 2;
-		for (uint32_t i = 0; i < i_StartingHandSize; i++)
-		{
-			for (auto& it : m_PlayerList)
-			{
-				it.second->AddCard(m_Deck.front());
-				m_Deck.pop();
-			}
-		}
+
+		CalculateLayoutPositions();
 	}
 
 	void GameLayer::OnAttach()
 	{
 		SS_PROFILE_FUNCTION();
 
-		SolutionShelves::FrameBufferSpecification fbSpec;
-		fbSpec.Width = 1280;
-		fbSpec.Height = 720;
+		SolutionShelves::FrameBufferSpecification fbSpec(1280, 720);
 		m_FrameBuffer = SolutionShelves::FrameBuffer::Create(fbSpec);
 	}
 
@@ -119,7 +81,8 @@ namespace PokerSS
 				(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
 			{
 				m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-				CreateCamera(m_FrameBuffer->GetSpecification().Width, m_FrameBuffer->GetSpecification().Height);
+				SetCamera();
+				CalculateLayoutPositions();
 			}
 			
 			SolutionShelves::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
@@ -132,6 +95,15 @@ namespace PokerSS
 			SolutionShelves::Renderer2D::EndScene();
 
 			m_FrameBuffer->Unbind();
+		}
+
+		m_Frames++;
+		m_DeltaTs += ts.GetSeconds();
+		if (m_DeltaTs >= 1.0f)
+		{
+			SS_CORE_INFO("{0} FPS", m_Frames);
+			m_DeltaTs = 0.0f;
+			m_Frames = 0;
 		}
 
 	}
@@ -222,57 +194,54 @@ namespace PokerSS
 
 	bool GameLayer::OnMouseButtonPressed(SolutionShelves::MouseButtonPressedEvent& e)
 	{
-		static int dealerAtual = 0;
-		switch (dealerAtual)
-		{
-		case 0:
-			SetDealer("Joao");
-			m_PlayerList["Joao"]->AddCard(m_Deck.front());
-			m_Deck.pop();
-			dealerAtual = 1;
-			break;
-		case 1:
-			SetDealer("Sergio");
-			m_PlayerList["Sergio"]->AddCard(m_Deck.front());
-			m_Deck.pop();
-			dealerAtual = 2;
-			break;
-		case 2:
-			SetDealer("Ueta");
-			m_PlayerList["Ueta"]->AddCard(m_Deck.front());
-			m_Deck.pop();
-			dealerAtual = 3;
-			break;
-		case 3:
-			SetDealer("Marcos");
-			m_PlayerList["Marcos"]->AddCard(m_Deck.front());
-			m_Deck.pop();
-			dealerAtual = 0;
-			break;
-		}
+		if (m_PlayerList.size() == 0) return false;
+		
+		uint32_t nextDealer = (m_DealerCurrent + 1) % (uint32_t)m_PlayerList.size();
+		SetDealer(nextDealer);
+		
+		uint32_t nextPlayer = (m_DealerCurrent + 1) % (uint32_t)m_PlayerList.size();
+		m_PlayerList[nextPlayer]->AddCard(m_Deck.front());
+		m_Deck.pop();
 
 		return false;
 	}
 
-	void GameLayer::SetDealer(const std::string& dealerName)
+	void GameLayer::SetDealer(uint32_t pos)
 	{
-		if (m_PlayerList.find(m_DealerName) != m_PlayerList.end())
-			m_PlayerList[m_DealerName]->SetDealer(false);
+		for (auto& it : m_PlayerList)
+			it->SetDealer(false);
 
-		m_PlayerList[dealerName]->SetDealer(true);
-		m_DealerName = dealerName;
+		if (pos < m_PlayerList.size()) 
+		{
+			m_PlayerList[pos]->SetDealer(true);
+			m_DealerCurrent = pos;
+		}
 	}
 
-	void GameLayer::CreateCamera(uint32_t width, uint32_t height)
+	void GameLayer::AddPlayer(const std::string& name)
 	{
-		float aspectRatio = (float)width / (float)height;
+		m_PlayerList.push_back(SolutionShelves::CreateRef<Player>(Player(name)));
+	}
+
+	void GameLayer::SetCamera()
+	{
+		m_AspectRatio = m_ViewportSize.x / m_ViewportSize.y;
 
 		float camWidth = 1.0f;
 		float bottom = -camWidth;
 		float top = camWidth;
-		float left = bottom * aspectRatio;
-		float right = top * aspectRatio;
-		m_Camera = SolutionShelves::CreateScope<SolutionShelves::OrthographicCamera>(left, right, bottom, top);
+		float left = bottom * m_AspectRatio;
+		float right = top * m_AspectRatio;
+		m_Bounds = { left, right, bottom, top};
+
+		if (m_Camera)
+		{
+			m_Camera->SetProjection(left, right, bottom, top);
+		}
+		else
+		{
+			m_Camera = SolutionShelves::CreateScope<SolutionShelves::OrthographicCamera>(left, right, bottom, top);
+		}
 	}
 
 	void GameLayer::CreateDeck()
@@ -353,9 +322,20 @@ namespace PokerSS
 			m_Deck.push(it);
 		}
 	}
-	glm::vec2 GameLayer::CalculateLayoutPosition(float x, float y)
+
+	void GameLayer::CalculateLayoutPositions()
 	{
-		float aspectRatio = (float)SolutionShelves::Application::Get().GetWindow().GetWidth() / (float)SolutionShelves::Application::Get().GetWindow().GetHeight();
-		return { x / m_MapWidth * (2 * aspectRatio) - aspectRatio, 1.0f - y / m_MapHeight * (2 * 1)};
+		for (uint32_t index = 0; index < m_PlayerList.size(); index++)
+		{
+			glm::vec2 playerLevelPosition = m_LevelOldWest->GetPlayerData(index).Position;
+			Orientation playerOrientation = m_LevelOldWest->GetPlayerData(index).Direction;
+			glm::vec2 levelLayout = m_LevelOldWest->GetMapLayout();
+			m_PlayerList[index]->SetOrientation(playerOrientation);
+			float viewPortWidth = -m_Bounds.x + m_Bounds.y;
+			float viewPortHeight = -m_Bounds.z + m_Bounds.w;
+			float playerPosX = playerLevelPosition.x / levelLayout.x * viewPortWidth + m_Bounds.x;
+			float playerPosY = m_Bounds.w - playerLevelPosition.y / levelLayout.y * viewPortHeight;
+			m_PlayerList[index]->SetPosition({ playerPosX,  playerPosY });
+		}
 	}
 }

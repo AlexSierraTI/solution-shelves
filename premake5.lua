@@ -221,6 +221,7 @@ project "Poker-SS"
 
 	includedirs
 	{
+		"%{prj.name}/src",
 		"SolutionShelves/vendor/spdlog/include",
 		"SolutionShelves/src",
 		"SolutionShelves/vendor",

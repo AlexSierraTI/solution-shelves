@@ -1,7 +1,7 @@
 #pragma once
 
-#include "SolutionShelves.h"
-#include "Entity.h"
+#include "Base.h"
+#include "Entities/Entity.h"
 
 namespace PokerSS
 {

@@ -6,16 +6,10 @@
 
 namespace PokerSS
 {
-
-	enum class Orientation
-	{
-		LEFT, RIGHT, DOWN, UP
-	};
-
 	class Player : public Entity
 	{
 	public:
-		Player(const std::string& name, const glm::vec2& position, Orientation orientation);
+		Player(const std::string& name);
 		~Player();
 
 		virtual void LoadAssets() override;
@@ -28,6 +22,7 @@ namespace PokerSS
 		std::string GetName() const { return m_Name; }
 
 		void SetPosition(const glm::vec2& position);
+		void SetOrientation(Orientation orientation);
 		void SetDealer(bool isDealer);
 
 		void AddCard(const SolutionShelves::Ref<Card> card);

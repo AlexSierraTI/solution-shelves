@@ -52,7 +52,7 @@ namespace PokerSS
 
 	void Card::OnImGuiRender()
 	{
-		ImGui::DragFloat2(GetCardDescription().c_str(), glm::value_ptr(m_TargetPosition), 0.01f);
+		// ImGui::DragFloat2(GetCardDescription().c_str(), glm::value_ptr(m_TargetPosition), 0.01f);
 	}
 
 	void Card::SetCardValue(FaceValue faceValue, Suit suit)
