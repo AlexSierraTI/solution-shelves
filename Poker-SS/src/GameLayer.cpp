@@ -13,39 +13,12 @@ namespace PokerSS
 		m_Frames = 0;
 		m_DeltaTs = 0.0f;
 
+		// Janela
 		auto& window = SolutionShelves::Application::Get().GetWindow();
 		m_ViewportSize = { (float)window.GetWidth(), (float)window.GetHeight() };
 		SetCamera();
 
-		// Loading Spritesheets
-		m_CardSpriteSheet = SolutionShelves::Texture2D::Create("assets/textures/playingCards.png");
-		m_CardBackSpriteSheet = SolutionShelves::Texture2D::Create("assets/textures/playingCardBacks.png");
-		
-		AddPlayer("Marcos");
-		AddPlayer("Joao");
-		AddPlayer("Sergio");
-		AddPlayer("Ueta");
-
-		SetDealer(m_DealerCurrent);
-
-		m_EntityManager = SolutionShelves::CreateScope<EntityManager>();
-
-		// Background
-		m_LevelOldWest = SolutionShelves::CreateRef<OldWest>();
-		m_LevelOldWest->EnableRender();
-		m_EntityManager->PushEntity(m_LevelOldWest);
-
-		// Players
-		for (auto& it : m_PlayerList) 
-		{
-			it->EnableRender();
-			m_EntityManager->PushEntity(it);
-		}
-
-		// Deck 
-		CreateDeck();
-
-		CalculateLayoutPositions();
+		Init();
 	}
 
 	void GameLayer::OnAttach()
@@ -59,14 +32,19 @@ namespace PokerSS
 	void GameLayer::OnDetach()
 	{
 		SS_PROFILE_FUNCTION();
-		m_EntityManager.release();
 	}
 
 	void GameLayer::OnUpdate(SolutionShelves::Timestep ts)
 	{
+		AddPlayersEntities();
 
 		// Update
 		m_EntityManager->UpdateEntities(ts);
+		if (m_EntityManager->GetEntitiesCount() != m_EntityCount) 
+		{
+			CalculateLayoutPositions(m_EngineJogo->GetJogadores(), m_LevelOldWest);
+			m_EntityCount = m_EntityManager->GetEntitiesCount();
+		}
 
 		// Render
 		SolutionShelves::Renderer2D::ResetStats();
@@ -82,7 +60,7 @@ namespace PokerSS
 			{
 				m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 				SetCamera();
-				CalculateLayoutPositions();
+				CalculateLayoutPositions(m_EngineJogo->GetJogadores(), m_LevelOldWest);
 			}
 			
 			SolutionShelves::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
@@ -134,7 +112,7 @@ namespace PokerSS
 			window_flags |= ImGuiWindowFlags_NoBackground;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
+		ImGui::Begin("MyDockSpace", &dockspaceOpen, window_flags);
 		ImGui::PopStyleVar();
 
 		if (opt_fullscreen)
@@ -157,6 +135,7 @@ namespace PokerSS
 
 			ImGui::EndMenuBar();
 		}
+		ImGui::End();
 
 		ImGui::Begin("Config");
 
@@ -170,6 +149,7 @@ namespace PokerSS
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
+
 		ImGui::Begin("Viewport");
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
@@ -179,9 +159,6 @@ namespace PokerSS
 		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		ImGui::End();
 		ImGui::PopStyleVar();
-
-
-		ImGui::End();
 
 		m_EntityManager->ImGuiRender();
 	}
@@ -194,33 +171,28 @@ namespace PokerSS
 
 	bool GameLayer::OnMouseButtonPressed(SolutionShelves::MouseButtonPressedEvent& e)
 	{
-		if (m_PlayerList.size() == 0) return false;
-		
-		uint32_t nextDealer = (m_DealerCurrent + 1) % (uint32_t)m_PlayerList.size();
-		SetDealer(nextDealer);
-		
-		uint32_t nextPlayer = (m_DealerCurrent + 1) % (uint32_t)m_PlayerList.size();
-		m_PlayerList[nextPlayer]->AddCard(m_Deck.front());
-		m_Deck.pop();
-
+	
 		return false;
 	}
 
-	void GameLayer::SetDealer(uint32_t pos)
+	void GameLayer::Init()
 	{
-		for (auto& it : m_PlayerList)
-			it->SetDealer(false);
+		m_EntityCount = 0;
+		m_EntityManager = SolutionShelves::CreateRef<EntityManager>();
 
-		if (pos < m_PlayerList.size()) 
-		{
-			m_PlayerList[pos]->SetDealer(true);
-			m_DealerCurrent = pos;
-		}
-	}
+		m_LevelOldWest = SolutionShelves::CreateRef<OldWest>();
+		m_LevelOldWest->EnableRender();
+		m_EntityManager->PushEntity(m_LevelOldWest);
+		m_EntityCount++;
 
-	void GameLayer::AddPlayer(const std::string& name)
-	{
-		m_PlayerList.push_back(SolutionShelves::CreateRef<Player>(Player(name)));
+		// Engine Regras
+		m_EngineJogo = SolutionShelves::CreateScope<TexasHoldem::TexasHoldem>();
+
+		// Controle
+		m_Controle = SolutionShelves::CreateScope<Controle>(m_EngineJogo, m_EntityManager);
+		m_Controle->EnableRender();
+		m_EntityManager->PushEntity(m_Controle);
+		m_EntityCount++;
 	}
 
 	void GameLayer::SetCamera()
@@ -244,98 +216,37 @@ namespace PokerSS
 		}
 	}
 
-	void GameLayer::CreateDeck()
+	void GameLayer::CalculateLayoutPositions(const std::vector<SolutionShelves::Ref<Player>> players, const SolutionShelves::Ref<Level> level)
 	{
-		std::vector<SolutionShelves::Ref<Card>> v_SortedDeck;
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Ace,   Suit::Spades));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Deuce, Suit::Spades));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Tray,  Suit::Spades));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Four,  Suit::Spades));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Five,  Suit::Spades));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Six,   Suit::Spades));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Seven, Suit::Spades));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Eight, Suit::Spades));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Nine,  Suit::Spades));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Ten,   Suit::Spades));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Jack,  Suit::Spades));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Queen, Suit::Spades));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::King,  Suit::Spades));
-
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Ace, Suit::Diamonds));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Deuce, Suit::Diamonds));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Tray, Suit::Diamonds));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Four, Suit::Diamonds));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Five, Suit::Diamonds));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Six, Suit::Diamonds));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Seven, Suit::Diamonds));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Eight, Suit::Diamonds));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Nine, Suit::Diamonds));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Ten, Suit::Diamonds));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Jack, Suit::Diamonds));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Queen, Suit::Diamonds));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::King, Suit::Diamonds));
-
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Ace, Suit::Clubs));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Deuce, Suit::Clubs));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Tray, Suit::Clubs));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Four, Suit::Clubs));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Five, Suit::Clubs));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Six, Suit::Clubs));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Seven, Suit::Clubs));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Eight, Suit::Clubs));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Nine, Suit::Clubs));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Ten, Suit::Clubs));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Jack, Suit::Clubs));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Queen, Suit::Clubs));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::King, Suit::Clubs));
-
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Ace, Suit::Hearts));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Deuce, Suit::Hearts));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Tray, Suit::Hearts));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Four, Suit::Hearts));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Five, Suit::Hearts));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Six, Suit::Hearts));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Seven, Suit::Hearts));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Eight, Suit::Hearts));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Nine, Suit::Hearts));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Ten, Suit::Hearts));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Jack, Suit::Hearts));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::Queen, Suit::Hearts));
-		v_SortedDeck.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, CardBack::Red4Suits, FaceValue::King, Suit::Hearts));
-
-		const uint32_t SHUFFLE_AMOUNT = 7;
-		for (uint32_t i = 0; i < SHUFFLE_AMOUNT; i++)
+		for (uint32_t index = 0; index < players.size(); index++)
 		{
-			uint32_t seed = static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count());
-			std::shuffle(v_SortedDeck.begin(), v_SortedDeck.end(), std::default_random_engine(seed));
-		}
-			
-		while (!m_Deck.empty())
-		{
-			m_EntityManager->PopEntity(m_Deck.front());
-			m_Deck.pop();
-		}
-
-		for (auto& it : v_SortedDeck) 
-		{
-			m_EntityManager->PushEntity(it);
-			m_Deck.push(it);
-		}
-	}
-
-	void GameLayer::CalculateLayoutPositions()
-	{
-		for (uint32_t index = 0; index < m_PlayerList.size(); index++)
-		{
-			glm::vec2 playerLevelPosition = m_LevelOldWest->GetPlayerData(index).Position;
-			Orientation playerOrientation = m_LevelOldWest->GetPlayerData(index).Direction;
-			glm::vec2 levelLayout = m_LevelOldWest->GetMapLayout();
-			m_PlayerList[index]->SetOrientation(playerOrientation);
+			glm::vec2 playerLevelPosition = level->GetPlayerData(index).Position;
+			Orientation playerOrientation = level->GetPlayerData(index).Direction;
+			glm::vec2 levelLayout = level->GetMapLayout();
+			players[index]->SetOrientation(playerOrientation);
 			float viewPortWidth = -m_Bounds.x + m_Bounds.y;
 			float viewPortHeight = -m_Bounds.z + m_Bounds.w;
 			float playerPosX = playerLevelPosition.x / levelLayout.x * viewPortWidth + m_Bounds.x;
 			float playerPosY = m_Bounds.w - playerLevelPosition.y / levelLayout.y * viewPortHeight;
-			m_PlayerList[index]->SetPosition({ playerPosX,  playerPosY });
+			players[index]->SetPosition({ playerPosX,  playerPosY });
 		}
 	}
+
+	void GameLayer::AddPlayersEntities()
+	{
+		
+		for (auto& it : m_EngineJogo->GetJogadores())
+		{
+			// Cards
+			for (auto& it2 : it->GetHand()) 
+			{
+				if (it2->GetEntityID() == 0)
+				{
+					m_EntityManager->PushEntity(it2);
+				}
+			}
+		}
+	}
+
+
 }

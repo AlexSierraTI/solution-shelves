@@ -4,24 +4,6 @@
 
 namespace PokerSS
 {
-	enum class Suit
-	{
-		Unknown, Clubs, Hearts, Spades, Diamonds
-	};
-	enum class FaceValue
-	{
-		Unknown, Deuce, Tray, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace
-	};
-
-	enum class CardBack
-	{
-		RedFlat, GreenFlat, GreenBorder,
-		RedManySuitBorder, GreenManySuitBorder, BlueManySuitBorder,
-		RedBorder, BlueFlat, BlueBorder,
-		RedManySuits, GreenManySuits, BlueManySuits,
-		Red4Suits, Green4Suits, Blue4Suits
-	};
-
 	class Card : public Entity
 	{
 	public:
@@ -44,6 +26,8 @@ namespace PokerSS
 		void SetCardValue(FaceValue faceValue, Suit suit);
 
 		std::string GetCardDescription();
+		FaceValue GetCardFaceValue() const { return m_FaceValue; }
+		Suit GetCardSuit() const { return m_Suit; }
 	private:
 		void CalculateTexture();
 	private:

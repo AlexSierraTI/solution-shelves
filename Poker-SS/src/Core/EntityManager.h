@@ -16,13 +16,14 @@ namespace PokerSS
 
 		uint32_t GetEntitiesCount() const { return m_EntitiesCount; }
 
-		SolutionShelves::Ref<Entity> GetEntity(uint32_t entityID) const { return m_EntityList.at(entityID); }
+		SolutionShelves::Ref<Entity> GetEntity(uint32_t entityID) const { return m_EntityList[entityID]; }
 
 		void RenderEntities();
 		void UpdateEntities(SolutionShelves::Timestep ts);
 		void ImGuiRender();
 	private:
-		std::unordered_map<uint32_t, SolutionShelves::Ref<Entity>> m_EntityList;
+		std::vector<SolutionShelves::Ref<Entity>> m_EntityList;
 		uint32_t m_EntitiesCount;
+		uint32_t m_EntityNextID;
 	};
 }

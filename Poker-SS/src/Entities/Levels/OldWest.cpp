@@ -53,7 +53,7 @@ namespace PokerSS
 	{
 		//ImGui::DragFloat2("Level Size", glm::value_ptr(m_LevelSize), 0.01f);
 	}
-	const PlayerData& OldWest::GetPlayerData(uint32_t pos)
+	PlayerData& OldWest::GetPlayerData(uint32_t pos)
 	{
 		if (pos > m_PlayersData.size())
 			return m_DefaultPos;

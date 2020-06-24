@@ -19,4 +19,22 @@ namespace PokerSS
 		{
 		}
 	};
+
+	enum class Suit
+	{
+		Unknown, Clubs, Hearts, Spades, Diamonds
+	};
+	enum class FaceValue
+	{
+		Unknown, Deuce, Tray, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace
+	};
+
+	enum class CardBack
+	{
+		RedFlat, GreenFlat, GreenBorder,
+		RedManySuitBorder, GreenManySuitBorder, BlueManySuitBorder,
+		RedBorder, BlueFlat, BlueBorder,
+		RedManySuits, GreenManySuits, BlueManySuits,
+		Red4Suits, Green4Suits, Blue4Suits
+	};
 }

@@ -11,9 +11,7 @@ PixelEngineWrapper::PixelEngineWrapper(uint32_t width, uint32_t height, uint32_t
 {
 	m_ScreenBuffer.resize(m_ScreenBufferLenght);
 	ClearScreen({ 0.3f, 0.3f, 0.3f, 1.0f });
-	SolutionShelves::FrameBufferSpecification fbSpec;
-	fbSpec.Width = 1280;
-	fbSpec.Height = 720;
+	SolutionShelves::FrameBufferSpecification fbSpec(1280, 720);
 	m_FrameBuffer = SolutionShelves::FrameBuffer::Create(fbSpec);
 }
 

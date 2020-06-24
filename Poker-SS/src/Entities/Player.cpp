@@ -11,6 +11,15 @@ namespace PokerSS
 		m_DealerChipSize = { 0.155f, 0.155f };
 		m_PlayerSize = { 0.35f, 0.35f };
 		m_CardSize = 0.25f;
+
+		m_Points = 0;
+		m_InGame = false;
+		m_Points = 0;
+		m_HandDescription = "";
+		m_Chips = 0;
+		m_Bet = 0;
+		m_AllIn = false;
+
 		LoadAssets();
 	}
 
@@ -86,22 +95,52 @@ namespace PokerSS
 
 	void Player::AddCard(const SolutionShelves::Ref<Card> card)
 	{
-		m_Hand[card->GetEntityID()] = card;
+		m_Hand.push_back(card);
 		CalculateRenderPositions();
 		card->EnableRender();
 	}
 
 	void Player::RemoveCard(const SolutionShelves::Ref<Card> card)
 	{
-		m_Hand.erase(card->GetEntityID());
-		CalculateRenderPositions();
-		card->DisableRender();
+		uint32_t cardIndex = 0;
+		bool cardFound = false;
+		for (auto& it : m_Hand)
+		{
+			if (it->GetEntityID() == card->GetEntityID()) 
+			{
+				cardFound = true;
+				break;
+			}
+			cardIndex++;
+		}
+
+		if (cardFound)
+		{
+			m_Hand.erase(m_Hand.begin() + cardIndex);
+			CalculateRenderPositions();
+			card->DisableRender();
+		}
 	}
 
 	void Player::ClearHand()
 	{
-		m_Hand.clear();
-		CalculateRenderPositions();
+		while (!m_Hand.empty())
+		{
+			RemoveCard(m_Hand.front());
+		}
+	}
+
+	void Player::AddChips(uint32_t value)
+	{
+		m_Chips += value;
+	}
+
+	void Player::RemoveChips(uint32_t value)
+	{
+		if (value >= m_Chips)
+			m_Chips = 0;
+		else
+			m_Chips -= value;
 	}
 
 	void Player::CalculateRenderPositions()
@@ -139,10 +178,10 @@ namespace PokerSS
 			{
 				iCount++;
 				iCountRemaining = m_Hand.size() - iCount;
-				it.second->SetRenderPosition({ m_Position.x - cardSpacePlayerX,
-											   m_Position.y - (cardSpaceOffsetY * iCountRemaining) + ((iCount - 1) * (cardSpaceOffsetY + cardSpaceOffsetYDisplace)) });
-				it.second->SetRenderSize(m_CardSize);
-				it.second->SetRenderRotation(glm::radians(90.0f));
+				it->SetRenderPosition({ m_Position.x - cardSpacePlayerX,
+									    m_Position.y - (cardSpaceOffsetY * iCountRemaining) + ((iCount - 1) * (cardSpaceOffsetY + cardSpaceOffsetYDisplace)) });
+				it->SetRenderSize(m_CardSize);
+				it->SetRenderRotation(glm::radians(90.0f));
 			}
 			break;
 		case Orientation::RIGHT:
@@ -155,10 +194,10 @@ namespace PokerSS
 			{
 				iCount++;
 				iCountRemaining = m_Hand.size() - iCount;
-				it.second->SetRenderPosition({ m_Position.x + cardSpacePlayerX,
+				it->SetRenderPosition({ m_Position.x + cardSpacePlayerX,
 											   m_Position.y + (cardSpaceOffsetY * iCountRemaining) - ((iCount - 1) * (cardSpaceOffsetY + cardSpaceOffsetYDisplace)) });
-				it.second->SetRenderSize(m_CardSize);
-				it.second->SetRenderRotation(glm::radians(-90.0f));
+				it->SetRenderSize(m_CardSize);
+				it->SetRenderRotation(glm::radians(-90.0f));
 			}
 			break;
 		case Orientation::DOWN:
@@ -170,10 +209,10 @@ namespace PokerSS
 			{
 				iCount++;
 				iCountRemaining = m_Hand.size() - iCount;
-				it.second->SetRenderPosition({ m_Position.x + (cardSpaceOffsetX * iCountRemaining) - ((iCount - 1) * (cardSpaceOffsetX + cardSpaceOffsetXDisplace)),
+				it->SetRenderPosition({ m_Position.x + (cardSpaceOffsetX * iCountRemaining) - ((iCount - 1) * (cardSpaceOffsetX + cardSpaceOffsetXDisplace)),
 							                   m_Position.y - cardSpacePlayerY });
-				it.second->SetRenderSize(m_CardSize);
-				it.second->SetRenderRotation(glm::radians(180.0f));
+				it->SetRenderSize(m_CardSize);
+				it->SetRenderRotation(glm::radians(180.0f));
 			}
 			break;
 		case Orientation::UP:
@@ -185,10 +224,10 @@ namespace PokerSS
 			{
 				iCount++;
 				iCountRemaining = m_Hand.size() - iCount;
-				it.second->SetRenderPosition({ m_Position.x - (cardSpaceOffsetX * iCountRemaining) + ((iCount - 1) * (cardSpaceOffsetX  + cardSpaceOffsetXDisplace)), 
+				it->SetRenderPosition({ m_Position.x - (cardSpaceOffsetX * iCountRemaining) + ((iCount - 1) * (cardSpaceOffsetX  + cardSpaceOffsetXDisplace)), 
 					                           m_Position.y + cardSpacePlayerY });
-				it.second->SetRenderSize(m_CardSize);
-				it.second->SetRenderRotation(glm::radians(0.0f));
+				it->SetRenderSize(m_CardSize);
+				it->SetRenderRotation(glm::radians(0.0f));
 				
 			}
 			break;

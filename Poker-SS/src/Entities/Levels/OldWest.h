@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Entities/Entity.h"
+#include "Level.h"
 
 namespace PokerSS
 {
-	class OldWest : public Entity
+	class OldWest : public Level
 	{
 	public:
 
@@ -18,8 +18,8 @@ namespace PokerSS
 
 		virtual void OnImGuiRender() override;
 		
-		const PlayerData& GetPlayerData(uint32_t pos);
-		const glm::vec2& GetMapLayout() const { return m_MapLayoutSize; }
+		PlayerData& GetPlayerData(uint32_t pos) override;
+		glm::vec2& GetMapLayout() { return m_MapLayoutSize; } 
 	private:
 		SolutionShelves::Ref<SolutionShelves::Texture2D> m_LevelTexture;
 		glm::vec2 m_LevelSize;

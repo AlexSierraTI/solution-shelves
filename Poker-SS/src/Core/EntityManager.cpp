@@ -3,7 +3,7 @@
 namespace PokerSS
 {
 	EntityManager::EntityManager()
-		: m_EntitiesCount(0)
+		: m_EntitiesCount(0), m_EntityNextID(0)
 	{
 	}
 
@@ -14,33 +14,43 @@ namespace PokerSS
 
 	void EntityManager::PushEntity(SolutionShelves::Ref<Entity> entity)
 	{
-		entity->SetEntityID(m_EntitiesCount);
-		m_EntityList[m_EntitiesCount] = entity;
+		m_EntityNextID++;
+		entity->SetEntityID(m_EntityNextID);
+		m_EntityList.push_back(entity);
 		m_EntitiesCount++;
 	}
 
 	void EntityManager::PopEntity(SolutionShelves::Ref<Entity> entity)
 	{
-		m_EntityList.erase(entity->GetEntityID());
-		m_EntitiesCount--;
+		uint32_t index = 0;
+		for (auto& it : m_EntityList)
+		{
+			if (it->GetEntityID() == entity->GetEntityID())
+			{
+				m_EntityList.erase(m_EntityList.begin() + index);
+				m_EntitiesCount--;
+				break;
+			}
+			index++;
+		}
 	}
 
 	void EntityManager::RenderEntities()
 	{
 		for (auto& it : m_EntityList)
-			if (it.second->ShouldRender()) it.second->OnRender();
+			if (it->ShouldRender()) it->OnRender();
 	}
 
 	void EntityManager::UpdateEntities(SolutionShelves::Timestep ts)
 	{
 		for (auto& it : m_EntityList)
-			it.second->OnUpdate(ts);
+			it->OnUpdate(ts);
 	}
 
 	void EntityManager::ImGuiRender()
 	{
 		for (auto& it : m_EntityList)
-			it.second->OnImGuiRender();
+			it->OnImGuiRender();
 	}
 
 }
