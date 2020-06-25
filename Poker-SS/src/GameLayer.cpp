@@ -1,8 +1,10 @@
 #include "GameLayer.h"
 
+#include <random>
+
 #include "ImGui/imgui.h"
 
-#include <random>
+#include "Core/EntityManager.h"
 
 namespace PokerSS
 {
@@ -27,6 +29,12 @@ namespace PokerSS
 
 		SolutionShelves::FrameBufferSpecification fbSpec(1280, 720);
 		m_FrameBuffer = SolutionShelves::FrameBuffer::Create(fbSpec);
+
+		ImGuiIO io = ImGui::GetIO();
+		m_FontDefault = io.Fonts->AddFontDefault();
+		m_FontOpenSans = io.Fonts->AddFontFromFileTTF("assets/OpenSans-Regular.ttf", 120.0f);
+		io.Fonts->AddFontFromFileTTF("assets/SummitBold-Display.ttf", 120.0f);
+		
 	}
 
 	void GameLayer::OnDetach()
@@ -39,11 +47,11 @@ namespace PokerSS
 		AddPlayersEntities();
 
 		// Update
-		m_EntityManager->UpdateEntities(ts);
-		if (m_EntityManager->GetEntitiesCount() != m_EntityCount) 
+		EntityManager::Get().UpdateEntities(ts);
+		if (EntityManager::Get().GetEntitiesCount() != m_EntityCount)
 		{
 			CalculateLayoutPositions(m_EngineJogo->GetJogadores(), m_LevelOldWest);
-			m_EntityCount = m_EntityManager->GetEntitiesCount();
+			m_EntityCount = EntityManager::Get().GetEntitiesCount();
 		}
 
 		// Render
@@ -69,7 +77,7 @@ namespace PokerSS
 		{
 			SS_PROFILE_SCOPE("Renderer Draw");
 			SolutionShelves::Renderer2D::BeginScene(*m_Camera);
-			m_EntityManager.get()->RenderEntities();
+			EntityManager::Get().RenderEntities();
 			SolutionShelves::Renderer2D::EndScene();
 
 			m_FrameBuffer->Unbind();
@@ -137,6 +145,18 @@ namespace PokerSS
 		}
 		ImGui::End();
 
+
+		ImGui::Begin("Log");
+		auto log = m_EngineJogo->GetLog();
+		auto logIndex = log->size();
+		while (logIndex != 0)
+		{
+			ImGui::TextWrapped("%s", log->at(logIndex - 1).c_str());
+			logIndex--;
+		}
+
+		ImGui::End();
+
 		ImGui::Begin("Config");
 
 		auto stats = SolutionShelves::Renderer2D::GetStats();
@@ -157,10 +177,11 @@ namespace PokerSS
 
 		uint64_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
 		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		MainLayerImGuiGameElements();
 		ImGui::End();
 		ImGui::PopStyleVar();
 
-		m_EntityManager->ImGuiRender();
+		EntityManager::Get().ImGuiRender();
 	}
 
 	void GameLayer::OnEvent(SolutionShelves::Event& e)
@@ -177,21 +198,20 @@ namespace PokerSS
 
 	void GameLayer::Init()
 	{
-		m_EntityCount = 0;
-		m_EntityManager = SolutionShelves::CreateRef<EntityManager>();
+		EntityManager::CreateInstance();
 
 		m_LevelOldWest = SolutionShelves::CreateRef<OldWest>();
 		m_LevelOldWest->EnableRender();
-		m_EntityManager->PushEntity(m_LevelOldWest);
+		EntityManager::Get().PushEntity(m_LevelOldWest);
 		m_EntityCount++;
 
 		// Engine Regras
 		m_EngineJogo = SolutionShelves::CreateScope<TexasHoldem::TexasHoldem>();
 
 		// Controle
-		m_Controle = SolutionShelves::CreateScope<Controle>(m_EngineJogo, m_EntityManager);
+		m_Controle = SolutionShelves::CreateScope<Controle>(m_EngineJogo);
 		m_Controle->EnableRender();
-		m_EntityManager->PushEntity(m_Controle);
+		EntityManager::Get().PushEntity(m_Controle);
 		m_EntityCount++;
 	}
 
@@ -228,7 +248,10 @@ namespace PokerSS
 			float viewPortHeight = -m_Bounds.z + m_Bounds.w;
 			float playerPosX = playerLevelPosition.x / levelLayout.x * viewPortWidth + m_Bounds.x;
 			float playerPosY = m_Bounds.w - playerLevelPosition.y / levelLayout.y * viewPortHeight;
+			float playerLayoutPosX = playerLevelPosition.x / levelLayout.x * m_ViewportSize.x;
+			float playerLayoutPosY = playerLevelPosition.y / levelLayout.y * m_ViewportSize.y;
 			players[index]->SetPosition({ playerPosX,  playerPosY });
+			players[index]->SetLayoutPosition({ playerLayoutPosX,  playerLayoutPosY });
 		}
 	}
 
@@ -242,10 +265,57 @@ namespace PokerSS
 			{
 				if (it2->GetEntityID() == 0)
 				{
-					m_EntityManager->PushEntity(it2);
+					EntityManager::Get().PushEntity(it2);
 				}
 			}
 		}
+
+		// Baralho
+		for (auto& it : m_EngineJogo->GetBaralho())
+		{
+			if (it->GetEntityID() == 0)
+			{
+				EntityManager::Get().PushEntity(it);
+			}
+		}
+
+		// Mesa
+		for (auto& it : m_EngineJogo->GetMesa())
+		{
+			if (it->GetEntityID() == 0)
+			{
+				EntityManager::Get().PushEntity(it);
+			}
+		}
+
+		// Muck
+		for (auto& it : m_EngineJogo->GetMuck())
+		{
+			if (it->GetEntityID() == 0)
+			{
+				EntityManager::Get().PushEntity(it);
+			}
+		}
+
+	}
+
+	void PokerSS::GameLayer::MainLayerImGuiGameElements()
+	{
+		switch (m_EngineJogo->GetEstadoJogo())
+		{
+		case TexasHoldem::EstadoJogo::Jogo:
+			std::string stackSize = std::string("$ ") + std::to_string(m_EngineJogo->GetPote());
+			auto pos = ImGui::GetWindowPos();
+			float width = m_ViewportSize.x;
+			float height = m_ViewportSize.y;
+			pos.x += width * 0.5f;
+			pos.y += height * 0.5f;
+			ImGui::PushFont(m_FontOpenSans);
+			ImGui::GetForegroundDrawList()->AddText(m_FontOpenSans, 36.0f, pos, 0xffffffff, stackSize.c_str());
+			ImGui::PopFont();
+			break;
+		}
+
 	}
 
 

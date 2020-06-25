@@ -2,6 +2,9 @@
 
 #include "TexasHoldem.h"
 
+#include "Core/Random.h"
+#include "Core/EntityManager.h"
+
 #include <random>
 
 namespace PokerSS
@@ -15,6 +18,22 @@ namespace PokerSS
 			m_CardSpriteSheet = SolutionShelves::Texture2D::Create("assets/textures/playingCards.png");
 			m_CardBackSpriteSheet = SolutionShelves::Texture2D::Create("assets/textures/playingCardBacks.png");
 
+			m_ChipsSpriteSheet = SolutionShelves::Texture2D::Create("assets/textures/ChipsSpriteSheet.png");
+
+			m_PlayerTextureLeft = SolutionShelves::Texture2D::Create("assets/textures/player_1.png");
+			m_PlayerTextureRight = SolutionShelves::Texture2D::Create("assets/textures/player_2.png");
+
+			m_DealerChip = SolutionShelves::Texture2D::Create("assets/textures/dealer-chip.png");
+
+			m_PosicaoBotao = -1;
+
+			m_Pote = SolutionShelves::CreateRef<ChipStack>(m_ChipsSpriteSheet);
+			m_Pote->EnableRender();
+			m_Pote->SetRenderSize(0.3f);
+			m_Pote->SetRenderPosition({ 0.05f, -0.05f });
+			EntityManager::Get().PushEntity(m_Pote);
+
+			m_Log = SolutionShelves::CreateRef<std::vector<std::string>>();
 			ReinicializaEngine();
 		}
 
@@ -34,7 +53,7 @@ namespace PokerSS
 					{
 						textoRetorno += "Jogador ";
 						textoRetorno += it->GetName();
-						textoRetorno += " ganha pote sem showdown e recebe ({0}).", m_Stack;
+						textoRetorno += " ganha pote sem showdown e recebe (" + std::to_string(m_Stack) + ").";
 					}
 				}
 			}
@@ -42,14 +61,16 @@ namespace PokerSS
 			{
 				uint32_t sobra = m_Stack;
 				CalculaMaosJogadores();
-				std::vector<SolutionShelves::Ref<Player>> vencedores = RankeiaJogadores();
+				std::vector<DadosMao> vencedores = RankeiaJogadores();
 
 				while (sobra > 0)
 				{
 					uint32_t divisao = 1;
 					for (uint32_t i = 0; i < vencedores.size() - 1; i++)
 					{
-						if (vencedores[i]->GetPoints() == vencedores[(uint64_t)i + 1]->GetPoints())
+						auto& it = m_Jogadores[vencedores[i].IndiceJogador];
+						auto& itProx = m_Jogadores[vencedores[(uint64_t)i + 1].IndiceJogador];
+						if (it->GetPoints() == itProx->GetPoints())
 							divisao++;
 						else
 							break;
@@ -57,10 +78,11 @@ namespace PokerSS
 
 					for (uint32_t i = 0; i < divisao; i++)
 					{
+						auto& jogador = m_Jogadores[vencedores[i].IndiceJogador];
 						long subtracao = 0;
 						for(auto& it : m_SidePots)
 						{
-							if (it.JogadorExcluido->GetEntityID() == vencedores[i]->GetEntityID())
+							if (it.JogadorExcluido->GetEntityID() == jogador->GetEntityID())
 							{
 								subtracao += it.Valor;
 								break;
@@ -72,18 +94,18 @@ namespace PokerSS
 						if (divisao > 1)
 						{
 							textoRetorno += "Jogador ";
-							textoRetorno += vencedores[i]->GetName();
+							textoRetorno += jogador->GetName();
 							textoRetorno += ", empata no pote com ";
-							textoRetorno += vencedores[i]->GetHandDescription();
-							textoRetorno += " e recebe ({0}).", fichasPote;
+							textoRetorno += jogador->GetHandDescription();
+							textoRetorno += " e recebe (" + std::to_string(fichasPote) +").";
 						}
 						else
 						{
 							textoRetorno += "Jogador ";
-							textoRetorno += vencedores[i]->GetName();
+							textoRetorno += jogador->GetName();
 							textoRetorno += " ganha pote com ";
-							textoRetorno += vencedores[i]->GetHandDescription();
-							textoRetorno += " e recebe ({0})", fichasPote;
+							textoRetorno += jogador->GetHandDescription();
+							textoRetorno += " e recebe (" + std::to_string(fichasPote) + ").";
 						}
 						sobra -= fichasPote;
 					}
@@ -98,6 +120,9 @@ namespace PokerSS
 
 		void TexasHoldem::SetaBlinds(uint32_t qtd)
 		{
+			sprintf_s(m_LogString, "Blind precisa ser um numero par!");
+			m_Log->push_back(m_LogString);
+
 			SS_ASSERT(qtd % 2 == 0, "Blind precisa ser um numero par!");
 			m_NivelInicialBlind = qtd;
 		}
@@ -107,18 +132,72 @@ namespace PokerSS
 			m_Ante = qtd;
 		}
 
-		void TexasHoldem::AdicionaJogador(const SolutionShelves::Ref<Player>& j)
+		void TexasHoldem::AdicionaJogador(const std::string& nome)
 		{
 			if (m_Jogadores.size() < MAXIMO_JOGADORES)
-				m_Jogadores.push_back(j);
+			{
+				auto novoJogador = SolutionShelves::CreateRef<Player>(nome, m_PlayerTextureLeft, m_PlayerTextureRight, m_DealerChip, m_ChipsSpriteSheet);
+				novoJogador->EnableRender();
+				EntityManager::Get().PushEntity(novoJogador);
+				novoJogador->AddChips(5000);
+				m_Jogadores.push_back(novoJogador);
+			}
 			else
+			{
+				sprintf_s(m_LogString, "Quantidade jogadores maxima(%d) ultrapassada!", MAXIMO_JOGADORES);
+				m_Log->push_back(m_LogString);
+
 				SS_ERROR("Quantidade jogadores maxima({0}) ultrapassada!", MAXIMO_JOGADORES);
+			}
 		}
 
 		void TexasHoldem::AdicionaFichasJogador(uint32_t indiceJogador, uint32_t qtdFichas)
 		{
+			sprintf_s(m_LogString, "Tentando adicionar fichas a um jogador que nao existe");
+			m_Log->push_back(m_LogString);
+
 			SS_ASSERT(indiceJogador < m_Jogadores.size(), "Tentando adicionar fichas a um jogador que nao existe");
 			m_Jogadores[indiceJogador]->AddChips(qtdFichas);
+		}
+
+		std::vector<AcoesJogador> TexasHoldem::GetAcoesPossiveis(int32_t jogadorPedindo)
+		{
+			std::vector<AcoesJogador> retorno;
+			if (jogadorPedindo != -1 && jogadorPedindo != m_IndiceJogadorAcao)
+				return retorno;
+
+			if (m_Jogadores[m_IndiceJogadorAcao]->GetIsAllinn())
+				return retorno;
+
+			if (!m_Jogadores[m_IndiceJogadorAcao]->GetInGame())
+				return retorno;
+
+			retorno.push_back(AcoesJogador::Fugir);
+			if (m_Jogadores[m_IndiceJogadorAcao]->GetBet() < m_ApostaAtual)
+			{
+				retorno.push_back(AcoesJogador::Chamar);
+				retorno.push_back(AcoesJogador::Aumentar);
+			} 
+			else
+			{
+				retorno.push_back(AcoesJogador::Mesa);
+				retorno.push_back(AcoesJogador::Apostar);
+			}
+			return retorno;
+
+		}
+
+		uint32_t TexasHoldem::GetApostaMinima()
+		{
+			if ((m_ApostaAtual + m_BigBlind) <= m_Jogadores[m_IndiceJogadorAcao]->GetChips())
+				return (m_ApostaAtual + m_BigBlind);
+			else
+				return m_Jogadores[m_IndiceJogadorAcao]->GetChips();
+		}
+
+		uint32_t TexasHoldem::GetApostaMaxima()
+		{
+			return m_Jogadores[m_IndiceJogadorAcao]->GetChips();
 		}
 
 		void TexasHoldem::Start()
@@ -145,12 +224,15 @@ namespace PokerSS
 			m_IndiceFimRodada = 0;
 			m_SidePots.clear();
 			m_Ante = 0;
+			
+			Random::Init();
 		}
 
 		void TexasHoldem::IniciarJogo()
 		{
 			if (m_Jogadores.size() < 2)
 			{
+				m_Log->push_back("[ERRO] Jogadores insuficientes!");
 				SS_WARN("Jogadores insuficientes!");
 				return;
 			}
@@ -160,6 +242,8 @@ namespace PokerSS
 			{
 				if (it->GetChips() == 0)
 				{
+					sprintf_s(m_LogString, "Jogador %s nao recebeu fichas!", it->GetName().c_str());
+					m_Log->push_back(m_LogString);
 					SS_WARN("Jogador {0} nao recebeu fichas!", it->GetName());
 					jogadorSemFichas = true;
 				}
@@ -181,11 +265,17 @@ namespace PokerSS
 
 			if (jogadorSemFichas) return;
 
-			m_PosicaoBotao = (rand() % m_Jogadores.size());
+			m_PosicaoBotao = (Random::Int() % m_Jogadores.size());
 
 			m_SmallBlind = m_NivelInicialBlind / 2;
 			m_BigBlind = m_NivelInicialBlind;
 			
+			if (m_SmallBlind)
+			{
+				sprintf_s(m_LogString, "Blinds em %d/%d", m_SmallBlind, m_BigBlind);
+				m_Log->push_back(m_LogString);
+			}
+
 			m_Stack = 0;
 			if (m_Jogadores.size() == 2)
 			{
@@ -199,6 +289,8 @@ namespace PokerSS
 				{
 					m_IndiceFimRodada = ProximaPosicao(m_PosicaoBotao);
 					m_IndiceJogadorAcao = ProximaPosicao(m_PosicaoBotao + 1);
+
+					
 				}
 				else
 				{
@@ -216,32 +308,50 @@ namespace PokerSS
 
 				if (m_SmallBlind > 0)
 				{
+					sprintf_s(m_LogString, "Jogador %s coloca small blind de %d.", m_Jogadores[ProximaPosicao(m_PosicaoBotao)]->GetName().c_str(), m_SmallBlind);
+					m_Log->push_back(m_LogString);
+					sprintf_s(m_LogString, "Jogador %s coloca big blind de %d.", m_Jogadores[ProximaPosicao(m_PosicaoBotao + 1)]->GetName().c_str(), m_BigBlind);
+					m_Log->push_back(m_LogString);
+
 					m_IndiceFimRodada = ProximaPosicao(m_PosicaoBotao + 1);
 					m_IndiceJogadorAcao = ProximaPosicao(m_PosicaoBotao + 2);
 				} 
 				else 
 				{
-					m_IndiceFimRodada = ProximaPosicao(m_PosicaoBotao - 1);
+					m_IndiceFimRodada = ProximaPosicao(m_PosicaoBotao + m_QuantidadeJogadoresNoJogo - 1);
 					m_IndiceJogadorAcao = ProximaPosicao(m_PosicaoBotao);
 
 				}
 			}
-			m_JogadorAcao = m_Jogadores[m_IndiceJogadorAcao];
+			SetaJogadorAcao(m_IndiceJogadorAcao);
 
 			EmbaralhaCartas(m_Baralho);
 			m_FaseRodadaAtual = FaseRodada::Pre_Flop;
 			m_EstadoJogoAtual = EstadoJogo::Jogo;
 
 			for (uint32_t i = 0; i < (m_Jogadores.size() * QUANTIDADE_CARTAS_JOGO); i++)
-				m_Jogadores[ProximaPosicao(m_PosicaoBotao + i)]->AddCard(ProximaCarta());
+			{
+				auto proximaCarta = ProximaCarta();
+				proximaCarta->SetRevealed(true);
+				m_Jogadores[ProximaPosicao(m_PosicaoBotao + i)]->AddCard(proximaCarta);
+			}
 
+			SetaDealer(m_PosicaoBotao);
 			m_NumeroMao++;
+			sprintf_s(m_LogString, "Jogo INICIADO.");
+			m_Log->push_back(m_LogString);
+
+			sprintf_s(m_LogString, "Jogador %s com a acao.", m_Jogadores[m_IndiceJogadorAcao]->GetName().c_str());
+			m_Log->push_back(m_LogString);
+
+			m_Pote->SetChipAmount(m_Stack);
 		}
 
 		void TexasHoldem::NovaMao()
 		{
 			if (m_FaseRodadaAtual != FaseRodada::CleanUp)
 			{
+				m_Log->push_back("Fase atual não pode iniciar nova mão.");
 				SS_ERROR("Fase atual não pode iniciar nova mão.");
 				return;
 			}
@@ -249,33 +359,44 @@ namespace PokerSS
 			// Retorna cartas dos jogadores, mesa e muck ao baralho
 			for (auto& it : m_Jogadores)
 			{
-				for (uint32_t i = 0; i < it->GetHand().size(); i++)
+				while (!it->GetHand().empty())
 				{
-					m_Baralho.push_back(it->GetHand().back());
-					it->GetHand().pop_back();
+					auto carta = it->GetHand().back();
+					carta->SetRevealed(false);
+					m_Baralho.push_back(carta);
+					it->RemoveCard(carta);
 				}
 			}
 			while (!m_CartasMesa.empty())
 			{
+				auto card = m_CartasMesa.back();
+				card->SetRevealed(false);
 				m_Baralho.push_back(m_CartasMesa.back());
 				m_CartasMesa.pop_back();
 			}
 			while (!m_CartasMuck.empty())
 			{
+				auto card = m_CartasMuck.back();
+				card->SetRevealed(false);
 				m_Baralho.push_back(m_CartasMuck.back());
 				m_CartasMuck.pop_back();
 			}
 
 			//Dá as fichas para os jogadores que ganharam
 			long sobra = m_Stack;
-			std::vector<SolutionShelves::Ref<Player>> vencedores = RankeiaJogadores();
+			std::vector<DadosMao> vencedores = RankeiaJogadores();
+
+			sprintf_s(m_LogString, GetVencedores().c_str());
+			m_Log->push_back(m_LogString);
 
 			while (sobra > 0)
 			{
 				uint32_t divisao = 1;
 				for (uint32_t i = 0; i < vencedores.size() - 1; i++)
 				{
-					if (vencedores[i]->GetPoints() == vencedores[(uint64_t)i + 1]->GetPoints())
+					auto& jogador1 = m_Jogadores[vencedores[i].IndiceJogador];
+					auto& jogador2 = m_Jogadores[vencedores[i + 1].IndiceJogador];
+					if (jogador1->GetPoints() == jogador2->GetPoints())
 						divisao++;
 					else
 						break;
@@ -284,10 +405,11 @@ namespace PokerSS
 				std::vector<int> remover;
 				for (uint32_t i = 0; i < divisao; i++)
 				{
+					auto& jogador1 = m_Jogadores[vencedores[i].IndiceJogador];
 					long subtracao = 0;
 					for(auto& it : m_SidePots)
 					{
-						if (it.JogadorExcluido->GetEntityID() == vencedores[i]->GetEntityID())
+						if (it.JogadorExcluido->GetEntityID() == jogador1->GetEntityID())
 						{
 							subtracao += it.Valor;
 							break;
@@ -295,14 +417,17 @@ namespace PokerSS
 					}
 					double d_FichasPote = (sobra - subtracao) / divisao;
 					uint32_t fichasPote = (uint32_t)glm::floor(d_FichasPote);
-					vencedores[i]->AddChips(fichasPote);
+					jogador1->AddChips(fichasPote);
 					sobra -= fichasPote;
 					remover.push_back(i);
 				}
 				if (sobra > 0 && vencedores.size() > 0)
 				{
-					SS_WARN("Atribuindo {0} fichas ao jogador {1} por sobra indivisel no sidepot", sobra, vencedores[0]->GetName());
-					vencedores[0]->AddChips(sobra);
+					auto& jogador1 = m_Jogadores[vencedores[0].IndiceJogador];
+					sprintf_s(m_LogString,"Atribuindo %d fichas ao jogador %s por sobra indivisel no sidepot", sobra, jogador1->GetName().c_str());
+					m_Log->push_back(m_LogString);
+					SS_WARN("Atribuindo {0} fichas ao jogador {1} por sobra indivisel no sidepot", sobra, jogador1->GetName());
+					jogador1->AddChips(sobra);
 				}
 				sobra = 0;
 			}
@@ -358,13 +483,16 @@ namespace PokerSS
 			{
 				m_FaseRodadaAtual = FaseRodada::FimDeJogo;
 				m_EstadoJogoAtual = EstadoJogo::FimJogo;
+				sprintf_s(m_LogString, "Jogo encerrado.");
+				m_Log->push_back(m_LogString);
+
 				SS_WARN("Jogo encerrado.");
 				return;
 			}
 
 			if (m_Jogadores.size() == 2)
 			{
-				m_Jogadores[ProximaPosicao(m_PosicaoBotao - 1)]->AddBet(m_SmallBlind);
+				m_Jogadores[ProximaPosicao(m_PosicaoBotao + m_QuantidadeJogadoresNoJogo - 1)]->AddBet(m_SmallBlind);
 				m_Stack += m_SmallBlind;
 				m_Jogadores[ProximaPosicao(m_PosicaoBotao)]->AddBet(m_BigBlind);
 				m_Stack += m_BigBlind;
@@ -372,12 +500,17 @@ namespace PokerSS
 
 				if (m_SmallBlind > 0)
 				{
+					sprintf_s(m_LogString, "Jogador %s coloca small blind de %d.", m_Jogadores[ProximaPosicao(m_PosicaoBotao)]->GetName().c_str(), m_SmallBlind);
+					m_Log->push_back(m_LogString);
+					sprintf_s(m_LogString, "Jogador %s coloca big blind de %d.", m_Jogadores[ProximaPosicao(m_PosicaoBotao + 1)]->GetName().c_str(), m_BigBlind);
+					m_Log->push_back(m_LogString);
+
 					m_IndiceFimRodada = ProximaPosicao(m_PosicaoBotao);
 					m_IndiceJogadorAcao = ProximaPosicao(m_PosicaoBotao + 1);
 				}
 				else
 				{
-					m_IndiceFimRodada = ProximaPosicao(m_PosicaoBotao - 1);
+					m_IndiceFimRodada = ProximaPosicao(m_PosicaoBotao + m_QuantidadeJogadoresNoJogo - 1);
 					m_IndiceJogadorAcao = ProximaPosicao(m_PosicaoBotao);
 				}
 			}
@@ -391,6 +524,12 @@ namespace PokerSS
 
 				if (m_SmallBlind > 0)
 				{
+					sprintf_s(m_LogString, "Jogador %s coloca small blind de %d.", m_Jogadores[ProximaPosicao(m_PosicaoBotao)]->GetName().c_str(), m_SmallBlind);
+					m_Log->push_back(m_LogString);
+					sprintf_s(m_LogString, "Jogador %s coloca big blind de %d.", m_Jogadores[ProximaPosicao(m_PosicaoBotao + 1)]->GetName().c_str(), m_BigBlind);
+					m_Log->push_back(m_LogString);
+
+
 					m_IndiceFimRodada = ProximaPosicao(m_PosicaoBotao + 1);
 					m_IndiceJogadorAcao = ProximaPosicao(m_PosicaoBotao + 2);
 				}
@@ -400,26 +539,43 @@ namespace PokerSS
 					m_IndiceJogadorAcao = ProximaPosicao(m_PosicaoBotao);
 				}
 			}
-
-			m_JogadorAcao = m_Jogadores[m_IndiceJogadorAcao];
-
+			SetaJogadorAcao(m_IndiceJogadorAcao);
 
 			m_CartasMesa.clear();
 			m_CartasMuck.clear();
 			EmbaralhaCartas(m_Baralho);
 			for (uint32_t i = 0; i < (m_Jogadores.size() * QUANTIDADE_CARTAS_JOGO); i++)
-				m_Jogadores[ProximaPosicao(m_PosicaoBotao + i)]->AddCard(ProximaCarta());
+			{
+				auto proximaCarta = ProximaCarta();
+				proximaCarta->SetRevealed(true);
+				m_Jogadores[ProximaPosicao(m_PosicaoBotao + i)]->AddCard(proximaCarta);
+			}
+
+			SetaDealer(m_PosicaoBotao);
 
 			m_FaseRodadaAtual = FaseRodada::Pre_Flop;
 			m_NumeroMao++;
+			
+			m_Pote->SetChipAmount(m_Stack);
+
+			sprintf_s(m_LogString, "Jogador %s com a acao.", m_Jogadores[m_IndiceJogadorAcao]->GetName().c_str());
+			m_Log->push_back(m_LogString);
+
 		}
 
-		std::vector<SolutionShelves::Ref<Player>> TexasHoldem::RankeiaJogadores()
+		std::vector<DadosMao> TexasHoldem::RankeiaJogadores()
 		{
-			std::vector<SolutionShelves::Ref<Player>> retorno;
-			sort(retorno.begin(), retorno.end(), [](const SolutionShelves::Ref<Player> left, const SolutionShelves::Ref<Player> right)
+			std::vector<DadosMao> retorno;
+			
+			for (uint32_t indice = 0; indice < (uint32_t)m_Jogadores.size(); indice++)
+			{
+				auto& it = m_Jogadores[indice];
+				if (m_Jogadores[indice]->GetInGame())
+					retorno.push_back(DadosMao(it->GetPoints(), it->GetName(), indice));
+			}
+			sort(retorno.begin(), retorno.end(), [](DadosMao left, DadosMao right)
 				{
-					return left->GetPoints() < right->GetPoints();
+					return left.Pontos > right.Pontos;
 				});
 			return retorno;
 		}
@@ -443,12 +599,21 @@ namespace PokerSS
 		void TexasHoldem::AvancaJogo()
 		{
 			if (m_FaseRodadaAtual == FaseRodada::FimDeJogo)
+			{
+				sprintf_s(m_LogString, "Fim de jogo!");
+				m_Log->push_back(m_LogString);
 				return;
+			}
 
 			if (m_IndiceFimRodada == m_IndiceJogadorAcao)
 			{
-				for(auto& it : m_Jogadores)
+				for (auto& it : m_Jogadores)
+				{
 					it->RemoveChips(it->GetBet());
+					it->ClearBet();
+				}
+
+				m_Pote->SetChipAmount(m_Stack);
 
 				switch (m_FaseRodadaAtual)
 				{
@@ -457,34 +622,54 @@ namespace PokerSS
 					m_CartasMesa.push_back(ProximaCarta());
 					m_CartasMesa.push_back(ProximaCarta());
 					m_CartasMesa.push_back(ProximaCarta());
+					PosicionaCartasMesa();
+					PosicionaCartasMuck();
 					ProximoJogador();
 					m_ApostaAtual = 0;
 					m_IndiceFimRodada = ProximaPosicao(m_PosicaoBotao - 1);
 					if (m_FaseRodadaAtual == FaseRodada::Pre_Flop)
 						m_FaseRodadaAtual = FaseRodada::Flop;
+
+					sprintf_s(m_LogString, "Flop de %s, %s e %s.", m_CartasMesa[0]->GetCardDescription().c_str(),
+						m_CartasMesa[1]->GetCardDescription().c_str(), m_CartasMesa[2]->GetCardDescription().c_str());
+					m_Log->push_back(m_LogString);
+
 					break;
 				case FaseRodada::Flop:
 					m_CartasMuck.push_back(ProximaCarta());
 					m_CartasMesa.push_back(ProximaCarta());
+					PosicionaCartasMesa();
+					PosicionaCartasMuck();
 					ProximoJogador();
 					m_ApostaAtual = 0;
 					m_IndiceFimRodada = ProximaPosicao(m_PosicaoBotao - 1);
 					if (m_FaseRodadaAtual == FaseRodada::Flop)
 						m_FaseRodadaAtual = FaseRodada::Turn;
+					sprintf_s(m_LogString, "Turn de %s.", m_CartasMesa[3]->GetCardDescription().c_str());
+					m_Log->push_back(m_LogString);
 					break;
 				case FaseRodada::Turn:
 					m_CartasMuck.push_back(ProximaCarta());
 					m_CartasMesa.push_back(ProximaCarta());
+					PosicionaCartasMesa();
+					PosicionaCartasMuck();
 					ProximoJogador();
 					m_ApostaAtual = 0;
 					m_IndiceFimRodada = ProximaPosicao(m_PosicaoBotao - 1);
 					if (m_FaseRodadaAtual == FaseRodada::Turn)
 						m_FaseRodadaAtual = FaseRodada::River;
+
+					sprintf_s(m_LogString, "River de %s.", m_CartasMesa[4]->GetCardDescription().c_str());
+					m_Log->push_back(m_LogString);
 					break;
 				case FaseRodada::River:
 					CalculaMaosJogadores();
 					if (m_FaseRodadaAtual == FaseRodada::River)
 						m_FaseRodadaAtual = FaseRodada::CleanUp;
+
+					sprintf_s(m_LogString, "%s.", GetVencedores().c_str());
+					m_Log->push_back(m_LogString);
+					m_EstadoJogoAtual = EstadoJogo::FimRodada;
 					break;
 				case FaseRodada::CleanUp:
 					//Aguardando ação de começar nova mão
@@ -505,14 +690,20 @@ namespace PokerSS
 		void TexasHoldem::ProximoJogadorMesmaFase()
 		{
 			m_IndiceJogadorAcao = ProximaPosicao(m_IndiceJogadorAcao);
-			m_JogadorAcao = m_Jogadores[m_IndiceJogadorAcao];
+			SetaJogadorAcao(m_IndiceJogadorAcao);
+
 			int primeiroIndice = m_IndiceJogadorAcao;
-			while (m_JogadorAcao->GetIsAllinn())
+			while (m_Jogadores[m_IndiceJogadorAcao]->GetIsAllinn())
 			{
+				sprintf_s(m_LogString, "Jogador %s, All - Inn", m_Jogadores[m_IndiceJogadorAcao]->GetName().c_str());
+				m_Log->push_back(m_LogString);
+
 				m_IndiceJogadorAcao = ProximaPosicao(m_IndiceJogadorAcao);
-				m_JogadorAcao = m_Jogadores[m_IndiceJogadorAcao];
+				SetaJogadorAcao(m_IndiceJogadorAcao);
 				if (m_IndiceJogadorAcao == primeiroIndice)
 				{
+					sprintf_s(m_LogString, "Todos jogadores All - Inn");
+					m_Log->push_back(m_LogString);
 					//Todos AllInn
 					m_IndiceFimRodada = m_IndiceJogadorAcao;
 					if (m_FaseRodadaAtual < FaseRodada::CleanUp)
@@ -530,7 +721,7 @@ namespace PokerSS
 				if (it->GetIsAllinn())
 					qtdJogadoresAllIn++;
 			}
-			if (qtdJogadoresAllIn == m_QuantidadeJogadoresNoJogo - 1 && m_JogadorAcao->GetBet() == m_ApostaAtual)
+			if (qtdJogadoresAllIn == m_QuantidadeJogadoresNoJogo - 1 && m_Jogadores[m_IndiceJogadorAcao]->GetBet() == m_ApostaAtual)
 			{
 				m_IndiceFimRodada = m_IndiceJogadorAcao;
 				if (m_FaseRodadaAtual < FaseRodada::CleanUp)
@@ -539,19 +730,24 @@ namespace PokerSS
 					AvancaJogo();
 				}
 			}
+
 		}
 
 		void TexasHoldem::ProximoJogador()
 		{
 			m_IndiceJogadorAcao = ProximaPosicao(m_PosicaoBotao);
-			m_JogadorAcao = m_Jogadores[m_IndiceJogadorAcao];
+			SetaJogadorAcao(m_IndiceJogadorAcao);
 			uint32_t primeiroIndice = m_IndiceJogadorAcao;
-			while (m_JogadorAcao->GetIsAllinn())
+			while (m_Jogadores[m_IndiceJogadorAcao]->GetIsAllinn())
 			{
 				m_IndiceJogadorAcao = ProximaPosicao(m_PosicaoBotao);
-				m_JogadorAcao = m_Jogadores[m_IndiceJogadorAcao];
+				SetaJogadorAcao(m_IndiceJogadorAcao);
 				if (m_IndiceJogadorAcao == primeiroIndice)
 				{
+					sprintf_s(m_LogString, "Todos os jogadores estao ALL IN");
+					m_Log->push_back(m_LogString);
+					break;
+
 					// Todos All-In
 					m_IndiceFimRodada = m_IndiceJogadorAcao;
 					if (m_FaseRodadaAtual < FaseRodada::CleanUp)
@@ -579,12 +775,19 @@ namespace PokerSS
 					AvancaJogo();
 				}
 			}
+			sprintf_s(m_LogString, "Jogador %s com a acao.", m_Jogadores[m_IndiceJogadorAcao]->GetName().c_str());
+			m_Log->push_back(m_LogString);
+
 		}
 
 		SolutionShelves::Ref<Card> TexasHoldem::ProximaCarta()
 		{
-			if (m_Baralho.size() == 0)
+			if (m_Baralho.size() == 0) 
+			{
+				sprintf_s(m_LogString, "Baralho vazio ao pedir proxima carta!");
+				m_Log->push_back(m_LogString);
 				SS_ERROR("Baralho vazio ao pedir proxima carta!");
+			}
 
 			SolutionShelves::Ref<Card> retorno = m_Baralho.back();
 			m_Baralho.pop_back();
@@ -609,28 +812,50 @@ namespace PokerSS
 			switch (tipoAcao)
 			{
 			case AcoesJogador::Fugir:
-				m_JogadorAcao->RemoveChips(m_JogadorAcao->GetBet());
-				m_Stack += m_JogadorAcao->GetBet();
-				m_JogadorAcao->SetInGame(false);
+				m_Jogadores[m_IndiceJogadorAcao]->RemoveChips(m_Jogadores[m_IndiceJogadorAcao]->GetBet());
+				m_Stack += m_Jogadores[m_IndiceJogadorAcao]->GetBet();
+				m_Pote->SetChipAmount(m_Pote->GetChipAmount() +  m_Jogadores[m_IndiceJogadorAcao]->GetBet());
+				m_Jogadores[m_IndiceJogadorAcao]->SetInGame(false);
+				m_Jogadores[m_IndiceJogadorAcao]->SetFolded(true);
+				m_Jogadores[m_IndiceJogadorAcao]->ClearBet();
+				while (!m_Jogadores[m_IndiceJogadorAcao]->GetHand().empty())
+				{
+					auto carta = m_Jogadores[m_IndiceJogadorAcao]->GetHand().back();
+					carta->SetRevealed(false);
+					m_CartasMuck.push_back(carta);
+					m_Jogadores[m_IndiceJogadorAcao]->RemoveCard(carta);
+				}
 				m_QuantidadeJogadoresNoJogo--;
+
+				sprintf_s(m_LogString, "Jogador %s FUGIU.", m_Jogadores[m_IndiceJogadorAcao]->GetName().c_str());
+				m_Log->push_back(m_LogString);
+
 				if (m_QuantidadeJogadoresNoJogo == 1)
 					m_FaseRodadaAtual = FaseRodada::CleanUp;
 				break;
 			case AcoesJogador::Mesa:
-				if (m_JogadorAcao->GetBet() != m_ApostaAtual)
+				if (m_Jogadores[m_IndiceJogadorAcao]->GetBet() != m_ApostaAtual)
 				{
-					SS_ERROR("Ação não permitida");
+					sprintf_s(m_LogString, "Ação nao permitida");
+					m_Log->push_back(m_LogString);
+
+					SS_ERROR("Acao nao permitida");
 					return;
 				}
+				sprintf_s(m_LogString, "Jogador %s MESA.", m_Jogadores[m_IndiceJogadorAcao]->GetName().c_str());
+				m_Log->push_back(m_LogString);
 				break;
 			case AcoesJogador::Chamar:
-				if (m_ApostaAtual > m_JogadorAcao->GetChips())
-					qtdFichas = m_JogadorAcao->GetChips();
+				if (m_ApostaAtual > m_Jogadores[m_IndiceJogadorAcao]->GetChips())
+					qtdFichas = m_Jogadores[m_IndiceJogadorAcao]->GetChips();
 				else
 					qtdFichas = m_ApostaAtual;
 
-				m_Stack += (qtdFichas - m_JogadorAcao->GetBet());
-				m_JogadorAcao->AddBet(qtdFichas - m_JogadorAcao->GetBet());
+				m_Stack += (qtdFichas - m_Jogadores[m_IndiceJogadorAcao]->GetBet());
+				m_Jogadores[m_IndiceJogadorAcao]->AddBet(qtdFichas - m_Jogadores[m_IndiceJogadorAcao]->GetBet());
+
+				sprintf_s(m_LogString, "Jogador %s da CALL", m_Jogadores[m_IndiceJogadorAcao]->GetName().c_str());
+				m_Log->push_back(m_LogString);
 
 				for(auto& it : m_SidePots)
 				{
@@ -639,28 +864,43 @@ namespace PokerSS
 						it.Valor += valorAdicionalSidepot;
 				}
 
-				if (m_JogadorAcao->GetIsAllinn()) 
+				if (m_Jogadores[m_IndiceJogadorAcao]->GetIsAllinn())
 				{
-					m_SidePots.push_back({ m_JogadorAcao, m_ApostaAtual - qtdFichas, m_JogadorAcao->GetBet() });
+					sprintf_s(m_LogString, "Jogador %s esta ALLINN", m_Jogadores[m_IndiceJogadorAcao]->GetName().c_str());
+					m_Log->push_back(m_LogString);
+
+					m_SidePots.push_back({ m_Jogadores[m_IndiceJogadorAcao], m_ApostaAtual - qtdFichas, m_Jogadores[m_IndiceJogadorAcao]->GetBet() });
 				}
 
 				break;
 			case AcoesJogador::Apostar:
-				if (qtdFichas < (m_ApostaAtual + m_BigBlind) && qtdFichas <= m_JogadorAcao->GetChips())
+			case AcoesJogador::Aumentar:
+				if (qtdFichas < (m_ApostaAtual + m_BigBlind) && qtdFichas <= m_Jogadores[m_IndiceJogadorAcao]->GetChips())
 				{
+					sprintf_s(m_LogString, "Aposta inválida.");
+					m_Log->push_back(m_LogString);
+
 					SS_ERROR("Aposta inválida.");
 					return;
 				}
 
-				if (qtdFichas > m_JogadorAcao->GetChips())
-					qtdFichas = m_JogadorAcao->GetChips();
+				if (qtdFichas > m_Jogadores[m_IndiceJogadorAcao]->GetChips())
+					qtdFichas = m_Jogadores[m_IndiceJogadorAcao]->GetChips();
 
-				m_Stack += (qtdFichas - m_JogadorAcao->GetBet());
-				m_JogadorAcao->AddBet(qtdFichas - m_JogadorAcao->GetBet());
-				if (m_JogadorAcao->GetBet() > m_ApostaAtual)
+				m_Stack += (qtdFichas - m_Jogadores[m_IndiceJogadorAcao]->GetBet());
+				m_Jogadores[m_IndiceJogadorAcao]->AddBet(qtdFichas - m_Jogadores[m_IndiceJogadorAcao]->GetBet());
+				if (m_Jogadores[m_IndiceJogadorAcao]->GetBet() > m_ApostaAtual)
 				{
 					m_ApostaAtual = qtdFichas;
-					m_IndiceFimRodada = ProximaPosicao(m_IndiceJogadorAcao);
+					m_IndiceFimRodada = ProximaPosicao(m_IndiceJogadorAcao + m_QuantidadeJogadoresNoJogo - 2);
+
+					if (tipoAcao == AcoesJogador::Apostar)
+						sprintf_s(m_LogString, "Jogador %s APOSTA %d fichas.", m_Jogadores[m_IndiceJogadorAcao]->GetName().c_str(), qtdFichas);
+					else
+						sprintf_s(m_LogString, "Jogador %s AUMENTA para %d fichas.", m_Jogadores[m_IndiceJogadorAcao]->GetName().c_str(), qtdFichas);
+
+					m_Log->push_back(m_LogString);
+
 				}
 
 				for (auto& it : m_SidePots)
@@ -670,16 +910,38 @@ namespace PokerSS
 						it.Valor += valorAdicionalSidepot;
 				}
 
-				if (m_JogadorAcao->GetIsAllinn())
-					m_SidePots.push_back({ m_JogadorAcao, m_ApostaAtual - qtdFichas, m_JogadorAcao->GetBet() });
+				if (m_Jogadores[m_IndiceJogadorAcao]->GetIsAllinn())
+				{
+					sprintf_s(m_LogString, "Jogador %s esta ALLINN.", m_Jogadores[m_IndiceJogadorAcao]->GetName().c_str());
+					m_Log->push_back(m_LogString);
+					m_SidePots.push_back({ m_Jogadores[m_IndiceJogadorAcao], m_ApostaAtual - qtdFichas, m_Jogadores[m_IndiceJogadorAcao]->GetBet() });
+				}
 
 				break;
 			default:
+				sprintf_s(m_LogString, "Ação inexistente(não implementada)");
+				m_Log->push_back(m_LogString);
 				SS_ERROR("Ação inexistente (não implementada)");
 				return;
 			}
 
 			AvancaJogo();
+		}
+
+		void TexasHoldem::SetaDealer(uint32_t pos)
+		{
+			for (auto& it : m_Jogadores)
+				it->SetDealer(false);
+			m_Jogadores[pos]->SetDealer(true);
+		}
+
+		void TexasHoldem::SetaJogadorAcao(uint32_t pos)
+		{
+			for (auto& it : m_Jogadores)
+				it->SetInAction(false);
+
+			m_Jogadores[m_IndiceJogadorAcao] = m_Jogadores[pos];
+			m_Jogadores[m_IndiceJogadorAcao]->SetInAction(true);
 		}
 
 		void TexasHoldem::CalculaMaosJogadores()
@@ -1398,7 +1660,106 @@ namespace PokerSS
 				uint32_t seed = static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count());
 				std::shuffle(cartas.begin(), cartas.end(), std::default_random_engine(seed));
 			}
+
+			for(auto & it : cartas)
+			{
+				it->SetRenderPosition({ -0.5, -0.5 });
+				it->SetRenderSize(0.1f);
+				it->EnableRender();
+				it->SetRevealed(false);
+			}
+			PosicionaCartasDeck();
 		}
-		
+
+		void TexasHoldem::PosicionaCartasDeck()
+		{
+			if (m_PosicaoBotao == -1) return;
+
+			for (auto& it : m_Baralho)
+			{
+				float posX = 0.0f;
+				float posY = 0.0f;
+				auto orientation = m_Jogadores[m_PosicaoBotao]->GetOrientation();
+				auto buttonPosition = m_Jogadores[m_PosicaoBotao]->GetDealerChipPosition();
+				switch (orientation)
+				{
+				case Orientation::UP:
+					posX = buttonPosition.x - 0.5f;
+					posY = buttonPosition.y;
+					break;
+				case Orientation::DOWN:
+					posX = buttonPosition.x - 0.25f;
+					posY = buttonPosition.y - 0.25f;
+					break;
+				case Orientation::LEFT:
+					posX = buttonPosition.x;
+					posY = buttonPosition.y - 0.25f;
+					break;
+				case Orientation::RIGHT:
+					posX = buttonPosition.x;
+					posY = buttonPosition.y + 0.25f;
+					break;
+				}
+
+				it->SetRenderPosition({ posX, posY });
+				it->SetRenderSize(0.1f);
+				it->EnableRender();
+				it->SetRevealed(false);
+			}
+		}
+
+		void TexasHoldem::PosicionaCartasMesa()
+		{
+			uint32_t cartasRestantes = (uint32_t)m_CartasMesa.size();
+			for (uint32_t i = 0; i < (uint32_t)m_CartasMesa.size(); i++)
+			{
+				cartasRestantes--;
+				float posX = (0.16f * i) - (cartasRestantes * 0.16f);
+				float posY = 0.15f;
+
+				m_CartasMesa[i]->SetRenderPosition({ posX, posY });
+				m_CartasMesa[i]->SetRenderSize(0.25f);
+				m_CartasMesa[i]->EnableRender();
+				m_CartasMesa[i]->SetRevealed(true);
+			}
+		}
+
+		void TexasHoldem::PosicionaCartasMuck()
+		{
+			if (m_PosicaoBotao == -1) return;
+
+			for (auto& it : m_CartasMuck)
+			{
+				float posX = 0.0f;
+				float posY = 0.0f;
+				auto orientation = m_Jogadores[m_PosicaoBotao]->GetOrientation();
+				auto buttonPosition = m_Jogadores[m_PosicaoBotao]->GetDealerChipPosition();
+				switch (orientation)
+				{
+				case Orientation::UP:
+					posX = buttonPosition.x - 0.75f;
+					posY = buttonPosition.y;
+					break;
+				case Orientation::DOWN:
+					posX = buttonPosition.x - 0.50f;
+					posY = buttonPosition.y - 0.25f;
+					break;
+				case Orientation::LEFT:
+					posX = buttonPosition.x - 0.25f;
+					posY = buttonPosition.y - 0.25f;
+					break;
+				case Orientation::RIGHT:
+					posX = buttonPosition.x + 0.25f;
+					posY = buttonPosition.y + 0.25f;
+					break;
+				}
+
+				it->SetRenderPosition({ posX, posY });
+				it->SetRenderSize(0.05f);
+				it->EnableRender();
+				it->SetRevealed(false);
+			}
+		}
+	
 	}
 }

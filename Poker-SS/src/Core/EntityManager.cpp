@@ -2,6 +2,9 @@
 
 namespace PokerSS
 {
+
+	EntityManager* EntityManager::s_Instance = nullptr;
+
 	EntityManager::EntityManager()
 		: m_EntitiesCount(0), m_EntityNextID(0)
 	{
@@ -52,5 +55,5 @@ namespace PokerSS
 		for (auto& it : m_EntityList)
 			it->OnImGuiRender();
 	}
-
+	
 }

@@ -4,12 +4,18 @@
 
 #include "Card.h"
 
+#include "ChipStack.h"
+
 namespace PokerSS
 {
 	class Player : public Entity
 	{
 	public:
-		Player(const std::string& name);
+		Player(const std::string& name,
+			   const SolutionShelves::Ref<SolutionShelves::Texture2D>& playerTextureLeft,
+			   const SolutionShelves::Ref<SolutionShelves::Texture2D>& playerTextureRight,
+			   const SolutionShelves::Ref<SolutionShelves::Texture2D>& dealerChip,
+			   const SolutionShelves::Ref<SolutionShelves::Texture2D>& chipStackTexture);
 		~Player();
 
 		virtual void LoadAssets() override;
@@ -21,20 +27,25 @@ namespace PokerSS
 
 		std::string GetName() const { return m_Name; }
 		bool GetInGame() const { return m_InGame; }
-		bool GetPoints() const { return m_Points; }
+		uint32_t GetPoints() const { return m_Points; }
 		std::string GetHandDescription() const { return m_HandDescription; }
 		std::vector<SolutionShelves::Ref<Card>> GetHand() const { return m_Hand; }
 		uint32_t GetBet() const { return m_Bet; }
 		uint32_t GetChips() const { return m_Chips; }
 		bool GetIsAllinn() const { return m_AllIn; }
+		glm::vec3 GetDealerChipPosition() const { return m_DealerChipPosition; }
+		Orientation GetOrientation() const { return m_Orientation; }
 
 		void SetPosition(const glm::vec2& position);
+		void SetLayoutPosition(const glm::vec2& position);
 		void SetOrientation(Orientation orientation);
 		void SetDealer(bool isDealer);
 		void SetInGame(bool status) { m_InGame = status; }
 		void SetPoints(uint32_t value) { m_Points = value; }
 		void SetHandDescription(const std::string& description) { m_HandDescription = description; }
 		void SetAllIn(bool value) { m_AllIn = value; }
+		void SetInAction(bool value) { m_InAction = value; }
+		void SetFolded(bool value) { m_Folded = value; }
 
 		void AddCard(const SolutionShelves::Ref<Card> card);
 		void RemoveCard(const SolutionShelves::Ref<Card> card);
@@ -43,8 +54,8 @@ namespace PokerSS
 		void AddChips(uint32_t value);
 		void RemoveChips(uint32_t value);
 		
-		void AddBet(uint32_t value) { m_Bet += value; }
-		void ClearBet() { m_Bet = 0; }
+		void AddBet(uint32_t value);
+		void ClearBet();
 	private:
 		void CalculateRenderPositions();
 	private:
@@ -54,9 +65,12 @@ namespace PokerSS
 		SolutionShelves::Ref<SolutionShelves::Texture2D> m_PlayerDrawTexture;
 		
 		SolutionShelves::Ref<SolutionShelves::Texture2D> m_DealerChip;
+		
+		SolutionShelves::Ref<SolutionShelves::Texture2D> m_ChipStackTexture;
 
 		std::string m_Name;
 		glm::vec2 m_Position;
+		glm::vec2 m_GridPosition;
 		glm::vec2 m_PlayerSize;
 
 		Orientation m_Orientation;
@@ -74,6 +88,11 @@ namespace PokerSS
 		uint32_t m_Chips;
 		uint32_t m_Bet;
 		bool m_AllIn;
+		bool m_InAction;
+		bool m_Folded;
+
+		SolutionShelves::Ref<ChipStack> m_ChipStack;
+		SolutionShelves::Ref<ChipStack> m_ChipStackBet;
 
 	};
 

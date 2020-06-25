@@ -2,7 +2,6 @@
 
 #include "Core/Base.h"
 
-#include "Core/EntityManager.h"
 #include "Core/EntityList.h"
 
 #include "Rules/TexasHoldem.h"
@@ -25,12 +24,12 @@ namespace PokerSS
 
 		void OnEvent(SolutionShelves::Event& e) override;
 		bool OnMouseButtonPressed(SolutionShelves::MouseButtonPressedEvent& e);
-
 	private:
 		void Init();
 		void SetCamera();
 		void CalculateLayoutPositions(const std::vector<SolutionShelves::Ref<Player>> players, const SolutionShelves::Ref<Level> level);
 		void AddPlayersEntities();
+		void MainLayerImGuiGameElements();
 	private:
 		uint64_t m_Frames;
 		float m_DeltaTs;
@@ -45,7 +44,6 @@ namespace PokerSS
 		glm::vec4 m_Bounds;
 
 		// Entities
-		SolutionShelves::Ref<EntityManager> m_EntityManager;
 		SolutionShelves::Ref<OldWest> m_LevelOldWest;
 		SolutionShelves::Ref<Controle> m_Controle;
 		
@@ -53,8 +51,9 @@ namespace PokerSS
 
 		// EngineJogo
 		SolutionShelves::Ref<TexasHoldem::TexasHoldem> m_EngineJogo;
-	
-		
+
+		ImFont* m_FontDefault;
+		ImFont* m_FontOpenSans;
 	};
 }
 

@@ -21,9 +21,15 @@ namespace PokerSS
 		void RenderEntities();
 		void UpdateEntities(SolutionShelves::Timestep ts);
 		void ImGuiRender();
+
+		static EntityManager& Get() { return *s_Instance; }
+		static void CreateInstance() { s_Instance = new EntityManager(); };
 	private:
 		std::vector<SolutionShelves::Ref<Entity>> m_EntityList;
 		uint32_t m_EntitiesCount;
 		uint32_t m_EntityNextID;
+
+		static EntityManager* s_Instance;
 	};
+
 }

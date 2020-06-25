@@ -2,7 +2,6 @@
 
 #include "Entities/Entity.h"
 
-#include "Core/EntityManager.h"
 #include "Rules/TexasHoldem.h"
 
 
@@ -11,7 +10,7 @@ namespace PokerSS
 	class Controle : public Entity
 	{
 	public:
-		Controle(const SolutionShelves::Ref<TexasHoldem::TexasHoldem>& engineJogo, const SolutionShelves::Ref<EntityManager>& entityManager);
+		Controle(const SolutionShelves::Ref<TexasHoldem::TexasHoldem>& engineJogo);
 		~Controle();
 
 		virtual void LoadAssets() override;
@@ -27,8 +26,6 @@ namespace PokerSS
 
 		void ChecarPodeComecarJogo();
 	private:
-		SolutionShelves::Ref<EntityManager> m_EntityManager;
-
 		SolutionShelves::Ref<TexasHoldem::TexasHoldem> m_EngineJogo;
 		
 		char m_MensagemErro[50];
@@ -39,6 +36,11 @@ namespace PokerSS
 		bool m_AdicionandoFichas = false;
 		int32_t m_FichasAdicionar;
 		bool m_PodeComecarJogo = false;
+		bool m_Apostando = false;
+		bool m_Aumentando = false;
+		bool m_PrimeiroFoco = false;
+
+		std::vector<TexasHoldem::AcoesJogador> m_AcoesPossiveis;
 	};
 }
 

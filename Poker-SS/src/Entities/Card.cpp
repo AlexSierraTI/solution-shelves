@@ -13,6 +13,7 @@ namespace PokerSS
 		m_TargetPosition = { 0.0f, 0.0f };
 		m_RenderSize = 0.0f;
 		m_Rotation = 0.0f;
+		m_Revealed = false;
 
 		LoadAssets();
 	}
@@ -86,7 +87,7 @@ namespace PokerSS
 		uint32_t posXCardBack = (uint32_t)m_CardBack % 3;
 		uint32_t posYCardBack = (uint32_t)m_CardBack / 3;
 
-		if (m_RenderPosition != m_TargetPosition) 
+		if ((m_RenderPosition != m_TargetPosition) || !m_Revealed) 
 		{
 			m_CardTexture = SolutionShelves::SubTexture2D::CreateFromCoords(m_CardBackSpriteSheet, { (float)posXCardBack, (float)posYCardBack }, { 140.0f, 190.0f });
 			return;

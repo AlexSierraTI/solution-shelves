@@ -22,6 +22,7 @@ namespace PokerSS
 		void SetRenderPosition(const glm::vec2& renderPosition) { m_TargetPosition = renderPosition; }
 		void SetRenderSize(float renderSize) { m_RenderSize = renderSize; }
 		void SetRenderRotation(float rotation) { m_Rotation = rotation; }
+		void SetRevealed(bool value) { m_Revealed = value; }
 
 		void SetCardValue(FaceValue faceValue, Suit suit);
 
@@ -43,6 +44,7 @@ namespace PokerSS
 		Suit m_Suit;
 		FaceValue m_FaceValue;
 		CardBack m_CardBack;
+		bool m_Revealed;
 	};
 }
 

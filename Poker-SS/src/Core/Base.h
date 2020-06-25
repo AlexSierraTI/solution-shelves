@@ -37,4 +37,5 @@ namespace PokerSS
 		RedManySuits, GreenManySuits, BlueManySuits,
 		Red4Suits, Green4Suits, Blue4Suits
 	};
+
 }

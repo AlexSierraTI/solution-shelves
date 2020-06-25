@@ -2,18 +2,25 @@
 
 namespace PokerSS
 {
-	Controle::Controle(const SolutionShelves::Ref<TexasHoldem::TexasHoldem>& engineJogo, const SolutionShelves::Ref<EntityManager>& entityManager)
-		: m_EngineJogo(engineJogo), m_EntityManager(entityManager), m_SelectedPlayer(-1)
+	Controle::Controle(const SolutionShelves::Ref<TexasHoldem::TexasHoldem>& engineJogo)
+		: m_EngineJogo(engineJogo), m_SelectedPlayer(-1)
 	{
 		m_NomeJogadorInclusao[0] = 0;
 		m_MensagemErro[0] = 0;
 		m_FichasAdicionar = 0;
 		m_SelectedPlayer = -1;
+		m_AcoesPossiveis.clear();
+		m_Apostando = false;
+		m_Aumentando = false;
+
+		m_PrimeiroFoco = false;
+
 		LoadAssets();
 		AddPlayer("Marcos");
 		AddPlayer("Sergio");
 		AddPlayer("Ueta");
 		AddPlayer("Joao");
+
 	}
 	Controle::~Controle()
 	{
@@ -60,8 +67,11 @@ namespace PokerSS
 			}
 
 			ImGui::Begin("Adicionar Jogador");
-			if (!ImGui::IsAnyItemFocused())
+			if (!ImGui::IsAnyItemFocused() && m_PrimeiroFoco)
+			{
 				ImGui::SetKeyboardFocusHere();
+				m_PrimeiroFoco = false;
+			}
 			ImGui::InputText("Nome", m_NomeJogadorInclusao, sizeof(m_NomeJogadorInclusao));
 			if (ImGui::Button("OK", ImVec2(100, 30)) || ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter)))
 			{
@@ -89,6 +99,8 @@ namespace PokerSS
 		switch (m_EngineJogo->GetEstadoJogo())
 		{
 		case TexasHoldem::EstadoJogo::PreJogo:
+			m_AcoesPossiveis.clear();
+
 			ImGui::ListBoxHeader("", ImVec2(250, 300));
 			for (auto& it : m_EngineJogo->GetJogadores())
 			{
@@ -96,11 +108,9 @@ namespace PokerSS
 				{
 					m_SelectedPlayer = i;
 				}
-				ImGui::Text("Nome: ");
+				ImGui::Text("    ");
 				ImGui::SameLine();
-				ImGui::Text(it->GetName().c_str());
-				ImGui::SameLine();
-				ImGui::Text(" - Fichas :");
+				ImGui::Text("Fichas :");
 				ImGui::SameLine();
 				ImGui::Text("%ld", it->GetChips());
 				i++;
@@ -108,6 +118,7 @@ namespace PokerSS
 			ImGui::ListBoxFooter();
 			if (ImGui::Button("Adicionar Jogador", ImVec2(150, 30)))
 			{
+				m_PrimeiroFoco = true;
 				m_AdicionandoJogador = true;
 			}
 			if (m_SelectedPlayer != -1)
@@ -128,8 +139,83 @@ namespace PokerSS
 
 			break;
 		case TexasHoldem::EstadoJogo::Jogo:
+
+			if (m_Apostando)
+			{
+				ImGui::Begin("Apostando");
+				ImGui::Text("Minimo: %d - Maximo: %d", m_EngineJogo->GetApostaMinima(), m_EngineJogo->GetApostaMaxima());
+				ImGui::DragInt("Adicionar", &m_FichasAdicionar, 25, m_EngineJogo->GetApostaMinima(), m_EngineJogo->GetApostaMaxima(), "$ %d");
+				if (ImGui::Button("OK", ImVec2(100, 30)))
+				{
+					if (m_Aumentando)
+						m_EngineJogo->AcaoJogador(TexasHoldem::AcoesJogador::Apostar, m_FichasAdicionar);
+					else
+						m_EngineJogo->AcaoJogador(TexasHoldem::AcoesJogador::Aumentar, m_FichasAdicionar);
+
+					m_Aumentando = false;
+					m_Apostando = false;
+					m_FichasAdicionar = 0;
+				}
+				if (ImGui::Button("Cancelar", ImVec2(100, 30)))
+				{
+					m_Aumentando = false;
+					m_Apostando = false;
+					m_FichasAdicionar = 0;
+				}
+				ImGui::End();
+			}
+
+			m_AcoesPossiveis.clear();
+			m_AcoesPossiveis = m_EngineJogo->GetAcoesPossiveis();
+			if (std::find(m_AcoesPossiveis.begin(), m_AcoesPossiveis.end(), TexasHoldem::AcoesJogador::Mesa) != m_AcoesPossiveis.end())
+			{
+				if (ImGui::Button("Mesa", ImVec2(150, 30)))
+				{
+					m_EngineJogo->AcaoJogador(TexasHoldem::AcoesJogador::Mesa, 0);
+				}
+			}
+			if (std::find(m_AcoesPossiveis.begin(), m_AcoesPossiveis.end(), TexasHoldem::AcoesJogador::Chamar) != m_AcoesPossiveis.end())
+			{
+				if (ImGui::Button("Chamar", ImVec2(150, 30)))
+				{
+					m_EngineJogo->AcaoJogador(TexasHoldem::AcoesJogador::Chamar, 0);
+				}
+			}
+			if (std::find(m_AcoesPossiveis.begin(), m_AcoesPossiveis.end(), TexasHoldem::AcoesJogador::Apostar) != m_AcoesPossiveis.end())
+			{
+				if (ImGui::Button("Apostar", ImVec2(150, 30)))
+				{
+					m_FichasAdicionar = m_EngineJogo->GetApostaMinima();
+					m_Aumentando = false;
+					m_Apostando = true;
+				}
+			}
+			if (std::find(m_AcoesPossiveis.begin(), m_AcoesPossiveis.end(), TexasHoldem::AcoesJogador::Aumentar) != m_AcoesPossiveis.end())
+			{
+				if (ImGui::Button("Aumentar", ImVec2(150, 30)))
+				{
+					m_FichasAdicionar = m_EngineJogo->GetApostaMinima();
+					m_Aumentando = true;
+					m_Apostando = true;
+				}
+			}
+
+			if (std::find(m_AcoesPossiveis.begin(), m_AcoesPossiveis.end(), TexasHoldem::AcoesJogador::Fugir) != m_AcoesPossiveis.end())
+			{
+				if (ImGui::Button("Fugir", ImVec2(150, 30)))
+				{
+					m_EngineJogo->AcaoJogador(TexasHoldem::AcoesJogador::Fugir, 0);
+				}
+			}
+
+			break;
+		case TexasHoldem::EstadoJogo::FimRodada:
+			m_AcoesPossiveis.clear();
+
 			break;
 		case TexasHoldem::EstadoJogo::FimJogo:
+			m_AcoesPossiveis.clear();
+
 			break;
 		}
 
@@ -138,12 +224,7 @@ namespace PokerSS
 
 	void Controle::AddPlayer(const std::string& name)
 	{
-		SolutionShelves::Ref<Player> novoJogador = SolutionShelves::CreateRef<Player>(name);
-		m_EngineJogo->AdicionaJogador(novoJogador);
-		m_EntityManager->PushEntity(novoJogador);
-		novoJogador->EnableRender();
-
-		novoJogador->AddChips(5000);
+		m_EngineJogo->AdicionaJogador(name);
 	}
 	void Controle::AddChips(uint32_t playerIndex, uint32_t chipsAmount)
 	{
