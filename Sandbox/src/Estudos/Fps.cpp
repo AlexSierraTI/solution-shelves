@@ -121,7 +121,7 @@ void Fps::OnUpdate(SolutionShelves::Timestep ts)
 
 				sort(p.begin(), p.end(), [](const pair<float, float>& left, const pair<float, float>& right) { return left.first < right.first; });
 
-				float fBound = 0.01;
+				float fBound = 0.01f;
 				if (glm::acos(p.at(0).second) < fBound) bBoundary = true;
 				if (glm::acos(p.at(1).second) < fBound) bBoundary = true;
 				// if (glm::acos(p.at(3).second) < fBound) bBoundary = true;
