@@ -178,7 +178,7 @@ namespace PokerSS
 					ImGui::Begin("Apostando");
 					ImGui::Text("Minimo: %d - Maximo: %d", m_EngineJogo->GetApostaMinima(), m_EngineJogo->GetApostaMaxima());
 					ImGui::DragInt("+", &m_FichasAdicionar, 
-						m_EngineJogo->GetApostaMinima() == m_EngineJogo->GetApostaMaxima() ? 0 : 25,
+						m_EngineJogo->GetApostaMinima() == m_EngineJogo->GetApostaMaxima() ? 0.0f : 25.0f,
 						m_EngineJogo->GetApostaMinima(), m_EngineJogo->GetApostaMaxima(), "$ %d");
 					if (ImGui::Button("OK", ImVec2(100, 30)))
 					{

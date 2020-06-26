@@ -36,6 +36,7 @@ namespace PokerSS
 		Orientation GetOrientation() const { return m_Orientation; }
 		bool GetIsAllIn();
 		bool GetFlatCalled() const { return m_FlatCalled; }
+		SidePot GetSidePot() const { return m_Sidepot; }
 
 		void SetPosition(const glm::vec2& position);
 		void SetLayoutPosition(const glm::vec2& position);
@@ -47,6 +48,8 @@ namespace PokerSS
 		void SetInAction(bool value) { m_InAction = value; }
 		void SetFolded(bool value) { m_Folded = value; }
 		void SetFlatCalled(bool value) { m_FlatCalled = value; }
+		void AddSidePot(uint32_t valor);
+		void SetSidePotAllInValue(uint32_t valor);
 
 		void AddCard(const SolutionShelves::Ref<Card> card);
 		void RemoveCard(const SolutionShelves::Ref<Card> card);
@@ -88,6 +91,7 @@ namespace PokerSS
 		std::string m_HandDescription;
 		uint32_t m_Chips;
 		uint32_t m_Bet;
+		SidePot m_Sidepot = SidePot(0, 0);
 		bool m_InAction;
 		bool m_Folded;
 		bool m_FlatCalled;

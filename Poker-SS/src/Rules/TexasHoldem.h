@@ -63,27 +63,23 @@ namespace PokerSS
 			uint32_t Pontos;
 			std::string Descricao;
 			int32_t IndiceJogador;
+			uint32_t ValorDisputado;
+			uint32_t ValorTratado;
 
 			DadosMao(uint32_t pontos, const std::string descricao)
-				: Pontos(pontos), Descricao(descricao), IndiceJogador(-1)
+				: Pontos(pontos), Descricao(descricao), IndiceJogador(-1), ValorDisputado(0), ValorTratado(0)
 			{
 			}
 			DadosMao(uint32_t pontos, const std::string descricao, int32_t indiceJogador)
-				: Pontos(pontos), Descricao(descricao), IndiceJogador(indiceJogador)
+				: Pontos(pontos), Descricao(descricao), IndiceJogador(indiceJogador), ValorDisputado(0), ValorTratado(0)
 			{
 			}
 
-		};
-
-		struct SidePot
-		{
-			SolutionShelves::Ref<Player> JogadorExcluido;
-			uint32_t Valor;
-			uint32_t ValorAllIn;
-			SidePot(SolutionShelves::Ref<Player> jogador, uint32_t valor, uint32_t valorAllIn)
-				: JogadorExcluido(jogador), Valor(valor), ValorAllIn(valorAllIn)
+			DadosMao(uint32_t pontos, const std::string descricao, int32_t indiceJogador, uint32_t valorDisputado)
+				: Pontos(pontos), Descricao(descricao), IndiceJogador(indiceJogador), ValorDisputado(valorDisputado), ValorTratado(0)
 			{
 			}
+
 		};
 
 		class TexasHoldem
@@ -204,8 +200,6 @@ namespace PokerSS
 			uint32_t m_ToggleBlind;
 
 			uint32_t m_NumeroMao;
-
-			std::vector<SidePot> m_SidePots;
 
 			SolutionShelves::Ref<std::vector<std::string>> m_Log;
 			char m_LogString[600];

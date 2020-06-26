@@ -19,6 +19,7 @@ namespace PokerSS
 		m_DealerChipSize = { 0.155f, 0.155f };
 		m_PlayerSize = { 0.35f, 0.35f };
 		m_CardSize = 0.25f;
+		m_Sidepot = SidePot((uint32_t)0, (uint32_t)0);
 
 		m_Points = 0;
 		m_InGame = false;
@@ -198,6 +199,16 @@ namespace PokerSS
 	{
 		m_Dealer = isDealer;
 		CalculateRenderPositions();
+	}
+
+	void Player::AddSidePot(uint32_t valor)
+	{
+		m_Sidepot.Valor = m_Sidepot.Valor + valor;
+	}
+
+	void Player::SetSidePotAllInValue(uint32_t valor)
+	{
+		m_Sidepot.ValorAllIn = valor;
 	}
 
 	void Player::AddCard(const SolutionShelves::Ref<Card> card)

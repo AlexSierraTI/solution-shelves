@@ -34,6 +34,9 @@ namespace PokerSS
 		uint64_t m_Frames;
 		float m_DeltaTs;
 
+		bool m_ViewportFocused = false;
+		bool m_ViewportHovered = false;
+
 		SolutionShelves::Scope<SolutionShelves::OrthographicCamera> m_Camera;
 
 		SolutionShelves::Ref<SolutionShelves::FrameBuffer> m_FrameBuffer;

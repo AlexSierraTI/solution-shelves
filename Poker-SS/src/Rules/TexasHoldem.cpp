@@ -99,59 +99,69 @@ namespace PokerSS
 					}
 				}
 
-				while (sobra > 0)
+				uint32_t indiceJogadorTratado = 0;
+				while (sobra > 0 && indiceJogadorTratado < (uint32_t)vencedores.size())
 				{
-					for (uint32_t i = 0; i < divisao; i++)
+					auto& vencedor = vencedores[indiceJogadorTratado];
+					auto& jogador = m_Jogadores[vencedor.IndiceJogador];
+					uint32_t qtdJogadoresEmpatados = 0;
+					uint32_t qtdJogadoresEmpatadosNaoTratados = 0;
+					uint32_t valorTratado = 0;
+					uint32_t fichasPote = 0;
+					double doubleFichasPote = 0.0f;
+
+					for (auto& it : vencedores)
 					{
-						auto& jogador = m_Jogadores[vencedores[i].IndiceJogador];
-						uint32_t fichasEmDisputa = 0;
-
-						// Verifica sidepot do jogador sendo tratado
-						for(auto& it : m_SidePots)
+						if (it.Pontos == vencedor.Pontos)
 						{
-							if (it.JogadorExcluido->GetEntityID() == jogador->GetEntityID())
-							{
-								fichasEmDisputa += it.Valor;
-								break;
-							}
+							qtdJogadoresEmpatados++;
+							valorTratado += it.ValorTratado;
+							if (!it.ValorTratado) 
+								qtdJogadoresEmpatadosNaoTratados++;
 						}
-						double doubleFichasPote = 0.0f;
-						if (fichasEmDisputa > 0)
-						{
-							// Jogador possui sidepot
-							doubleFichasPote = fichasEmDisputa / (divisao);
-						}
-						else
-						{
-							// Jogador esta disputando o mainpot
-							doubleFichasPote = sobra / (divisao - i);
-						}
-						uint32_t fichasPote = (uint32_t)glm::floor(doubleFichasPote);
-
-						if (divisao > 1)
-						{
-							textoRetorno += "Jogador ";
-							textoRetorno += jogador->GetName();
-							textoRetorno += ", empata no pote com ";
-							textoRetorno += jogador->GetHandDescription();
-							textoRetorno += " e recebe (" + std::to_string(fichasPote) +").";
-							if (i != divisao - 1)
-								textoRetorno += " | ";
-						}
-						else
-						{
-							textoRetorno += "Jogador ";
-							textoRetorno += jogador->GetName();
-							textoRetorno += " ganha pote com ";
-							textoRetorno += jogador->GetHandDescription();
-							textoRetorno += " e recebe (" + std::to_string(fichasPote) + ").";
-						}
-						sobra -= fichasPote;
 					}
-					sobra = 0;
+
+					if (vencedor.ValorDisputado < m_Stack)
+					{
+						// Jogador possui sidepot
+						doubleFichasPote = (vencedor.ValorDisputado - valorTratado) / (qtdJogadoresEmpatadosNaoTratados);
+					}
+					else
+					{
+						// Jogador esta disputando o mainpot
+						doubleFichasPote = sobra / (qtdJogadoresEmpatadosNaoTratados);
+					}
+					fichasPote = (uint32_t)glm::floor(doubleFichasPote);
+
+					if (qtdJogadoresEmpatados > 1)
+					{
+						textoRetorno += "Jogador ";
+						textoRetorno += jogador->GetName();
+						textoRetorno += ", empata no pote com ";
+						textoRetorno += jogador->GetHandDescription();
+						textoRetorno += " e recebe (" + std::to_string(fichasPote) +").";
+						if (indiceJogadorTratado != qtdJogadoresEmpatados - 1)
+							textoRetorno += " | ";
+					}
+					else
+					{
+						textoRetorno += "Jogador ";
+						textoRetorno += jogador->GetName();
+						textoRetorno += " ganha pote com ";
+						textoRetorno += jogador->GetHandDescription();
+						textoRetorno += " e recebe (" + std::to_string(fichasPote) + ").";
+					}
+					sobra -= fichasPote;
+					indiceJogadorTratado++;
+					vencedor.ValorTratado = fichasPote;
+					if (sobra == 1)
+					{
+						SS_WARN("Sobra de uma ficha apos divisao");
+						sobra--;
+						break;
+					}
+
 				}
-
-
 			}
 
 			return textoRetorno;
@@ -268,7 +278,6 @@ namespace PokerSS
 			m_TempoCrescimentoBlinds = 0;
 			m_ApostaAtual = 0;
 			m_IndiceFimRodada = 0;
-			m_SidePots.clear();
 			m_Ante = 0;
 			m_UltimoAumento = 0;
 			m_Aguardando = false;
@@ -409,60 +418,49 @@ namespace PokerSS
 			sprintf_s(m_LogString, GetVencedores().c_str());
 			m_Log->push_back(m_LogString);
 
-			while (sobra > 0)
+			uint32_t indiceJogadorTratado = 0;
+			while (sobra > 0 && indiceJogadorTratado < (uint32_t)vencedores.size())
 			{
-				uint32_t divisao = 1;
-				for (uint32_t i = 0; i < vencedores.size() - 1; i++)
+				auto& vencedor = vencedores[indiceJogadorTratado];
+				auto& jogador = m_Jogadores[vencedor.IndiceJogador];
+				uint32_t qtdJogadoresEmpatados = 0;
+				uint32_t qtdJogadoresEmpatadosNaoTratados = 0;
+				uint32_t valorTratado = 0;
+				uint32_t fichasPote = 0;
+				double doubleFichasPote = 0.0f;
+
+				for (auto& it : vencedores)
 				{
-					auto& jogador1 = m_Jogadores[vencedores[i].IndiceJogador];
-					auto& jogador2 = m_Jogadores[vencedores[(uint64_t)i + 1].IndiceJogador];
-					if (jogador1->GetPoints() == jogador2->GetPoints())
-						divisao++;
-					else
-						break;
+					qtdJogadoresEmpatados++;
+					valorTratado += it.ValorTratado;
+					if (!it.ValorTratado)
+						qtdJogadoresEmpatadosNaoTratados++;
 				}
 
-				for (uint32_t i = 0; i < divisao; i++)
+				if (vencedor.ValorDisputado < m_Stack)
 				{
-					auto& jogador = m_Jogadores[vencedores[i].IndiceJogador];
-					uint32_t fichasEmDisputa = 0;
+					// Jogador possui sidepot
+					doubleFichasPote = (vencedor.ValorDisputado - valorTratado) / (qtdJogadoresEmpatadosNaoTratados);
+				}
+				else
+				{
+					// Jogador esta disputando o mainpot
+					doubleFichasPote = sobra / (qtdJogadoresEmpatadosNaoTratados);
+				}
 
-					// Verifica sidepot do jogador sendo tratado
-					for (auto& it : m_SidePots)
-					{
-						if (it.JogadorExcluido->GetEntityID() == jogador->GetEntityID())
-						{
-							fichasEmDisputa += it.Valor;
-							break;
-						}
-					}
-					double doubleFichasPote = 0.0f;
-					if (fichasEmDisputa > 0)
-					{
-						// Jogador possui sidepot
-						doubleFichasPote = fichasEmDisputa / (divisao);
-					}
-					else
-					{
-						// Jogador esta disputando o mainpot
-						doubleFichasPote = sobra / (divisao - i);
-					}
-					uint32_t fichasPote = (uint32_t)glm::floor(doubleFichasPote);
-					jogador->AddChips(fichasPote);
-					sobra -= fichasPote;
-				}
-				if (sobra > 0 && vencedores.size() > 0)
+				fichasPote = (uint32_t)glm::floor(doubleFichasPote);
+				jogador->AddChips(fichasPote);
+				sobra -= fichasPote;
+				indiceJogadorTratado++;
+				vencedor.ValorTratado = fichasPote;
+				if (sobra == 1)
 				{
-					auto& jogador1 = m_Jogadores[vencedores[0].IndiceJogador];
-					sprintf_s(m_LogString,"Atribuindo %d fichas ao jogador %s por sobra indivisel no sidepot", sobra, jogador1->GetName().c_str());
-					m_Log->push_back(m_LogString);
-					SS_WARN("Atribuindo {0} fichas ao jogador {1} por sobra indivisel no sidepot", sobra, jogador1->GetName());
-					jogador1->AddChips(sobra);
+					SS_WARN("Sobra de uma ficha apos divisao [atribuindo ao primeiro vencedor]");
+					m_Jogadores[vencedores[0].IndiceJogador]->AddChips(sobra);
+					sobra--;
+					break;
 				}
-				sobra = 0;
 			}
-
-			m_SidePots.clear();
 
 			m_Futures.push_back(std::async([this]() {
 				std::this_thread::sleep_for(std::chrono::seconds(TEMPO_AGUARDAR));
@@ -627,11 +625,14 @@ namespace PokerSS
 			{
 				auto& it = m_Jogadores[indice];
 				if (m_Jogadores[indice]->GetInGame())
-					retorno.push_back(DadosMao(it->GetPoints(), it->GetName(), indice));
+					retorno.push_back(DadosMao(it->GetPoints(), it->GetName(), indice, it->GetSidePot().Valor));
 			}
 			sort(retorno.begin(), retorno.end(), [](DadosMao left, DadosMao right)
 				{
-					return left.Pontos > right.Pontos;
+					if (left.Pontos != right.Pontos)
+						return left.Pontos > right.Pontos;
+					else
+						return left.ValorDisputado < right.ValorDisputado;
 				});
 			return retorno;
 		}
@@ -965,13 +966,15 @@ namespace PokerSS
 				m_Log->push_back(m_LogString);
 
 				// Adiciona fichas aos sidepots existentes 
-				for (auto& it : m_SidePots)
+				for (auto& it : m_Jogadores)
 				{
-					long valorAdicionalSidepot = 0;
-					if (qtdFichas < it.ValorAllIn)
-						it.Valor += qtdFichas;
-					else
-						it.Valor += it.ValorAllIn;
+					if (it->GetIsAllIn() && it->GetEntityID() != m_Jogadores[m_IndiceJogadorAcao]->GetEntityID())
+					{
+						if (qtdFichas < it->GetSidePot().ValorAllIn)
+							it->AddSidePot(qtdFichas);
+						else
+							it->AddSidePot(it->GetSidePot().ValorAllIn);
+					}
 				}
 
 				if (m_Jogadores[m_IndiceJogadorAcao]->GetIsAllIn())
@@ -980,17 +983,16 @@ namespace PokerSS
 					m_Log->push_back(m_LogString);
 
 					// Cria sidepot do jogador
-					m_SidePots.push_back({ 
-						m_Jogadores[m_IndiceJogadorAcao],
-						m_Stack + 
-						m_Jogadores[m_IndiceJogadorAcao]->GetBet(),
-						m_Jogadores[m_IndiceJogadorAcao]->GetBet()
-						});
+					m_Jogadores[m_IndiceJogadorAcao]->AddSidePot(m_Pote->GetChipAmount() + m_Jogadores[m_IndiceJogadorAcao]->GetBet());
+					m_Jogadores[m_IndiceJogadorAcao]->SetSidePotAllInValue(m_Jogadores[m_IndiceJogadorAcao]->GetBet());
 					// Adiciona parcela de todas as apostas
 					for (auto& it : m_Jogadores)
 					{
-						if (it->GetInGame() && it->GetBet() > 0 && it->GetEntityID() != m_Jogadores[m_IndiceJogadorAcao]->GetEntityID())
-							m_SidePots.back().Valor += glm::min(it->GetBet(), m_Jogadores[m_IndiceJogadorAcao]->GetBet());
+						if (it->GetInGame() && it->GetBet() > 0 &&
+							it->GetEntityID() != m_Jogadores[m_IndiceJogadorAcao]->GetEntityID())
+						{
+							m_Jogadores[m_IndiceJogadorAcao]->AddSidePot(glm::min(it->GetBet(), m_Jogadores[m_IndiceJogadorAcao]->GetBet()));
+						}
 					}
 				}
 				m_Jogadores[m_IndiceJogadorAcao]->SetFlatCalled(true);
@@ -1044,13 +1046,15 @@ namespace PokerSS
 				}
 
 				// Adiciona fichas aos sidepots existentes 
-				for (auto& it : m_SidePots)
+				for (auto& it : m_Jogadores)
 				{
-					long valorAdicionalSidepot = 0;
-					if (qtdFichas < it.ValorAllIn)
-						it.Valor += qtdFichas;
-					else
-						it.Valor += it.ValorAllIn;
+					if (it->GetIsAllIn() && it->GetEntityID() != m_Jogadores[m_IndiceJogadorAcao]->GetEntityID())
+					{
+						if (qtdFichas < it->GetSidePot().ValorAllIn)
+							it->AddSidePot(qtdFichas);
+						else
+							it->AddSidePot(it->GetSidePot().ValorAllIn);
+					}
 				}
 
 				if (m_Jogadores[m_IndiceJogadorAcao]->GetIsAllIn())
@@ -1059,17 +1063,16 @@ namespace PokerSS
 					m_Log->push_back(m_LogString);
 					
 					// Cria sidepot do jogador
-					m_SidePots.push_back({
-						m_Jogadores[m_IndiceJogadorAcao],
-						m_Stack +
-						m_Jogadores[m_IndiceJogadorAcao]->GetBet(),
-						m_Jogadores[m_IndiceJogadorAcao]->GetBet()
-						});
+					m_Jogadores[m_IndiceJogadorAcao]->AddSidePot(m_Pote->GetChipAmount() + m_Jogadores[m_IndiceJogadorAcao]->GetBet());
+					m_Jogadores[m_IndiceJogadorAcao]->SetSidePotAllInValue(m_Jogadores[m_IndiceJogadorAcao]->GetBet());
 					// Adiciona parcela de todas as apostas
 					for (auto& it : m_Jogadores)
 					{
-						if (it->GetInGame() && it->GetBet() > 0 && it->GetEntityID() != m_Jogadores[m_IndiceJogadorAcao]->GetEntityID())
-							m_SidePots.back().Valor += glm::min(it->GetBet(), m_Jogadores[m_IndiceJogadorAcao]->GetBet());
+						if (it->GetInGame() && it->GetBet() > 0 &&
+							it->GetEntityID() != m_Jogadores[m_IndiceJogadorAcao]->GetEntityID())
+						{
+							m_Jogadores[m_IndiceJogadorAcao]->AddSidePot(glm::min(it->GetBet(), m_Jogadores[m_IndiceJogadorAcao]->GetBet()));
+						}
 					}
 				}
 

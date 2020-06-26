@@ -38,4 +38,14 @@ namespace PokerSS
 		Red4Suits, Green4Suits, Blue4Suits
 	};
 
+	struct SidePot
+	{
+		uint32_t Valor;
+		uint32_t ValorAllIn;
+		SidePot(uint32_t valor, uint32_t valorAllIn)
+			: Valor(valor), ValorAllIn(valorAllIn)
+		{
+		}
+	};
+
 }
