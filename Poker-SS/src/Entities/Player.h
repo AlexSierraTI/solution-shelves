@@ -60,6 +60,8 @@ namespace PokerSS
 		
 		void AddBet(uint32_t value);
 		void ClearBet();
+
+		void PopEntities();
 	private:
 		void CalculateRenderPositions();
 	private:

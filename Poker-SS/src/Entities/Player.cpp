@@ -276,6 +276,12 @@ namespace PokerSS
 		m_ChipStackBet->SetChipAmount(m_Bet);
 	}
 
+	void Player::PopEntities()
+	{
+		EntityManager::Get().PopEntity(m_ChipStack);
+		EntityManager::Get().PopEntity(m_ChipStackBet);
+	}
+
 	void Player::CalculateRenderPositions()
 	{
 		// Dealer Chip

@@ -31,7 +31,6 @@ namespace PokerSS
 			m_Pote->EnableRender();
 			m_Pote->SetRenderSize(0.3f);
 			m_Pote->SetRenderPosition({ 0.05f, -0.05f });
-			EntityManager::Get().PushEntity(m_Pote);
 
 			m_Log = SolutionShelves::CreateRef<std::vector<std::string>>();
 			ReinicializaEngine();
@@ -121,7 +120,7 @@ namespace PokerSS
 						}
 					}
 
-					if (vencedor.ValorDisputado < m_Stack)
+					if (vencedor.ValorDisputado > 0 && vencedor.ValorDisputado < m_Stack)
 					{
 						// Jogador possui sidepot
 						doubleFichasPote = (vencedor.ValorDisputado - valorTratado) / (qtdJogadoresEmpatadosNaoTratados);
@@ -264,7 +263,15 @@ namespace PokerSS
 
 		void TexasHoldem::ReinicializaEngine()
 		{
-			CriarBaralho(m_CardBackBaralho);
+			for (auto& it : m_Jogadores)
+			{
+				it->PopEntities();
+				EntityManager::Get().PopEntity(it);
+			}
+
+			if (m_Baralho.size() == 0)
+				CriarBaralho(m_CardBackBaralho);
+
 			EmbaralhaCartas(m_Baralho);
 			m_Jogadores.clear();
 			m_EstadoJogoAtual = EstadoJogo::PreJogo;
@@ -282,6 +289,7 @@ namespace PokerSS
 			m_UltimoAumento = 0;
 			m_Aguardando = false;
 			m_AcaoFechada = false;
+			m_Pote->SetChipAmount(0);
 			
 			Random::Init();
 		}
@@ -323,7 +331,7 @@ namespace PokerSS
 
 			if (jogadorSemFichas) return;
 
-			m_PosicaoBotao = 3 ;// (Random::Int() % m_Jogadores.size()); TODO REMOVER COMENTARIO
+			m_PosicaoBotao = (Random::Int() % m_Jogadores.size()); 
 
 			m_SmallBlind = m_NivelInicialBlind / 2;
 			m_BigBlind = m_NivelInicialBlind;
@@ -431,13 +439,16 @@ namespace PokerSS
 
 				for (auto& it : vencedores)
 				{
-					qtdJogadoresEmpatados++;
-					valorTratado += it.ValorTratado;
-					if (!it.ValorTratado)
-						qtdJogadoresEmpatadosNaoTratados++;
+					if (it.Pontos == vencedor.Pontos)
+					{
+						qtdJogadoresEmpatados++;
+						valorTratado += it.ValorTratado;
+						if (!it.ValorTratado)
+							qtdJogadoresEmpatadosNaoTratados++;
+					}
 				}
 
-				if (vencedor.ValorDisputado < m_Stack)
+				if (vencedor.ValorDisputado > 0 && vencedor.ValorDisputado < m_Stack)
 				{
 					// Jogador possui sidepot
 					doubleFichasPote = (vencedor.ValorDisputado - valorTratado) / (qtdJogadoresEmpatadosNaoTratados);
@@ -790,20 +801,20 @@ namespace PokerSS
 
 				m_IndiceJogadorAcao = ProximaPosicao(m_IndiceJogadorAcao);
 				SetaJogadorAcao(m_IndiceJogadorAcao);
-				if (m_IndiceJogadorAcao == primeiroIndice) // TODO SUSPEITA DE CODIGO INATINGIVEL
-				{
-					sprintf_s(m_LogString, "Todos jogadores All - Inn");
-					m_Log->push_back(m_LogString);
-					//Todos AllInn
-					m_IndiceFimRodada = m_IndiceJogadorAcao;
-					if (m_FaseRodadaAtual < FaseRodada::CleanUp)
-					{
-						m_FaseRodadaAtual = (FaseRodada)((uint32_t)m_FaseRodadaAtual + 1);
-						AvancaJogo();
-					}
-					else
-						return;
-				}
+				//if (m_IndiceJogadorAcao == primeiroIndice) // TODO SUSPEITA DE CODIGO INATINGIVEL
+				//{
+				//	sprintf_s(m_LogString, "Todos jogadores All - Inn");
+				//	m_Log->push_back(m_LogString);
+				//	//Todos AllInn
+				//	m_IndiceFimRodada = m_IndiceJogadorAcao;
+				//	if (m_FaseRodadaAtual < FaseRodada::CleanUp)
+				//	{
+				//		m_FaseRodadaAtual = (FaseRodada)((uint32_t)m_FaseRodadaAtual + 1);
+				//		AvancaJogo();
+				//	}
+				//	else
+				//		return;
+				//}
 			}
 			int qtdJogadoresAllIn = 0;
 			for(auto& it : m_Jogadores)
@@ -884,7 +895,8 @@ namespace PokerSS
 			if (!m_Jogadores[novaPos]->GetInGame())
 				novaPos = ProximaPosicao(novaPos);
 
-			SS_ASSERT(novaPos != pos, "Erro pegando proxima posicao (loop infinito) depois da recursao");
+			if (novaPos == pos) return 0;
+			// SS_ASSERT(novaPos != pos, "Erro pegando proxima posicao (loop infinito) depois da recursao");
 
 			return novaPos;
 		}
@@ -1876,31 +1888,6 @@ namespace PokerSS
 			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::Queen, Suit::Hearts));
 			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::King, Suit::Hearts));
 
-
-			// Testando Straight Flush TODO
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::Ace, Suit::Spades));
-
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::Ace, Suit::Diamonds));
-
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::King, Suit::Spades));
-
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::Ace, Suit::Diamonds));
-			
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::Ten, Suit::Spades));
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::Jack, Suit::Spades));
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::Queen, Suit::Spades));
-
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::Ace, Suit::Diamonds));
-
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::Ace, Suit::Diamonds));
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::Ace, Suit::Diamonds));
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::Ace, Suit::Diamonds));
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::King, Suit::Spades));
-
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::Ace, Suit::Diamonds));
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::Ace, Suit::Diamonds));
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::Ace, Suit::Diamonds));
-			m_Baralho.push_back(SolutionShelves::CreateRef<Card>(m_CardSpriteSheet, m_CardBackSpriteSheet, cardback, FaceValue::Ace, Suit::Spades));
 		}
 
 		void TexasHoldem::OrdenarCartas(std::vector<SolutionShelves::Ref<Card>>& cartas)
@@ -1913,11 +1900,11 @@ namespace PokerSS
 
 		void TexasHoldem::EmbaralhaCartas(std::vector<SolutionShelves::Ref<Card>>& cartas)
 		{
-			//for (uint32_t i = 0; i < QUANTIDADE_EMBARALHADAS; i++) TODO
-			//{
-			//	uint32_t seed = static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count());
-			//	std::shuffle(cartas.begin(), cartas.end(), std::default_random_engine(seed));
-			//}
+			for (uint32_t i = 0; i < QUANTIDADE_EMBARALHADAS; i++)
+			{
+				uint32_t seed = static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count());
+				std::shuffle(cartas.begin(), cartas.end(), std::default_random_engine(seed));
+			}
 
 			for(auto & it : cartas)
 			{

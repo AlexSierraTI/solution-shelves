@@ -39,6 +39,11 @@ namespace PokerSS
 		else if (m_TargetPosition.x < m_RenderPosition.x) m_RenderPosition.x -= cardAnimationSpeed * ts;
 		if      (m_TargetPosition.y > m_RenderPosition.y) m_RenderPosition.y += cardAnimationSpeed * ts;
 		else if (m_TargetPosition.y < m_RenderPosition.y) m_RenderPosition.y -= cardAnimationSpeed * ts;
+
+		if (m_RenderPosition.x >= 2.0f) m_RenderPosition.x = 1.0f;
+		if (m_RenderPosition.x <= -2.0f) m_RenderPosition.x = -1.0f;
+		if (m_RenderPosition.y >= 2.0f) m_RenderPosition.y = 1.0f;
+		if (m_RenderPosition.y <= -2.0f) m_RenderPosition.y = -1.0f;
 		
 		CalculateTexture();
 	}
@@ -47,7 +52,7 @@ namespace PokerSS
 	{
 		if (m_RenderSize)
 		{
-			SolutionShelves::Renderer2D::DrawRotatedQuad({ m_RenderPosition.x, m_RenderPosition.y, 0.1f }, { m_RenderSize, m_RenderSize }, m_Rotation, m_CardTexture);
+			SolutionShelves::Renderer2D::DrawRotatedQuad({ m_RenderPosition.x, m_RenderPosition.y, 0.2f }, { m_RenderSize, m_RenderSize }, m_Rotation, m_CardTexture);
 		}
 	}
 

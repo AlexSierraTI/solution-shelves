@@ -90,6 +90,8 @@ namespace PokerSS
 
 			std::string GetVencedores();
 			
+			void ReinicializaEngine();
+
 			void SetaCardBack(CardBack cardBack) { m_CardBackBaralho = cardBack; }
 			void SetaBlinds(uint32_t qtd);
 			void SetaAnte(uint32_t qtd);
@@ -113,7 +115,6 @@ namespace PokerSS
 			void Start();
 		private:
 			// Controles do Jogo
-			void ReinicializaEngine();
 			void IniciarJogo();
 			void NovaMao();
 			void IniciaNovaMao();
@@ -158,7 +159,7 @@ namespace PokerSS
 			// Constantes
 			const uint8_t QUANTIDADE_CARTAS_JOGO = 2;
 			const uint8_t QUANTIDADE_EMBARALHADAS = 7;
-			const uint8_t MAXIMO_JOGADORES = 10;
+			const uint8_t MAXIMO_JOGADORES = 9;
 			const uint32_t TEMPO_AGUARDAR = 5;
 
 			// Textures

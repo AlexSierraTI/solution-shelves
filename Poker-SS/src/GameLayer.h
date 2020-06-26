@@ -24,6 +24,7 @@ namespace PokerSS
 
 		void OnEvent(SolutionShelves::Event& e) override;
 		bool OnMouseButtonPressed(SolutionShelves::MouseButtonPressedEvent& e);
+		bool OnWindowResizeEvent(SolutionShelves::WindowResizeEvent& e);
 	private:
 		void Init();
 		void SetCamera();

@@ -6,7 +6,7 @@ namespace PokerSS
 	EntityManager* EntityManager::s_Instance = nullptr;
 
 	EntityManager::EntityManager()
-		: m_EntitiesCount(0), m_EntityNextID(0)
+		: m_EntitiesCount(0), m_EntityNextID(0), m_Valid(true)
 	{
 	}
 
@@ -21,6 +21,7 @@ namespace PokerSS
 		entity->SetEntityID(m_EntityNextID);
 		m_EntityList.push_back(entity);
 		m_EntitiesCount++;
+		m_Valid = false;
 	}
 
 	void EntityManager::PopEntity(SolutionShelves::Ref<Entity> entity)
@@ -36,24 +37,46 @@ namespace PokerSS
 			}
 			index++;
 		}
+		m_Valid = false;
 	}
 
 	void EntityManager::RenderEntities()
 	{
 		for (auto& it : m_EntityList)
+		{
+			if (!m_Valid)
+			{
+				m_Valid = true;
+				break;
+			}
 			if (it->ShouldRender()) it->OnRender();
+		}
 	}
 
 	void EntityManager::UpdateEntities(SolutionShelves::Timestep ts)
 	{
 		for (auto& it : m_EntityList)
+		{
+			if (!m_Valid)
+			{
+				m_Valid = true;
+				break;
+			}
 			it->OnUpdate(ts);
+		}
 	}
 
 	void EntityManager::ImGuiRender()
 	{
 		for (auto& it : m_EntityList)
+		{
+			if (!m_Valid)
+			{
+				m_Valid = true;
+				break;
+			}
 			it->OnImGuiRender();
+		}
 	}
-	
+
 }

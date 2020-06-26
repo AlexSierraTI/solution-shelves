@@ -3,6 +3,7 @@
 #include <random>
 
 #include "ImGui/imgui.h"
+#include "ImGui/imgui_internal.h"
 
 #include "Core/EntityManager.h"
 
@@ -59,18 +60,7 @@ namespace PokerSS
 
 		{
 			SS_PROFILE_SCOPE("Renderer Prep");
-			
 			m_FrameBuffer->Bind();
-			// Resize
-			if (SolutionShelves::FrameBufferSpecification spec = m_FrameBuffer->GetSpecification();
-				m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
-				(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
-			{
-				m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-				SetCamera();
-				CalculateLayoutPositions(m_EngineJogo->GetJogadores(), m_LevelOldWest);
-			}
-			
 			SolutionShelves::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 			SolutionShelves::RenderCommand::Clear();
 		}
@@ -99,52 +89,36 @@ namespace PokerSS
 		SS_PROFILE_FUNCTION();
 
 		static bool dockspaceOpen = true;
-		static bool opt_fullscreen_persistant = true;
-		bool opt_fullscreen = opt_fullscreen_persistant;
-		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_AutoHideTabBar;
 
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-		if (opt_fullscreen)
-		{
-			ImGuiViewport* viewport = ImGui::GetMainViewport();
-			ImGui::SetNextWindowPos(viewport->GetWorkPos());
-			ImGui::SetNextWindowSize(viewport->GetWorkSize());
-			ImGui::SetNextWindowViewport(viewport->ID);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-			window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-			window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-		}
-
-		if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-			window_flags |= ImGuiWindowFlags_NoBackground;
-
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_DockNodeHost;
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewport->GetWorkPos());
+		ImGui::SetNextWindowSize(viewport->GetWorkSize());
+		ImGui::SetNextWindowViewport(viewport->ID);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("MyDockSpace", &dockspaceOpen, window_flags);
-		ImGui::PopStyleVar();
-
-		if (opt_fullscreen)
-			ImGui::PopStyleVar(2);
-
+		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+		ImGui::Begin("MainDockSpace", &dockspaceOpen, window_flags);
+		ImGui::PopStyleVar(3);
 		ImGuiIO& io = ImGui::GetIO();
 		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 		{
-			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+			ImGuiID dockspace_id = ImGui::GetID("MainDockSpace");
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-		}
-
-		if (ImGui::BeginMenuBar())
-		{
-			if (ImGui::BeginMenu("Arquivo"))
+			if (ImGuiDockNode* node = ImGui::DockBuilderGetCentralNode(dockspace_id))
+				node->LocalFlags |= ImGuiDockNodeFlags_NoTabBar;
+			if (ImGuiDockNode* node = ImGui::DockBuilderGetNode(dockspace_id))
 			{
-				if (ImGui::MenuItem("Sair")) SolutionShelves::Application::Get().Close();
-				ImGui::EndMenu();
+				for (auto& it : node->ChildNodes)
+					if (it != NULL)
+						it->LocalFlags |= ImGuiDockNodeFlags_NoTabBar;
 			}
-
-			ImGui::EndMenuBar();
 		}
 		ImGui::End();
-
+		
 
 		ImGui::Begin("Log");
 		auto log = m_EngineJogo->GetLog();
@@ -169,8 +143,8 @@ namespace PokerSS
 		ImGui::End();
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
-
 		ImGui::Begin("Viewport");
+		ImGui::PopStyleVar();
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
@@ -182,21 +156,44 @@ namespace PokerSS
 		uint64_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
 		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		MainLayerImGuiGameElements();
+
+		if (SolutionShelves::FrameBufferSpecification spec = m_FrameBuffer->GetSpecification();
+			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
+			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
+		{
+			CalculateLayoutPositions(m_EngineJogo->GetJogadores(), m_LevelOldWest);
+		}
+
 		ImGui::End();
-		ImGui::PopStyleVar();
 
 		EntityManager::Get().ImGuiRender();
+		
 	}
 
 	void GameLayer::OnEvent(SolutionShelves::Event& e)
 	{
 		SolutionShelves::EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<SolutionShelves::MouseButtonPressedEvent>(SS_BIND_EVENT_FN(GameLayer::OnMouseButtonPressed));
+		dispatcher.Dispatch<SolutionShelves::WindowResizeEvent>(SS_BIND_EVENT_FN(GameLayer::OnWindowResizeEvent));
 	}
 
 	bool GameLayer::OnMouseButtonPressed(SolutionShelves::MouseButtonPressedEvent& e)
 	{
 	
+		return false;
+	}
+
+	bool GameLayer::OnWindowResizeEvent(SolutionShelves::WindowResizeEvent& e)
+	{
+		// Resize
+		if (SolutionShelves::FrameBufferSpecification spec = m_FrameBuffer->GetSpecification();
+			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
+			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
+		{
+			m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			SetCamera();
+			CalculateLayoutPositions(m_EngineJogo->GetJogadores(), m_LevelOldWest);
+		}
 		return false;
 	}
 
@@ -242,10 +239,82 @@ namespace PokerSS
 
 	void GameLayer::CalculateLayoutPositions(const std::vector<SolutionShelves::Ref<Player>> players, const SolutionShelves::Ref<Level> level)
 	{
+		std::vector<uint32_t> positions;
+		switch (players.size())
+		{
+		case 0:
+			return;
+		case 1:
+			positions.push_back(0);
+			break;
+		case 2:
+			positions.push_back(0);
+			positions.push_back(1);
+			break;
+		case 3:
+			positions.push_back(0);
+			positions.push_back(6);
+			positions.push_back(7);
+			break;
+		case 4:
+			positions.push_back(0);
+			positions.push_back(4);
+			positions.push_back(1);
+			positions.push_back(5);
+			break;
+		case 5:
+			positions.push_back(0);
+			positions.push_back(4);
+			positions.push_back(6);
+			positions.push_back(7);
+			positions.push_back(5);
+			break;
+		case 6:
+			positions.push_back(0);
+			positions.push_back(9);
+			positions.push_back(2);
+			positions.push_back(1);
+			positions.push_back(3);
+			positions.push_back(11);
+			break;
+		case 7:
+			positions.push_back(13);
+			positions.push_back(12);
+			positions.push_back(4);
+			positions.push_back(2);
+			positions.push_back(1);
+			positions.push_back(3);
+			positions.push_back(5);
+			break;
+		case 8:
+			positions.push_back(13);
+			positions.push_back(12);
+			positions.push_back(9);
+			positions.push_back(8);
+			positions.push_back(6);
+			positions.push_back(7);
+			positions.push_back(10);
+			positions.push_back(11);
+			break;
+		case 9:
+			positions.push_back(13);
+			positions.push_back(12);
+			positions.push_back(9);
+			positions.push_back(8);
+			positions.push_back(2);
+			positions.push_back(1);
+			positions.push_back(3);
+			positions.push_back(8);
+			positions.push_back(9);
+			break;
+		default:
+			SS_ERROR("Quantidade de jogadores invalida");
+			return;
+		}
 		for (uint32_t index = 0; index < players.size(); index++)
 		{
-			glm::vec2 playerLevelPosition = level->GetPlayerData(index).Position;
-			Orientation playerOrientation = level->GetPlayerData(index).Direction;
+			glm::vec2 playerLevelPosition = level->GetPlayerData(positions[index]).Position;
+			Orientation playerOrientation = level->GetPlayerData(positions[index]).Direction;
 			glm::vec2 levelLayout = level->GetMapLayout();
 			players[index]->SetOrientation(playerOrientation);
 			float viewPortWidth = -m_Bounds.x + m_Bounds.y;

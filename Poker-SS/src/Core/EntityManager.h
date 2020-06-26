@@ -28,6 +28,7 @@ namespace PokerSS
 		std::vector<SolutionShelves::Ref<Entity>> m_EntityList;
 		uint32_t m_EntitiesCount;
 		uint32_t m_EntityNextID;
+		bool m_Valid;
 
 		static EntityManager* s_Instance;
 	};
