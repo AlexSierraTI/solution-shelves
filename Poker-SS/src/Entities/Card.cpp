@@ -105,7 +105,7 @@ namespace PokerSS
 				m_CardTexture = SolutionShelves::SubTexture2D::CreateFromCoords(m_CardSpriteSheet, { 4.0f, 1.0f }, { 140.0f, 190.0f });
 				break;
 			case FaceValue::Four:
-				m_CardTexture = SolutionShelves::SubTexture2D::CreateFromCoords(m_CardSpriteSheet, { 4.0f, 4.0f }, { 140.0f, 190.0f });
+				m_CardTexture = SolutionShelves::SubTexture2D::CreateFromCoords(m_CardSpriteSheet, { 4.0f, 0.0f }, { 140.0f, 190.0f });
 				break;
 			case FaceValue::Five:
 				m_CardTexture = SolutionShelves::SubTexture2D::CreateFromCoords(m_CardSpriteSheet, { 5.0f, 9.0f }, { 140.0f, 190.0f });

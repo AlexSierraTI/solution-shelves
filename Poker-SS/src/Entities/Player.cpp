@@ -26,9 +26,9 @@ namespace PokerSS
 		m_HandDescription = "";
 		m_Chips = 0;
 		m_Bet = 0;
-		m_AllIn = false;
 		m_InAction = false;
 		m_Folded = false;
+		m_FlatCalled = false;
 
 		LoadAssets();
 	}
@@ -170,6 +170,11 @@ namespace PokerSS
 		char betStackChips[10];
 		sprintf_s(betStackChips, "[%d]", m_Bet);
 		ImGui::GetForegroundDrawList()->AddText(fonts->Fonts[2], 16.0f, posBetStack, 0xff1e1eaf, betStackChips);
+	}
+
+	bool Player::GetIsAllIn()
+	{
+		return (m_Bet  == m_Chips);
 	}
 
 	void Player::SetPosition(const glm::vec2& position)

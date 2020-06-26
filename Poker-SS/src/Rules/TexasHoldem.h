@@ -7,6 +7,8 @@
 
 #include "Entities/ChipStack.h"
 
+#include <future>
+
 namespace PokerSS
 {
 	namespace TexasHoldem
@@ -110,21 +112,23 @@ namespace PokerSS
 			uint32_t GetApostaMinima();
 			uint32_t GetApostaMaxima();
 			SolutionShelves::Ref<std::vector<std::string>> GetLog() const { return m_Log; }
+			bool GetAguardando() const { return m_Aguardando; }
 			
 			void Start();
-
 		private:
 			// Controles do Jogo
 			void ReinicializaEngine();
 			void IniciarJogo();
 			void NovaMao();
+			void IniciaNovaMao();
+			void AvancaJogo();
 			std::vector<DadosMao> RankeiaJogadores();
 			void AumentaBlinds();
-			void AvancaJogo();
 			void ProximoJogadorMesmaFase();
 			void ProximoJogador();
 			SolutionShelves::Ref<Card> ProximaCarta();
 			uint32_t ProximaPosicao(uint32_t pos);
+			uint32_t PosicaoAnterior(uint32_t pos);
 			void SetaDealer(uint32_t pos);
 			void SetaJogadorAcao(uint32_t pos);
 
@@ -132,6 +136,8 @@ namespace PokerSS
 			void CalculaMaosJogadores();
 			DadosMao AnalisaMao(const std::vector<SolutionShelves::Ref<Card>>& mao);
 			uint32_t CalculaPontos(const std::vector<SolutionShelves::Ref<Card>>& mao, TipoMao tipo);
+			uint32_t QuantidadeJogadoresNoJogo();
+			bool VerificaShowdown();
 
 			std::vector<SolutionShelves::Ref<Card>> CartaAlta(const std::vector<SolutionShelves::Ref<Card>>& mao);
 			std::vector<SolutionShelves::Ref<Card>> UmPar(const std::vector<SolutionShelves::Ref<Card>>& mao);
@@ -147,11 +153,18 @@ namespace PokerSS
 			void CriarBaralho(CardBack cardback);
 			void OrdenarCartas(std::vector<SolutionShelves::Ref<Card>>& cartas);
 			void EmbaralhaCartas(std::vector<SolutionShelves::Ref<Card>>& cartas);
+			void DistribuirCartasIniciais();
 			void PosicionaCartasDeck();
 			void PosicionaCartasMesa();
 			void PosicionaCartasMuck();
 
 		private:
+			// Constantes
+			const uint8_t QUANTIDADE_CARTAS_JOGO = 2;
+			const uint8_t QUANTIDADE_EMBARALHADAS = 7;
+			const uint8_t MAXIMO_JOGADORES = 10;
+			const uint32_t TEMPO_AGUARDAR = 5;
+
 			// Textures
 			SolutionShelves::Ref<SolutionShelves::Texture2D> m_CardSpriteSheet;
 			SolutionShelves::Ref<SolutionShelves::Texture2D> m_CardBackSpriteSheet;
@@ -169,6 +182,7 @@ namespace PokerSS
 			FaseRodada m_FaseRodadaAtual;
 
 			uint32_t m_ApostaAtual;
+			uint32_t m_UltimoAumento;
 			uint32_t m_Stack;
 			SolutionShelves::Ref<ChipStack> m_Pote;
 
@@ -176,7 +190,6 @@ namespace PokerSS
 			std::vector<SolutionShelves::Ref<Card>> m_CartasMuck;
 
 			uint32_t m_IndiceJogadorAcao;
-			uint32_t m_QuantidadeJogadoresNoJogo;
 			uint32_t m_IndiceFimRodada;
 
 			uint32_t m_SmallBlind;
@@ -194,12 +207,12 @@ namespace PokerSS
 
 			std::vector<SidePot> m_SidePots;
 
-			const uint8_t QUANTIDADE_CARTAS_JOGO = 2;
-			const uint8_t QUANTIDADE_EMBARALHADAS = 7;
-			const uint8_t MAXIMO_JOGADORES = 10;
-
 			SolutionShelves::Ref<std::vector<std::string>> m_Log;
-			char m_LogString[100];
+			char m_LogString[600];
+
+			bool m_Aguardando;
+			std::vector<std::future<void>> m_Futures;
+			bool m_AcaoFechada;
 		};
 	}
 }

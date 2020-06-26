@@ -32,9 +32,10 @@ namespace PokerSS
 		std::vector<SolutionShelves::Ref<Card>> GetHand() const { return m_Hand; }
 		uint32_t GetBet() const { return m_Bet; }
 		uint32_t GetChips() const { return m_Chips; }
-		bool GetIsAllinn() const { return m_AllIn; }
 		glm::vec3 GetDealerChipPosition() const { return m_DealerChipPosition; }
 		Orientation GetOrientation() const { return m_Orientation; }
+		bool GetIsAllIn();
+		bool GetFlatCalled() const { return m_FlatCalled; }
 
 		void SetPosition(const glm::vec2& position);
 		void SetLayoutPosition(const glm::vec2& position);
@@ -43,9 +44,9 @@ namespace PokerSS
 		void SetInGame(bool status) { m_InGame = status; }
 		void SetPoints(uint32_t value) { m_Points = value; }
 		void SetHandDescription(const std::string& description) { m_HandDescription = description; }
-		void SetAllIn(bool value) { m_AllIn = value; }
 		void SetInAction(bool value) { m_InAction = value; }
 		void SetFolded(bool value) { m_Folded = value; }
+		void SetFlatCalled(bool value) { m_FlatCalled = value; }
 
 		void AddCard(const SolutionShelves::Ref<Card> card);
 		void RemoveCard(const SolutionShelves::Ref<Card> card);
@@ -87,9 +88,9 @@ namespace PokerSS
 		std::string m_HandDescription;
 		uint32_t m_Chips;
 		uint32_t m_Bet;
-		bool m_AllIn;
 		bool m_InAction;
 		bool m_Folded;
+		bool m_FlatCalled;
 
 		SolutionShelves::Ref<ChipStack> m_ChipStack;
 		SolutionShelves::Ref<ChipStack> m_ChipStackBet;

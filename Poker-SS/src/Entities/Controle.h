@@ -34,6 +34,7 @@ namespace PokerSS
 		char m_NomeJogadorInclusao[50];
 		bool m_AdicionandoJogador = false;
 		bool m_AdicionandoFichas = false;
+		bool m_RemovendoFichas = false;
 		int32_t m_FichasAdicionar;
 		bool m_PodeComecarJogo = false;
 		bool m_Apostando = false;
