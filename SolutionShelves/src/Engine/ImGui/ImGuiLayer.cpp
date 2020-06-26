@@ -63,7 +63,12 @@ namespace SolutionShelves
 
 	void ImGuiLayer::OnEvent(Event& e)
 	{
-
+		if (m_BlockEvents)
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			e.Handled |= e.IsInCategory(EventCategory::EventCategoryMouse) & io.WantCaptureMouse;
+			e.Handled |= e.IsInCategory(EventCategory::EventCategoryKeyboard) & io.WantCaptureKeyboard;
+		}
 	}
 	
 	void ImGuiLayer::Begin()
