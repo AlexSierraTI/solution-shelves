@@ -48,4 +48,21 @@ namespace PokerSS
 		}
 	};
 
+	struct RemotePlayer
+	{
+		uint32_t Address;
+		uint16_t Port;
+		
+		uint32_t Id;
+
+		RemotePlayer(uint32_t address, uint16_t port, uint32_t id)
+			: Address(address), Port(port), Id(id)
+		{
+		}
+	};
+
+	enum class ClientMessage
+	{
+		Join
+	};
 }

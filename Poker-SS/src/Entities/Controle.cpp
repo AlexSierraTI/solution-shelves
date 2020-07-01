@@ -15,6 +15,9 @@ namespace PokerSS
 		m_RemovendoFichas = false;
 
 		m_PrimeiroFoco = false;
+		
+		m_Server = SolutionShelves::CreateRef<Server>();
+		m_ServerThread = std::thread(&Server::Run, m_Server);
 
 		LoadAssets();
 		//AddPlayer("Marcos");
@@ -31,10 +34,12 @@ namespace PokerSS
 
 	Controle::~Controle()
 	{
+		m_ServerThread.join();
 	}
 
 	void Controle::LoadAssets()
 	{
+
 	}
 
 	void Controle::OnUpdate(SolutionShelves::Timestep ts)
@@ -149,6 +154,13 @@ namespace PokerSS
 						m_AdicionandoJogador = false;
 						m_RemovendoFichas = false;
 					}
+				}
+
+				ImGui::NewLine();
+				ImGui::SameLine(BUTTON_SPACING);
+				if (ImGui::Button("Teste Envio", ImVec2(MAIN_MENU_BUTTON_X, MAIN_MENU_BUTTON_Y)))
+				{
+					Client::Teste();
 				}
 				ImGui::EndChildFrame();
 				break;
@@ -387,10 +399,11 @@ namespace PokerSS
 
 	void Controle::ChecarPodeComecarJogo()
 	{
-		if (m_EngineJogo->GetJogadores().size() > 1)
+		auto& v_ListaJogadores = m_EngineJogo->GetJogadores();
+		if (v_ListaJogadores.size() > 1)
 		{
 			bool todosComFicha = true;
-			for (auto& it : m_EngineJogo->GetJogadores())
+			for (auto& it : v_ListaJogadores)
 			{
 				if (it->GetChips() == 0)
 				{

@@ -4,6 +4,8 @@
 
 #include "Rules/TexasHoldem.h"
 
+#include "Core/Server.h"
+#include "Core/Client.h"
 
 namespace PokerSS
 {
@@ -42,6 +44,9 @@ namespace PokerSS
 		bool m_PrimeiroFoco = false;
 
 		std::vector<TexasHoldem::AcoesJogador> m_AcoesPossiveis;
+
+		SolutionShelves::Ref<Server> m_Server;
+		std::thread m_ServerThread;
 	};
 }
 
