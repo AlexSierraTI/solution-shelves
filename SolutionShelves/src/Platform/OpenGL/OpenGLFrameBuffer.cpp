@@ -5,6 +5,8 @@
 
 namespace SolutionShelves
 {
+	static const uint32_t s_MaxFramebufferSize = 8192;
+
 	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification& spec)
 		: m_Specification(spec)
 	{
@@ -66,6 +68,11 @@ namespace SolutionShelves
 
 	void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height)
 	{
+		if (width == 0 || height == 0 || width > s_MaxFramebufferSize || height > s_MaxFramebufferSize)
+		{
+			SS_CORE_WARN("Tentativa de redimensionar framebuffer para {0}, {1}", width, height);
+			return;
+		}
 		m_Specification.Width = width;
 		m_Specification.Height = height;
 		Invalidate();
