@@ -11,10 +11,12 @@
 #include "Engine/Core/Input.h"
 #include "Engine/Core/KeyCodes.h"
 #include "Engine/Core/MouseButtonCodes.h"
+#include "Engine/Renderer/OrthographicCameraController.h"
 
 #include "Engine/ImGui/ImGuiLayer.h"
 
-#include "Engine/Renderer/OrthographicCameraController.h"
+#include "Engine/Scene/Scene.h"
+#include "Engine/Scene/Components.h"
 
 // -Renderer-------------------
 #include "Engine/Renderer/Renderer.h"
