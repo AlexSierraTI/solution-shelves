@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include "Engine/Renderer/Camera.h"
+
 namespace SolutionShelves
 {
 	struct TagComponent
@@ -37,5 +39,15 @@ namespace SolutionShelves
 			: Color(color) { }
 	};
 
+	struct CameraComponent
+	{
+		Camera Camera;
+		bool Primary = true; // TODO: mover para Scene
+
+		CameraComponent() = default;
+		CameraComponent(const CameraComponent&) = default;
+		CameraComponent(const glm::mat4& projection)
+			: Camera(projection) { }
+	};
 	
 }
