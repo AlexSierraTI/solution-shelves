@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-#include "Engine/Renderer/Camera.h"
+#include "Engine/Scene/SceneCamera.h"
 
 namespace SolutionShelves
 {
@@ -41,13 +41,12 @@ namespace SolutionShelves
 
 	struct CameraComponent
 	{
-		Camera Camera;
+		SceneCamera Camera;
 		bool Primary = true; // TODO: mover para Scene
+		bool FixedAspectRatio = false;
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
-		CameraComponent(const glm::mat4& projection)
-			: Camera(projection) { }
 	};
 	
 }
