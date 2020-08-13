@@ -31,9 +31,38 @@ namespace SolutionShelves
 		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
 		m_CameraEntity.AddComponent<CameraComponent>();
 
-		m_SecondCamera = m_ActiveScene->CreateEntity("Clip-Space Camera");
+		m_SecondCamera = m_ActiveScene->CreateEntity("Clip-Space Entity");
 		auto& cc = m_SecondCamera.AddComponent<CameraComponent>();
 		cc.Primary = false;
+
+		class CameraController : ScriptableEntity
+		{
+		public:
+			void OnCreate()
+			{
+				GetComponent<TransformComponent>();
+			}
+
+			void OnDestroy()
+			{
+			}
+
+			void OnUpdate(Timestep ts)
+			{
+				auto& transform = GetComponent<TransformComponent>().Transform;
+				float speed = 5.0f;
+
+				if (Input::IsKeyPressed(SS_KEY_A))
+					transform[3][0] -= speed * ts;
+				if (Input::IsKeyPressed(SS_KEY_D))
+					transform[3][0] += speed * ts;
+				if (Input::IsKeyPressed(SS_KEY_W))
+					transform[3][1] += speed * ts;
+				if (Input::IsKeyPressed(SS_KEY_S))
+					transform[3][1] -= speed * ts;
+			}
+		};
+		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 	}
 
 	void EditorLayer::OnDetach()
