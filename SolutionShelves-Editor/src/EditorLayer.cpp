@@ -62,7 +62,10 @@ namespace SolutionShelves
 					transform[3][1] -= speed * ts;
 			}
 		};
+
 		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+		m_SecondCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+
 	}
 
 	void EditorLayer::OnDetach()
