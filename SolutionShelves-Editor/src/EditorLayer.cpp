@@ -25,8 +25,13 @@ namespace SolutionShelves
 		m_ActiveScene = CreateRef<Scene>();
 
 		// Entity
-		m_SquareEntity = m_ActiveScene->CreateEntity("Green Square");
-		m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+		auto square = m_ActiveScene->CreateEntity("Green Square");
+		square.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f, 1.0f, 0.0f, 1.0f });
+
+		auto redSquare = m_ActiveScene->CreateEntity("Red Square");
+		redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0f, 0.0f, 0.0f, 1.0f });
+
+		m_SquareEntity = square;
 
 		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
 		m_CameraEntity.AddComponent<CameraComponent>();
@@ -189,7 +194,7 @@ namespace SolutionShelves
 			auto& camera = m_SecondCamera.GetComponent<CameraComponent>().Camera;
 			float orthoSize = camera.GetOrthographicSize();
 			if (ImGui::DragFloat("Second Camera Ortho Size", &orthoSize))
-				camera.SetOthographicSize(orthoSize);
+				camera.SetOrthographicSize(orthoSize);
 		}
 
 		ImGui::End();
