@@ -17,7 +17,7 @@ public:
 	ParticleSystem(uint32_t maxParticles = 1500);
 
 	void OnUpdate(SolutionShelves::Timestep ts);
-	void OnRender(SolutionShelves::OrthographicCamera& camera);
+	void OnRender(SolutionShelves::Camera& camera);
 
 	void Emit(const ParticleProps& particleProps);
 private:

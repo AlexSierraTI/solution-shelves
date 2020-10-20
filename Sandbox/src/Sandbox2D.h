@@ -15,7 +15,7 @@ public:
 	virtual void OnImGuiRender() override;
 	void OnEvent(SolutionShelves::Event& e) override;
 private:
-	SolutionShelves::OrthographicCameraController m_CameraController;
+	SolutionShelves::Camera m_Camera;
 
 	SolutionShelves::Ref<SolutionShelves::Texture2D> m_CheckerboardTexture;
 };

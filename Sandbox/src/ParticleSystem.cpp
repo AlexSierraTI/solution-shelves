@@ -31,9 +31,9 @@ void ParticleSystem::OnUpdate(SolutionShelves::Timestep ts)
 	}
 }
 
-void ParticleSystem::OnRender(SolutionShelves::OrthographicCamera& camera)
+void ParticleSystem::OnRender(SolutionShelves::Camera& camera)
 {
-	SolutionShelves::Renderer2D::BeginScene(camera);
+	SolutionShelves::Renderer2D::BeginScene(camera, glm::mat4(1.0f));
 	for (auto& particle : m_ParticlePool)
 	{
 		if (!particle.Active)

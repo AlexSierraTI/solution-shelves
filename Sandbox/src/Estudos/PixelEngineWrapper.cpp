@@ -17,11 +17,9 @@ PixelEngineWrapper::PixelEngineWrapper(uint32_t width, uint32_t height, uint32_t
 	m_FrameBuffer = SolutionShelves::FrameBuffer::Create(fbSpec);
 }
 
-void PixelEngineWrapper::OnRender(SolutionShelves::OrthographicCameraController& cameraController)
+void PixelEngineWrapper::OnRender(SolutionShelves::Camera& camera)
 {
-	cameraController.SetZoomLevel(70.0f);
-
-	SolutionShelves::Renderer2D::BeginScene(cameraController.GetCamera());
+	SolutionShelves::Renderer2D::BeginScene(camera, glm::mat4(1.0f));
 	m_FrameBuffer->Bind();
 
 	SolutionShelves::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });

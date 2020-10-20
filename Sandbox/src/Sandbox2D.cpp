@@ -6,7 +6,7 @@
 
 
 Sandbox2D::Sandbox2D()
-	: Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f, true)
+	: Layer("Sandbox2D"), m_Camera()
 {
 }
 
@@ -26,10 +26,6 @@ void Sandbox2D::OnDetach()
 
 void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 {
-	// Update
-	m_CameraController.OnUpdate(ts);
-
-
 	// Render
 	SolutionShelves::Renderer2D::ResetStats();
 
@@ -44,7 +40,7 @@ void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 		rotation +=  ts * 50.0f;
 
 		SS_PROFILE_SCOPE("Renderer Draw");
-		SolutionShelves::Renderer2D::BeginScene(m_CameraController.GetCamera());
+		SolutionShelves::Renderer2D::BeginScene(m_Camera, glm::mat4(1.0f));
 		SolutionShelves::Renderer2D::DrawRotatedQuad({ 1.0f,  0.0f }, { 0.8f,  0.8f }, -glm::radians(-45.0f), { 0.8f, 0.2f, 0.3f, 1.0f });
 		SolutionShelves::Renderer2D::DrawQuad({ -1.0f,  0.0f }, { 0.8f,  0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
 		SolutionShelves::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f,  0.75f }, { 0.3f, 0.2f, 0.8f, 1.0f });
@@ -52,7 +48,7 @@ void Sandbox2D::OnUpdate(SolutionShelves::Timestep ts)
 		SolutionShelves::Renderer2D::DrawRotatedQuad({ -2.0f,  0.0f, 0.0f }, { 1.0f,  1.0f }, glm::radians(rotation), m_CheckerboardTexture, 20.0f);
 		SolutionShelves::Renderer2D::EndScene();
 
-		SolutionShelves::Renderer2D::BeginScene(m_CameraController.GetCamera());
+		SolutionShelves::Renderer2D::BeginScene(m_Camera, glm::mat4(1.0f));
 		for (float y = -5.0f; y < 5.0f; y += 0.5f)
 		{
 			for (float x = -5.0f; x < 5.0f; x += 0.5f)
@@ -85,5 +81,5 @@ void Sandbox2D::OnImGuiRender()
 
 void Sandbox2D::OnEvent(SolutionShelves::Event& e)
 {
-	m_CameraController.OnEvent(e);
+
 }

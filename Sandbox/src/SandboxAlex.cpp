@@ -5,7 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 SandboxAlex::SandboxAlex()
-	: Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f, true)
+	: Layer("SandboxAlex"), m_Camera()
 {
 	m_Application = std::make_unique<Fps>(800, 450, 4);
 }
@@ -26,7 +26,7 @@ void SandboxAlex::OnUpdate(SolutionShelves::Timestep ts)
 	SolutionShelves::RenderCommand::Clear();
 
 	m_Application->OnUpdate(ts);
-	m_Application->OnRender(m_CameraController);
+	m_Application->OnRender(m_Camera);
 }
 
 void SandboxAlex::OnImGuiRender()

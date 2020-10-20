@@ -16,7 +16,7 @@ public:
 	virtual void OnUpdate(SolutionShelves::Timestep ts) = 0;
 	virtual void OnEvent(SolutionShelves::Event& event) = 0;
 
-	void OnRender(SolutionShelves::OrthographicCameraController& cameraController);
+	void OnRender(SolutionShelves::Camera& camera);
 
 	uint32_t ScreenWidth() const { return m_ScreenWidth; };
 	uint32_t ScreenHeight() const { return m_ScreenHeight; };
