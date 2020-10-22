@@ -1,6 +1,9 @@
 #pragma once
 
-#include "Engine/Core/Base.h"
+#include <glm/glm.hpp>
+
+#include "Engine/Core/KeyCodes.h"
+#include "Engine/Core/MouseCodes.h"
 
 namespace SolutionShelves
 {
@@ -10,7 +13,7 @@ namespace SolutionShelves
 		static bool IsKeyPressed(int keycode);
 
 		static bool IsMouseButtonPressed(int button);
-		static std::pair<float, float> GetMousePosition();
+		static glm::vec2 GetMousePosition();
 		static float GetMouseX();
 		static float GetMouseY();
 	};

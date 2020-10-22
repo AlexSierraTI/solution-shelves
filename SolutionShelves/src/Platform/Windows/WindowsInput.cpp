@@ -18,7 +18,7 @@ namespace SolutionShelves
 		auto state = glfwGetMouseButton(window, button);
 		return state == GLFW_PRESS;
 	}
-	std::pair<float, float> Input::GetMousePosition()
+	glm::vec2 Input::GetMousePosition()
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		double xpos, ypos;
@@ -28,12 +28,12 @@ namespace SolutionShelves
 	}
 	float Input::GetMouseX()
 	{
-		auto [x, y] = GetMousePosition();
-		return x;
+		auto mousePos = GetMousePosition();
+		return mousePos.x;
 	}
 	float Input::GetMouseY()
 	{
-		auto [x, y] = GetMousePosition();
-		return y;
+		auto mousePos = GetMousePosition();
+		return mousePos.y;
 	}
 }
