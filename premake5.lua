@@ -1,5 +1,8 @@
-workspace "EngineGrafico"
+include "./vendor/premake/premake_customization/solution_items.lua"
+
+workspace "SolutionShelves"
 	architecture "x86_64"
+	startproject "SolutionShelves-Editor"
 
 	configurations
 	{
@@ -8,201 +11,37 @@ workspace "EngineGrafico"
 		"Dist"
 	}
 	
-	startproject "Sandbox"
+	solution_items
+	{
+		".editorconfig"
+	}
+	
+	flags
+	{
+		"MultiProcessorCompile"
+	}
+	
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
-IncludeDir["GLFW"] = "SolutionShelves/vendor/GLFW/include"
-IncludeDir["Glad"] = "SolutionShelves/vendor/Glad/include"
-IncludeDir["ImGui"] = "SolutionShelves/vendor/ImGui"
-IncludeDir["glm"] = "SolutionShelves/vendor/glm"
-IncludeDir["stb_image"] = "SolutionShelves/vendor/stb_image"
-IncludeDir["entt"] = "SolutionShelves/vendor/entt/include"
+IncludeDir["GLFW"] = "%{wks.location}/SolutionShelves/vendor/GLFW/include"
+IncludeDir["Glad"] = "%{wks.location}/SolutionShelves/vendor/Glad/include"
+IncludeDir["ImGui"] = "%{wks.location}/SolutionShelves/vendor/ImGui"
+IncludeDir["glm"] = "%{wks.location}/SolutionShelves/vendor/glm"
+IncludeDir["stb_image"] = "%{wks.location}/SolutionShelves/vendor/stb_image"
+IncludeDir["entt"] = "%{wks.location}/SolutionShelves/vendor/entt/include"
+IncludeDir["yaml_cpp"] = "%{wks.location}/SolutionShelves/vendor/yaml-cpp/include"
 
 group "Dependencias"
+	include "vendor/premake"
 	include "SolutionShelves/vendor/GLFW"
 	include "SolutionShelves/vendor/Glad"
 	include "SolutionShelves/vendor/ImGui"
+	include "SolutionShelves/vendor/yaml-cpp"
 group ""
 
-project "SolutionShelves"
-	location "SolutionShelves"
-	kind "StaticLib"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-	
-
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
-	pchheader "sspch.h"
-	pchsource "SolutionShelves/src/sspch.cpp"
-
-	files
-	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/vendor/stb_image/**.h",
-		"%{prj.name}/vendor/stb_image/**.cpp",
-		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl"
-	}
-	
-	defines
-	{
-		"_CRT_SECURE_NO_WARNINGS"
-	}
-
-	includedirs
-	{
-		"%{prj.name}/src",
-		"%{prj.name}/vendor/spdlog/include",
-		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.Glad}",
-		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.entt}"
-	}
-	
-	links
-	{
-		"GLFW",
-		"Glad",
-		"ImGui",
-		"opengl32.lib"
-	}
-	
-	filter "system:windows"
-		systemversion "latest"
-
-		defines 
-		{
-			"SS_PLATFORM_WINDOWS",
-			"SS_BUILD_DLL",
-			"GLFW_INCLUDE_NONE"
-		}
-
-	filter "configurations:Debug"
-		defines "SS_DEBUG"
-		runtime "Debug"
-		symbols "on"
-
-	filter "configurations:Release"
-		defines "SS_RELEASE"
-		runtime "Release"
-		optimize "on"
-
-	filter "configurations:Dist"
-		defines "SS_DIST"
-		runtime "Release"
-		optimize "on"
-
-project "Sandbox"
-	location "Sandbox"
-	kind "ConsoleApp"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
-	files
-	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
-	}
-
-	includedirs
-	{
-		"SolutionShelves/vendor/spdlog/include",
-		"SolutionShelves/src",
-		"SolutionShelves/vendor",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}"
-	}
-
-	links
-	{
-		"SolutionShelves"
-	}
-	
-	filter "system:windows"
-		systemversion "latest"
-
-		defines 
-		{
-			"SS_PLATFORM_WINDOWS"
-		}
-
-	filter "configurations:Debug"
-		defines "SS_DEBUG"
-		runtime "Debug"
-		symbols "on"
-
-	filter "configurations:Release"
-		defines "SS_RELEASE"
-		runtime "Release"
-		optimize "on"
-
-	filter "configurations:Dist"
-		defines "SS_DIST"
-		runtime "Release"
-		optimize "on"
-
-project "SolutionShelves-Editor"
-	location "SolutionShelves-Editor"
-	kind "ConsoleApp"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
-	files
-	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
-	}
-
-	includedirs
-	{
-		"SolutionShelves/vendor/spdlog/include",
-		"SolutionShelves/src",
-		"SolutionShelves/vendor",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}"
-	}
-
-	links
-	{
-		"SolutionShelves"
-	}
-	
-	filter "system:windows"
-		systemversion "latest"
-
-		defines 
-		{
-			"SS_PLATFORM_WINDOWS"
-		}
-
-	filter "configurations:Debug"
-		defines "SS_DEBUG"
-		runtime "Debug"
-		symbols "on"
-
-	filter "configurations:Release"
-		defines "SS_RELEASE"
-		runtime "Release"
-		optimize "on"
-
-	filter "configurations:Dist"
-		defines "SS_DIST"
-		runtime "Release"
-		optimize "on"
+include "SolutionShelves"
+include "Sandbox"
+include "SolutionShelves-Editor"

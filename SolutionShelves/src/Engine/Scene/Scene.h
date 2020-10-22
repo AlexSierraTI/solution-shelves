@@ -1,6 +1,9 @@
 #pragma once
 
+// This ignores all warnings raised inside External headers
+#pragma warning(push, 0)
 #include "entt.hpp"
+#pragma warning(pop)
 
 #include "Engine/Core/Timestep.h"
 
@@ -28,6 +31,7 @@ namespace SolutionShelves
 		uint32_t m_ViewportHeight = 0;
 
 		friend class Entity;
+		friend class SceneSerializer;
 		friend class SceneHierarchyPanel;
 	};
 }

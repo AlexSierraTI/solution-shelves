@@ -5,7 +5,7 @@
 namespace SolutionShelves
 {
 
-	class SOLUTION_SHELVES_API KeyEvent : public Event
+	class KeyEvent : public Event
 	{
 	public:
 		int GetKeyCode() const { return m_KeyCode; }
@@ -18,7 +18,7 @@ namespace SolutionShelves
 		int m_KeyCode;
 	};
 
-	class SOLUTION_SHELVES_API KeyPressedEvent : public KeyEvent
+	class KeyPressedEvent : public KeyEvent
 	{
 	public:
 		KeyPressedEvent(int keycode, int repeatCount)
@@ -38,7 +38,7 @@ namespace SolutionShelves
 		int m_RepeatCount;
 	};
 
-	class SOLUTION_SHELVES_API KeyReleasedEvent : public KeyEvent
+	class KeyReleasedEvent : public KeyEvent
 	{
 	public:
 		KeyReleasedEvent(int keycode)
@@ -54,7 +54,7 @@ namespace SolutionShelves
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
 
-	class SOLUTION_SHELVES_API KeyTypedEvent : public KeyEvent
+	class KeyTypedEvent : public KeyEvent
 	{
 	public:
 		KeyTypedEvent(int keycode)

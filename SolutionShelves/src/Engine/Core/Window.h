@@ -22,7 +22,7 @@ namespace SolutionShelves
 	};
 
 	// Interface representando um sistema desktop baseado em Window
-	class SOLUTION_SHELVES_API Window
+	class Window
 	{
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;

@@ -4,7 +4,7 @@
 
 namespace SolutionShelves 
 {
-	class SOLUTION_SHELVES_API WindowResizeEvent : public Event
+	class WindowResizeEvent : public Event
 	{
 	public:
 		WindowResizeEvent(unsigned int width, unsigned int height)
@@ -26,7 +26,7 @@ namespace SolutionShelves
 		uint32_t m_Width, m_Height;
 	};
 
-	class SOLUTION_SHELVES_API WindowCloseEvent : public Event
+	class WindowCloseEvent : public Event
 	{
 	public:
 		WindowCloseEvent() = default;
@@ -35,7 +35,7 @@ namespace SolutionShelves
 		EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
 	};
 
-	class SOLUTION_SHELVES_API AppTickEvent : public Event
+	class AppTickEvent : public Event
 	{
 	public:
 		AppTickEvent() = default;
@@ -44,7 +44,7 @@ namespace SolutionShelves
 		EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
 	};
 
-	class SOLUTION_SHELVES_API AppUpdateEvent : public Event
+	class AppUpdateEvent : public Event
 	{
 	public:
 		AppUpdateEvent() = default;
@@ -53,7 +53,7 @@ namespace SolutionShelves
 		EVENT_CLASS_CATEGORY(EventCategory::EventCategoryApplication)
 	};
 
-	class SOLUTION_SHELVES_API AppRenderEvent : public Event
+	class AppRenderEvent : public Event
 	{
 	public:
 		AppRenderEvent() = default;

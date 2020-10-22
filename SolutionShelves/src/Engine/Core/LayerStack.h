@@ -6,7 +6,7 @@
 namespace SolutionShelves
 {
 
-	class SOLUTION_SHELVES_API LayerStack
+	class LayerStack
 	{
 	public:
 		LayerStack() = default;

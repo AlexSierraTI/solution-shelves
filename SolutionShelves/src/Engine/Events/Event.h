@@ -32,7 +32,7 @@ namespace SolutionShelves
 
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return (int)category; }
 
-	class SOLUTION_SHELVES_API Event
+	class Event
 	{
 		friend class EventDispatcher;
 	public:

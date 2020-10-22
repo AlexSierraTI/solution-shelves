@@ -8,7 +8,7 @@
 
 namespace SolutionShelves
 {
-	class SOLUTION_SHELVES_API ImGuiLayer : public Layer
+	class ImGuiLayer : public Layer
 	{
 	public:
 		ImGuiLayer();

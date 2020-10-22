@@ -10,3 +10,6 @@
 [submodule "SolutionShelves/vendor/glm"]
 	path = SolutionShelves/vendor/glm
 	url = https://github.com/AlexSierraTI/glm
+[submodule "SolutionShelves/vendor/yaml-cpp"]
+	path = SolutionShelves/vendor/yaml-cpp
+	url = https://github.com/AlexSierraTI/yaml-cpp

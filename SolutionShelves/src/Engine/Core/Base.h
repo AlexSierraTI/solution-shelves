@@ -2,33 +2,24 @@
 
 #include <memory>
 
-#ifdef SS_PLATFORM_WINDOWS
-	#if SS_DYNAMIC_LINK
-		#ifdef SS_BUILD_DLL
-			#define SOLUTION_SHELVES_API __declspec(dllexport)
-		#else
-			#define SOLUTION_SHELVES_API __declspec(dllimport)
-		#endif
-	#else
-		#define SOLUTION_SHELVES_API
-	#endif
-#else
-	#error Solution Shelves apenas para Windows!
-#endif
+#include "Engine/Core/PlatformDetection.h"
 
 #ifdef SS_DEBUG
+	#if defined(SS_PLATFORM_WINDOWS)
+		#define SS_DEBUGBREAK() __debugbreak()
+	#elif defined(SS_PLATFORM_LINUX)
+		#include <signal.h>
+		#define SS_DEBUGBREAK() raise(SIGTRAP)
+	#else
+		#error "Platform doesn't support debugbreak yet!"
+	#endif
 	#define SS_ENABLE_ASSERTS
-#endif
-
-#ifdef SS_ENABLE_ASSERTS
-	#define SS_ASSERT(x, ...) { if (!(x)) { SS_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-	#define SS_CORE_ASSERT(x, ...) { if (!(x)) { SS_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
 #else
-	#define SS_ASSERT(x, ...) 
-	#define SS_CORE_ASSERT(x, ...) 
+	#define SS_DEBUGBREAK()
 #endif
 
-#include "sspch.h"
+#define SS_EXPAND_MACRO(x) x
+#define SS_STRINGIFY_MACRO(x) #x
 
 #define BIT(x) (1 << x)
 
@@ -52,3 +43,6 @@ namespace SolutionShelves
 		return std::make_shared<T>(std::forward<Args>(args)...);
 	}
 }
+
+#include "Engine/Core/Log.h"
+#include "Engine/Core/Assert.h"
