@@ -48,13 +48,13 @@ void Fps::OnUpdate(SolutionShelves::Timestep ts)
 
 	int playerCurrentPos = (int)fPlayerY * nMapWidth + (int)fPlayerX;
 
-	if (SolutionShelves::Input::IsKeyPressed(SS_KEY_A))
+	if (SolutionShelves::Input::IsKeyPressed(SolutionShelves::Key::A))
 		fPlayerA -= turnDelta;
 
-	if (SolutionShelves::Input::IsKeyPressed(SS_KEY_D))
+	if (SolutionShelves::Input::IsKeyPressed(SolutionShelves::Key::D))
 		fPlayerA += turnDelta;
 
-	if (SolutionShelves::Input::IsKeyPressed(SS_KEY_W))
+	if (SolutionShelves::Input::IsKeyPressed(SolutionShelves::Key::W))
 	{
 		fPlayerX += glm::sin(fPlayerA) * moveDelta;
 		fPlayerY += glm::cos(fPlayerA) * moveDelta;
@@ -67,7 +67,7 @@ void Fps::OnUpdate(SolutionShelves::Timestep ts)
 
 	}
 
-	if (SolutionShelves::Input::IsKeyPressed(SS_KEY_S))
+	if (SolutionShelves::Input::IsKeyPressed(SolutionShelves::Key::S))
 	{
 		fPlayerX -= glm::sin(fPlayerA) * moveDelta;
 		fPlayerY -= glm::cos(fPlayerA) * moveDelta;
