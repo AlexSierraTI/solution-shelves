@@ -1,4 +1,4 @@
-project "SolutionShelves-Editor"
+project "Poker-SS"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"

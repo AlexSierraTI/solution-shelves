@@ -2,7 +2,7 @@ include "./vendor/premake/premake_customization/solution_items.lua"
 
 workspace "SolutionShelves"
 	architecture "x86_64"
-	startproject "SolutionShelves-Editor"
+	startproject "Poker-SS"
 
 	configurations
 	{
@@ -43,5 +43,4 @@ group "Dependencias"
 group ""
 
 include "SolutionShelves"
-include "Sandbox"
-include "SolutionShelves-Editor"
+include "Poker-SS"
