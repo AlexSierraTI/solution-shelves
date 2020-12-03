@@ -22,6 +22,7 @@ namespace PokerSS
 
 		m_CameraEntity = m_ActiveScene->CreateEntity("Camera");
 		m_CameraEntity.AddComponent<SolutionShelves::CameraComponent>();
+
 	}
 
 	void MainLayer::OnDetach()
@@ -41,9 +42,7 @@ namespace PokerSS
 		}
 
 		// Update
-		if (m_ViewportFocused)
-		{
-		}
+		m_Cliente.Update();
 
 		// Render
 		SolutionShelves::Renderer2D::ResetStats();
@@ -106,6 +105,21 @@ namespace PokerSS
 		{
 			if (ImGui::BeginMenu("Arquivo"))
 			{
+				if (!m_Cliente.IsConnected())
+				{
+					if (ImGui::MenuItem("Connect"))
+						m_Cliente.Connect("127.0.0.1", 20051982);
+				}
+				else
+				{
+					if (ImGui::MenuItem("Ping"))
+						m_Cliente.PingServer();
+					if (ImGui::MenuItem("Disconnect"))
+						m_Cliente.Disconnect();
+				}
+
+				ImGui::Separator();
+				
 				if (ImGui::MenuItem("Sair")) 
 					SolutionShelves::Application::Get().Close();
 
@@ -123,6 +137,14 @@ namespace PokerSS
 		ImGui::Text("Quads: %d", stats.QuadCount);
 		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+
+		ImGui::Separator();
+
+		ImGui::Text("Status Conexao: %s", m_Cliente.IsConnected() ? "Conectado" : "Desconectado");
+		if (m_Cliente.IsConnected())
+		{
+			ImGui::Text("Latency: %dms", m_Cliente.GetLatency());
+		}
 
 		ImGui::End();
 

@@ -33,6 +33,7 @@ IncludeDir["glm"] = "%{wks.location}/SolutionShelves/vendor/glm"
 IncludeDir["stb_image"] = "%{wks.location}/SolutionShelves/vendor/stb_image"
 IncludeDir["entt"] = "%{wks.location}/SolutionShelves/vendor/entt/include"
 IncludeDir["yaml_cpp"] = "%{wks.location}/SolutionShelves/vendor/yaml-cpp/include"
+IncludeDir["asio"] = "%{wks.location}/SolutionShelves/vendor/asio/include"
 
 group "Dependencias"
 	include "vendor/premake"
@@ -44,3 +45,4 @@ group ""
 
 include "SolutionShelves"
 include "Poker-SS"
+include "Poker-SS-Server"

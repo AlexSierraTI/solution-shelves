@@ -19,7 +19,8 @@ project "Poker-SS"
 		"%{wks.location}/SolutionShelves/src",
 		"%{wks.location}/SolutionShelves/vendor",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.asio}"
 	}
 
 	links
