@@ -217,7 +217,7 @@ namespace SolutionShelves
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity && m_GizmoType != -1)
 		{
-			ImGuizmo::SetOrthographic(true);
+			ImGuizmo::SetOrthographic(false);
 			ImGuizmo::SetDrawlist();
 
 			float windowWidth = (float)ImGui::GetWindowWidth();
