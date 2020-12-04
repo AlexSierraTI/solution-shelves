@@ -42,6 +42,8 @@ namespace SolutionShelves
 		bool m_ViewportHovered = false;
 		glm::vec2 m_ViewportSize = { 1280.0f, 720.0f };
 
+		int m_GizmoType = -1;
+
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 	};

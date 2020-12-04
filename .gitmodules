@@ -13,3 +13,6 @@
 [submodule "SolutionShelves/vendor/yaml-cpp"]
 	path = SolutionShelves/vendor/yaml-cpp
 	url = https://github.com/AlexSierraTI/yaml-cpp
+[submodule "SolutionShelves/vendor/ImGuizmo"]
+	path = SolutionShelves/vendor/ImGuizmo
+	url = https://github.com/AlexSierraTI/ImGuizmo

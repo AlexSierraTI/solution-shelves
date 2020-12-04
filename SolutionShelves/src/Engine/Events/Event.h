@@ -16,7 +16,7 @@ namespace SolutionShelves
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 	};
 
-	enum class EventCategory
+	enum EventCategory
 	{
 		None = 0,
 		EventCategoryApplication    = BIT(0),
@@ -34,7 +34,6 @@ namespace SolutionShelves
 
 	class Event
 	{
-		friend class EventDispatcher;
 	public:
 		virtual ~Event() = default;
 

@@ -19,7 +19,8 @@ project "SolutionShelves-Editor"
 		"%{wks.location}/SolutionShelves/src",
 		"%{wks.location}/SolutionShelves/vendor",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.ImGuizmo}"
 	}
 
 	links
