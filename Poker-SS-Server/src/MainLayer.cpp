@@ -23,13 +23,11 @@ namespace PokerSS
 		m_CameraEntity = m_ActiveScene->CreateEntity("Camera");
 		m_CameraEntity.AddComponent<SolutionShelves::CameraComponent>();
 
-		m_Servidor.Start();
 	}
 
 	void MainLayer::OnDetach()
 	{
 		SS_PROFILE_FUNCTION();
-		m_Servidor.Stop();
 	}
 
 	void MainLayer::OnUpdate(SolutionShelves::Timestep ts)
@@ -45,7 +43,7 @@ namespace PokerSS
 
 		// Update
 		m_Servidor.Update();
-
+		
 		// Render
 		SolutionShelves::Renderer2D::ResetStats();
 		m_FrameBuffer->Bind();

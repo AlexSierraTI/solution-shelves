@@ -20,7 +20,7 @@ project "Poker-SS-Server"
 		"%{wks.location}/SolutionShelves/vendor",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.asio}"
+		"%{IncludeDir.enet}"
 	}
 
 	links
@@ -30,7 +30,12 @@ project "Poker-SS-Server"
 	
 	filter "system:windows"
 		systemversion "latest"
-
+		links
+		{
+			"ws2_32.lib",
+			"winmm.lib"
+		}
+		
 	filter "configurations:Debug"
 		defines "SS_DEBUG"
 		runtime "Debug"

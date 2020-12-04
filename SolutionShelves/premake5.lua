@@ -18,6 +18,8 @@ project "SolutionShelves"
 		"vendor/stb_image/**.cpp",
 		"vendor/glm/glm/**.hpp",
 		"vendor/glm/glm/**.inl",
+		"vendor/enet/**.c",
+		"vendor/enet/**.h"
 	}
 
 	defines
@@ -37,7 +39,7 @@ project "SolutionShelves"
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.asio}"
+		"%{IncludeDir.enet}"
 	}
 
 	links
@@ -49,9 +51,11 @@ project "SolutionShelves"
 		"opengl32.lib"
 	}
 
+	filter "files:vendor/enet/**.c"
+	flags { "NoPCH" }
+	
 	filter "system:windows"
 		systemversion "latest"
-
 		defines
 		{
 		}

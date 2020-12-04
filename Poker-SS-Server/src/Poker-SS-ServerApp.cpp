@@ -4,6 +4,8 @@
 
 #include "Engine/Core/EntryPoint.h"
 
+#include "enet/enet.h"
+
 namespace PokerSS
 {
 
@@ -24,5 +26,10 @@ namespace PokerSS
 
 SolutionShelves::Application* SolutionShelves::CreateApplication()
 {
+	if (enet_initialize() != 0)
+	{
+		SS_ERROR("An error occurred while initializing.");
+	}
+	atexit(enet_deinitialize);
 	return new PokerSS::PokerSSServer();
 }

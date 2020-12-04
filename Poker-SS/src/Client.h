@@ -1,26 +1,28 @@
 #pragma once
 
 #include <SolutionShelves.h>
-
-#include "Engine/Network/NetClient.h"
+#include "enet/enet.h"
 
 namespace PokerSS
 {
-	enum class MsgTypes : uint32_t
-	{
-		ServerAccept,
-		ServerDeny,
-		ServerPing
-	};
-
-	class Client : public SolutionShelves::client_interface<MsgTypes>
+	class Client
 	{
 	public:
-		void PingServer();
+		Client();
+		~Client();
+
 		void Update();
 
-		uint32_t GetLatency() const { return m_Latency; }
+		void Connect(const std::string& endereco, uint16_t porta);
+		void Disconnect();
+
+		void Ping();
+
+		bool IsConnected() const { return m_IsConnected; }
 	private:
-		uint32_t m_Latency = 9999;
+		ENetHost* m_Client;
+		ENetPeer* m_Peer;
+
+		bool m_IsConnected;
 	};
 }

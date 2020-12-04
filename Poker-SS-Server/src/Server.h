@@ -1,30 +1,21 @@
 #pragma once
 
 #include <SolutionShelves.h>
-
-#include "Engine/Network/NetServer.h"
+#include "enet/enet.h"
 
 namespace PokerSS
 {
-	enum class MsgTypes : uint32_t
-	{
-		ServerAccept,
-		ServerDeny,
-		ServerPing
-	};
-
-	class Server : public SolutionShelves::server_interface<MsgTypes>
+	class Server
 	{
 	public:
-		Server(uint16_t nPort) 
-			: SolutionShelves::server_interface<MsgTypes>(nPort)
-		{
-		}
-	protected:
-		virtual bool OnClientConnect(SolutionShelves::Ref<SolutionShelves::connection<MsgTypes>> client);
+		Server(uint16_t nPort);
+		~Server();
 
-		virtual void OnClientDisconnect(SolutionShelves::Ref<SolutionShelves::connection<MsgTypes>> client);
+		void Update();
+	private:
+		ENetAddress m_Address{};
+		ENetHost* m_Server;
 
-		virtual void OnMessage(SolutionShelves::Ref<SolutionShelves::connection<MsgTypes>> client, SolutionShelves::message<MsgTypes>& msg);
+		uint32_t m_ConnectionCount;
 	};
 }
