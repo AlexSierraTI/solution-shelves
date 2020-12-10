@@ -1,8 +1,9 @@
 #pragma once
 
 #include <SolutionShelves.h>
-
 #include "Panels/SceneHierarchyPanel.h"
+
+#include "Engine/Renderer/EditorCamera.h"
 
 namespace SolutionShelves
 {
@@ -35,6 +36,8 @@ namespace SolutionShelves
 		Entity m_SecondCamera;
 
 		bool m_PrimaryCamera = true;
+
+		EditorCamera m_EditorCamera;
 
 		Ref<Texture2D> m_CheckerboardTexture;
 

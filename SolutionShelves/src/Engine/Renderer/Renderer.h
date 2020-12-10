@@ -1,9 +1,9 @@
 #pragma once
 
-#include "RenderCommand.h"
+#include "Engine/Renderer/RenderCommand.h"
 
-#include "OrthographicCamera.h"
-#include "Shader.h"
+#include "Engine/Renderer/OrthographicCamera.h"
+#include "Engine/Renderer/Shader.h"
 
 namespace SolutionShelves
 {

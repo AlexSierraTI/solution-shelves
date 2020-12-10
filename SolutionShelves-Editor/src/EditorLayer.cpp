@@ -2,6 +2,7 @@
 
 #include "ImGui/imgui.h"
 
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Engine/Scene/SceneSerializer.h"
@@ -31,6 +32,8 @@ namespace SolutionShelves
 		m_FrameBuffer = FrameBuffer::Create(fbSpec);
 
 		m_ActiveScene = CreateRef<Scene>();
+
+		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 #if 0
 		// Entity
 		auto square = m_ActiveScene->CreateEntity("Green Square");
@@ -101,6 +104,7 @@ namespace SolutionShelves
 		{
 			m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+			m_EditorCamera.SetViewPortSize(m_ViewportSize.x, m_ViewportSize.y);
 
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
@@ -109,6 +113,8 @@ namespace SolutionShelves
 		if (m_ViewportFocused)
 			m_CameraController.OnUpdate(ts);
 
+		m_EditorCamera.OnUpdate(ts);
+
 		// Render
 		Renderer2D::ResetStats();
 		m_FrameBuffer->Bind();
@@ -116,7 +122,7 @@ namespace SolutionShelves
 		RenderCommand::Clear();
 
 		// Update Scene
-		m_ActiveScene->OnUpdate(ts);
+		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
 		m_FrameBuffer->Unbind();
 		
@@ -135,8 +141,8 @@ namespace SolutionShelves
 		if (opt_fullscreen)
 		{
 			ImGuiViewport* viewport = ImGui::GetMainViewport();
-			ImGui::SetNextWindowPos(viewport->GetWorkPos());
-			ImGui::SetNextWindowSize(viewport->GetWorkSize());
+			ImGui::SetNextWindowPos(viewport->Pos);
+			ImGui::SetNextWindowSize(viewport->Size);
 			ImGui::SetNextWindowViewport(viewport->ID);
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -225,10 +231,16 @@ namespace SolutionShelves
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
 			// Camera
-			auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
-			const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
-			const glm::mat4& cameraProjection = camera.GetProjection();
-			glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+			
+			// Runtime camera from entity
+			// auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+			// const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
+			// const glm::mat4& cameraProjection = camera.GetProjection();
+			// glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+
+			// Editor camera
+			const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
+			glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
 
 			// Entity transform
 			auto& tc = selectedEntity.GetComponent<TransformComponent>();
@@ -252,8 +264,8 @@ namespace SolutionShelves
 				glm::vec3 translation, rotation, scale;
 
 				Math::DecomposeTransform(transform, translation, rotation, scale);
-				glm::vec3 deltaRotation = rotation - tc.Rotation;
 
+				glm::vec3 deltaRotation = rotation - tc.Rotation;
 				tc.Translation = translation;
 				tc.Rotation += deltaRotation;
 				tc.Scale = scale;
@@ -270,6 +282,7 @@ namespace SolutionShelves
 	void EditorLayer::OnEvent(Event& e)
 	{
 		m_CameraController.OnEvent(e);
+		m_EditorCamera.OnEvent(e);
 
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(SS_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
@@ -282,27 +295,20 @@ namespace SolutionShelves
 
 		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
 		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
-
 		switch (e.GetKeyCode())
 		{
 			case Key::N:
-			{
 				if (control)
 					NewScene();
 				break;
-			}
 			case Key::O:
-			{
 				if (control)
 					OpenScene();
 				break;
-			}
 			case Key::S:
-			{
 				if (control && shift)
 					SaveSceneAs();
 				break;
-			}
 			
 			// Gizmos
 			case Key::Q:
@@ -330,25 +336,25 @@ namespace SolutionShelves
 
 	void EditorLayer::OpenScene()
 	{
-		std::string filepath = FileDialogs::OpenFile("Solution Shelves Scene (*.sss)\0*.sss\0");
-		if (!filepath.empty())
+		std::optional<std::string>filepath = FileDialogs::OpenFile("Solution Shelves Scene (*.sss)\0*.sss\0");
+		if (filepath)
 		{
 			m_ActiveScene = CreateRef<Scene>();
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
 			SceneSerializer serializer(m_ActiveScene);
-			serializer.Deserialize(filepath);
+			serializer.Deserialize(*filepath);
 		}
 	}
 
 	void EditorLayer::SaveSceneAs()
 	{
-		std::string filepath = FileDialogs::SaveFile("Solution Shelves Scene (*.sss)\0*.sss\0");
-		if (!filepath.empty())
+		std::optional<std::string> filepath = FileDialogs::SaveFile("Solution Shelves Scene (*.sss)\0*.sss\0");
+		if (filepath)
 		{
 			SceneSerializer serializer(m_ActiveScene);
-			serializer.Serialize(filepath);
+			serializer.Serialize(*filepath);
 		}
 	}
 
