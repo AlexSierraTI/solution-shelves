@@ -11,6 +11,8 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
+#include "ImGuizmo.h"
+
 namespace SolutionShelves
 {
 	ImGuiLayer::ImGuiLayer()
@@ -71,8 +73,8 @@ namespace SolutionShelves
 		if (m_BlockEvents)
 		{
 			ImGuiIO& io = ImGui::GetIO();
-			e.Handled |= e.IsInCategory(EventCategory::EventCategoryMouse) & io.WantCaptureMouse;
-			e.Handled |= e.IsInCategory(EventCategory::EventCategoryKeyboard) & io.WantCaptureKeyboard;
+			e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+			e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
 		}
 	}
 	
@@ -83,6 +85,7 @@ namespace SolutionShelves
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+		ImGuizmo::BeginFrame();
 	}
 
 	void ImGuiLayer::End()

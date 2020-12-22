@@ -3,8 +3,12 @@
 
 #include "Components.h"
 #include "Engine/Renderer/Renderer2D.h"
+#include "Engine/Renderer/EditorCamera.h"
+
+#include <glm/glm.hpp>
 
 #include "Entity.h"
+
 
 namespace SolutionShelves
 {
@@ -32,7 +36,21 @@ namespace SolutionShelves
 		m_Registry.destroy(entity);
 	}
 
-	void Scene::OnUpdate(Timestep ts)
+	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera)
+	{
+		Renderer2D::BeginScene(camera);
+
+		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
+		for (auto entity : group)
+		{
+			auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+		}
+
+		Renderer2D::EndScene();
+	}
+
+	void Scene::OnUpdateRuntime(Timestep ts)
 	{
 		// Update Scripts
 		{
@@ -69,7 +87,7 @@ namespace SolutionShelves
 
 		if (mainCamera)
 		{
-			Renderer2D::BeginScene(mainCamera->GetProjection(), cameraTransform);
+			Renderer2D::BeginScene(*mainCamera, cameraTransform);
 
 			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 			for (auto entity : group)
@@ -97,6 +115,18 @@ namespace SolutionShelves
 				cameraComponent.Camera.SetViewportSize(width, height);
 		}
 
+	}
+
+	Entity Scene::GetPrimaryCameraEntity()
+	{
+		auto view = m_Registry.view<CameraComponent>();
+		for (auto entity : view)
+		{
+			const auto& camera = view.get<CameraComponent>(entity);
+			if (camera.Primary)
+				return Entity{ entity, this };
+		}
+		return {};
 	}
 
 	template<typename T>

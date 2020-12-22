@@ -1,8 +1,9 @@
 #pragma once
 
 #include <SolutionShelves.h>
-
 #include "Panels/SceneHierarchyPanel.h"
+
+#include "Engine/Renderer/EditorCamera.h"
 
 namespace SolutionShelves
 {
@@ -36,11 +37,15 @@ namespace SolutionShelves
 
 		bool m_PrimaryCamera = true;
 
+		EditorCamera m_EditorCamera;
+
 		Ref<Texture2D> m_CheckerboardTexture;
 
 		bool m_ViewportFocused = false;
 		bool m_ViewportHovered = false;
 		glm::vec2 m_ViewportSize = { 1280.0f, 720.0f };
+
+		int m_GizmoType = -1;
 
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
