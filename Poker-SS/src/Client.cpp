@@ -18,6 +18,7 @@ namespace PokerSS
 
 	Client::~Client()
 	{
+		Disconnect();
 		enet_host_destroy(m_Client);
 	}
 	void Client::Update()
