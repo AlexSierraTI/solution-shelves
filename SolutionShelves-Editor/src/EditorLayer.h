@@ -21,6 +21,7 @@ namespace SolutionShelves
 		void OnEvent(Event& e) override;
 	private:
 		bool OnKeyPressed(KeyPressedEvent& e);
+		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
 		void NewScene();
 		void OpenScene();
@@ -29,11 +30,14 @@ namespace SolutionShelves
 		OrthographicCameraController m_CameraController;
 
 		Ref<FrameBuffer> m_FrameBuffer;
+		Ref<FrameBuffer> m_IDFrameBuffer;
 
 		Ref<Scene> m_ActiveScene;
 		Entity m_SquareEntity;
 		Entity m_CameraEntity;
 		Entity m_SecondCamera;
+
+		Entity m_HoveredEntity;
 
 		bool m_PrimaryCamera = true;
 
@@ -44,6 +48,7 @@ namespace SolutionShelves
 		bool m_ViewportFocused = false;
 		bool m_ViewportHovered = false;
 		glm::vec2 m_ViewportSize = { 1280.0f, 720.0f };
+		glm::vec2 m_ViewportBounds[2]{};
 
 		int m_GizmoType = -1;
 

@@ -7,6 +7,7 @@
 
 #include "Engine/Core/Timestep.h"
 #include "Engine/Renderer/EditorCamera.h"
+#include "Engine/Renderer/FrameBuffer.h"
 
 namespace SolutionShelves
 {
@@ -24,6 +25,9 @@ namespace SolutionShelves
 		void OnUpdateEditor(Timestep ts, EditorCamera& camera);
 		void OnUpdateRuntime(Timestep ts);
 		void OnViewportResize(uint32_t width, uint32_t height);
+
+		void DrawIDBuffer(Ref<FrameBuffer> target, EditorCamera& camera);
+		int Pixel(int x, int);
 
 		Entity GetPrimaryCameraEntity();
 	private:
