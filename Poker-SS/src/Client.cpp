@@ -79,23 +79,27 @@ namespace PokerSS
 
 	void Client::Disconnect()
 	{
-		ENetEvent event;
-		enet_peer_disconnect(m_Peer, 0);
-		m_IsConnected = false;
-
-		while (enet_host_service(m_Client, &event, 3000) > 0)
+		if (m_IsConnected)
 		{
-			switch (event.type)
+			ENetEvent event;
+			enet_peer_disconnect(m_Peer, 0);
+
+			while (enet_host_service(m_Client, &event, 3000) > 0)
 			{
-			case ENET_EVENT_TYPE_RECEIVE:
-				enet_packet_destroy(event.packet);
-				break;
-			case ENET_EVENT_TYPE_DISCONNECT:
-				SS_WARN("Disconnection succeeded.");
-				return;
+				switch (event.type)
+				{
+				case ENET_EVENT_TYPE_RECEIVE:
+					enet_packet_destroy(event.packet);
+					break;
+				case ENET_EVENT_TYPE_DISCONNECT:
+					SS_WARN("Disconnection succeeded.");
+					return;
+				}
 			}
+			enet_peer_reset(m_Peer);
+			m_IsConnected = false;
 		}
-		enet_peer_reset(m_Peer);
+
 	}
 
 	void Client::Ping()
