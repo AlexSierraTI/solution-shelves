@@ -30,7 +30,6 @@ namespace SolutionShelves
 		OrthographicCameraController m_CameraController;
 
 		Ref<FrameBuffer> m_FrameBuffer;
-		Ref<FrameBuffer> m_IDFrameBuffer;
 
 		Ref<Scene> m_ActiveScene;
 		Entity m_SquareEntity;

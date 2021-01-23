@@ -27,11 +27,10 @@ namespace SolutionShelves
 		m_CheckerboardTexture = Texture2D::Create("assets/textures/Checkerboard.png");
 
 		FrameBufferSpecification fbSpec;
+		fbSpec.Attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::Id, FrameBufferTextureFormat::Depth };
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
 		m_FrameBuffer = FrameBuffer::Create(fbSpec);
-
-		m_IDFrameBuffer = FrameBuffer::Create(fbSpec);
 
 		m_ActiveScene = CreateRef<Scene>();
 
@@ -105,7 +104,6 @@ namespace SolutionShelves
 			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
 		{
 			m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_IDFrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
 			m_EditorCamera.SetViewPortSize(m_ViewportSize.x, m_ViewportSize.y);
 
@@ -140,7 +138,7 @@ namespace SolutionShelves
 		if (mouseX >= 0 && mouseY >= 0 && mouseX <= viewportWidth && mouseY <= viewportHeigth)
 		{
 			int pixel = m_ActiveScene->Pixel(mouseX, mouseY);
-			m_HoveredEntity = pixel == -1 ? Entity() : Entity((entt::entity)pixel, m_ActiveScene.get());
+			m_HoveredEntity = pixel == -1 ||  pixel > 100000000 ? Entity() : Entity((entt::entity)pixel, m_ActiveScene.get());
 		}
 
 		m_FrameBuffer->Unbind();
