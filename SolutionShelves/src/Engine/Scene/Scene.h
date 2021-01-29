@@ -27,7 +27,6 @@ namespace SolutionShelves
 		void OnViewportResize(uint32_t width, uint32_t height);
 
 		void DrawIDBuffer(Ref<FrameBuffer> target, EditorCamera& camera);
-		int Pixel(int x, int);
 
 		Entity GetPrimaryCameraEntity();
 	private:

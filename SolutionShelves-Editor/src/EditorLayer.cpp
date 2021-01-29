@@ -121,7 +121,6 @@ namespace SolutionShelves
 		m_FrameBuffer->Bind();
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		RenderCommand::Clear();
-		m_FrameBuffer->Bind();
 
 		// Update Scene
 		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
@@ -129,16 +128,17 @@ namespace SolutionShelves
 		auto [mx, my] = ImGui::GetMousePos();
 		mx -= m_ViewportBounds[0].x;
 		my -= m_ViewportBounds[0].y;
-		auto viewportWidth = m_ViewportBounds[1].x - m_ViewportBounds[0].x;
-		auto viewportHeigth = m_ViewportBounds[1].y - m_ViewportBounds[0].y;
-		my = viewportHeigth - my;
+		glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+		my = viewportSize.y - my;
 
 		int mouseX = (int)mx;
 		int mouseY = (int)my;
-		if (mouseX >= 0 && mouseY >= 0 && mouseX <= viewportWidth && mouseY <= viewportHeigth)
+		if (mouseX >= 0 && mouseY >= 0 && mouseX <= viewportSize.x && mouseY <= viewportSize.y)
 		{
-			int pixel = m_ActiveScene->Pixel(mouseX, mouseY);
-			m_HoveredEntity = pixel == -1 ||  pixel > 100000000 ? Entity() : Entity((entt::entity)pixel, m_ActiveScene.get());
+			// int pixel = m_ActiveScene->Pixel(mouseX, mouseY);
+			int pixelData = m_FrameBuffer->ReadPixel(1, mouseX, mouseY);
+			SS_CORE_WARN("Pixel data = {0}", pixelData);
+			m_HoveredEntity = pixelData == -1 || pixelData > 100000000 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
 		}
 
 		m_FrameBuffer->Unbind();
