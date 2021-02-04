@@ -76,6 +76,17 @@ namespace SolutionShelves
 			return false;
 		}
 
+		static GLenum SolutionShelvesFBTextureFormatToGL(FrameBufferTextureFormat format)
+		{
+			switch(format)
+			{
+				case FrameBufferTextureFormat::RGBA8:		return GL_RGBA8;
+				case FrameBufferTextureFormat::RED_INTEGER:	return GL_RED_INTEGER;
+			}
+			
+			SS_CORE_ASSERT(false);
+			return 0;
+		}
 	}
 
 	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification& spec)
@@ -174,9 +185,6 @@ namespace SolutionShelves
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 		glViewport(0, 0, m_Specification.Width, m_Specification.Height);
-
-		int clearValue = -1;
-		glClearTexImage(m_IDAttachment, 0, GL_RED_INTEGER, GL_INT, &clearValue);
 	}
 
 	void OpenGLFrameBuffer::Unbind()
@@ -204,6 +212,15 @@ namespace SolutionShelves
 		int pixelData;
 		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
 		return pixelData;
+	}
+
+	void OpenGLFrameBuffer::ClearAttachment(uint32_t attachmentIndex, int value)
+	{
+		SS_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
+
+		auto& spec = m_ColorAttachmentSpecifications[attachmentIndex];
+		glClearTexImage(m_ColorAttachments[attachmentIndex], 0, 
+			Utils::SolutionShelvesFBTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
 	}
 
 }
