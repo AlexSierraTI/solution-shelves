@@ -122,6 +122,9 @@ namespace SolutionShelves
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		RenderCommand::Clear();
 
+		// Clear our entity ID attachment to -1
+		m_FrameBuffer->ClearAttachment(1, -1);
+
 		// Update Scene
 		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
@@ -135,10 +138,8 @@ namespace SolutionShelves
 		int mouseY = (int)my;
 		if (mouseX >= 0 && mouseY >= 0 && mouseX <= viewportSize.x && mouseY <= viewportSize.y)
 		{
-			// int pixel = m_ActiveScene->Pixel(mouseX, mouseY);
 			int pixelData = m_FrameBuffer->ReadPixel(1, mouseX, mouseY);
-			SS_CORE_WARN("Pixel data = {0}", pixelData);
-			m_HoveredEntity = pixelData == -1 || pixelData > 100000000 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
+			m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
 		}
 
 		m_FrameBuffer->Unbind();
@@ -235,7 +236,7 @@ namespace SolutionShelves
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);
+		Application::Get().GetImGuiLayer()->BlockEvents(!(m_ViewportFocused && m_ViewportHovered));
 
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
@@ -366,8 +367,12 @@ namespace SolutionShelves
 	
 	bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 	{
-		if (e.GetMouseButton() == Mouse::ButtonLeft && !ImGuizmo::IsUsing() && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt))
+		if (e.GetMouseButton() == Mouse::ButtonLeft &&
+			!ImGuizmo::IsUsing() && !ImGuizmo::IsOver() &&
+			!Input::IsKeyPressed(Key::LeftAlt))
+		{
 			m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+		}
 		return false;
 	}
 
