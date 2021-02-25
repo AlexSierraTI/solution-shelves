@@ -45,4 +45,3 @@ group ""
 
 include "SolutionShelves"
 include "Sandbox"
-include "SolutionShelves-Editor"

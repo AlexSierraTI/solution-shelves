@@ -19,12 +19,14 @@ project "Sandbox"
 		"%{wks.location}/SolutionShelves/src",
 		"%{wks.location}/SolutionShelves/vendor",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"$(VULKAN_SDK)/include"
 	}
 
 	links
 	{
-		"SolutionShelves"
+		"SolutionShelves",
+		"$(VULKAN_SDK)/lib/vulkan-1.lib"
 	}
 	
 	filter "system:windows"
