@@ -14,6 +14,19 @@ namespace SolutionShelves
 		uint32_t queue_family_index = 0;
 	};
 
+	struct Buffer
+	{
+		VkBuffer buffer = VK_NULL_HANDLE;
+		VkDeviceMemory buffer_memory = VK_NULL_HANDLE;
+		VkDeviceSize size = sizeof(unsigned int) * 64;
+	};
+
+	struct Descriptor
+	{
+		VkDescriptorPool descriptor_pool;
+		VkDescriptorSetLayout descriptor_set_layout;
+	};
+
 	class SandboxVulkan : public Layer
 	{
 	public:
@@ -42,12 +55,19 @@ namespace SolutionShelves
 		bool GetQueueFamily(const VkPhysicalDevice& physical_device, VkQueueFlags flags, uint32_t& queue_family_index);
 		uint32_t FindMemoryType(uint32_t type_filter, VkMemoryPropertyFlags properties);
 
-		void ExampleBuffer();
+		void CreateBuffer();
+		void FreeBufferMemory();
+		void DestroyBuffer();
+
+		void CreateDescriptorPool();
+		void DestroyDescriptorPool();
 	private:
 		VkInstance m_Instance = VK_NULL_HANDLE;
 		VkDevice m_Device = VK_NULL_HANDLE;
 		VkCommandPool m_CommandPool = VK_NULL_HANDLE;
 
-		PhysicalDevice m_PhysicalDevice = {};
+		PhysicalDevice m_PhysicalDevice;
+		Buffer m_Buffer;
+		Descriptor m_Descriptor;
 	};
 }

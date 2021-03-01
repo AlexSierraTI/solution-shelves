@@ -9,12 +9,14 @@ namespace SolutionShelves
 		ChoosePhysicalDevice();
 		CreateDevice();
 		CreateCommandPool();
-
-		ExampleBuffer();
+		CreateBuffer();
+		CreateDescriptorPool();
 	}
 
 	SandboxVulkan::~SandboxVulkan()
 	{
+		DestroyDescriptorPool();
+		DestroyBuffer();
 		DestroyCommandPool();
 		DestroyDevice();
 		DestroyInstance();
@@ -288,7 +290,7 @@ namespace SolutionShelves
 		return -1;
 	}
 
-	void SandboxVulkan::ExampleBuffer()
+	void SandboxVulkan::CreateBuffer()
 	{
 		unsigned int example_input_data[64];
 		for (unsigned int i = 0; i < 64; i++)
@@ -296,16 +298,11 @@ namespace SolutionShelves
 			example_input_data[i] = i;
 		}
 
-		VkDeviceSize size = sizeof(unsigned int) * 64;
-
 		VkMemoryPropertyFlags buffer_memory_properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-
-		VkBuffer buffer = VK_NULL_HANDLE;
-		VkDeviceMemory buffer_memory = VK_NULL_HANDLE;
 
 		VkBufferCreateInfo buffer_info = {};
 		buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		buffer_info.size = size;
+		buffer_info.size = m_Buffer.size;
 		buffer_info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 		buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
@@ -313,7 +310,7 @@ namespace SolutionShelves
 			m_Device,
 			&buffer_info,
 			nullptr,
-			&buffer
+			&m_Buffer.buffer
 		);
 
 		SS_ASSERT(result == VK_SUCCESS);
@@ -321,7 +318,7 @@ namespace SolutionShelves
 		VkMemoryRequirements memory_requirements;
 		vkGetBufferMemoryRequirements(
 			m_Device,
-			buffer,
+			m_Buffer.buffer,
 			&memory_requirements
 		);
 
@@ -332,22 +329,22 @@ namespace SolutionShelves
 
 		VkMemoryAllocateInfo memory_allocate_info = {};
 		memory_allocate_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-		memory_allocate_info.allocationSize = size;
+		memory_allocate_info.allocationSize = m_Buffer.size;
 		memory_allocate_info.memoryTypeIndex = memory_type;
 
 		VkResult memory_allocation_result = vkAllocateMemory(
 			m_Device,
 			&memory_allocate_info,
 			nullptr,
-			&buffer_memory
+			&m_Buffer.buffer_memory
 		);
 
 		SS_ASSERT(memory_allocation_result == VK_SUCCESS);
 
 		VkResult buffer_bind_result = vkBindBufferMemory(
 			m_Device,
-			buffer,
-			buffer_memory,
+			m_Buffer.buffer,
+			m_Buffer.buffer_memory,
 			0
 		);
 
@@ -357,9 +354,9 @@ namespace SolutionShelves
 
 		VkResult map_memory_result = vkMapMemory(
 			m_Device,
-			buffer_memory,
+			m_Buffer.buffer_memory,
 			0,
-			size,
+			m_Buffer.size,
 			0,
 			&mapped_memory
 		);
@@ -369,19 +366,19 @@ namespace SolutionShelves
 		memcpy(
 			mapped_memory,
 			example_input_data,
-			size
+			m_Buffer.size
 		);
 
 		vkUnmapMemory(
 			m_Device,
-			buffer_memory
+			m_Buffer.buffer_memory
 		);
 
 		map_memory_result = vkMapMemory(
 			m_Device,
-			buffer_memory,
+			m_Buffer.buffer_memory,
 			0,
-			size,
+			m_Buffer.size,
 			0,
 			&mapped_memory
 		);
@@ -393,25 +390,140 @@ namespace SolutionShelves
 		memcpy(
 			example_output_data,
 			mapped_memory,
-			size
+			m_Buffer.size
 		);
 
 		vkUnmapMemory(
 			m_Device,
-			buffer_memory
-		);
-
-		vkDestroyBuffer(
-			m_Device,
-			buffer,
-			nullptr
-		);
-
-		vkFreeMemory(
-			m_Device,
-			buffer_memory,
-			nullptr
+			m_Buffer.buffer_memory
 		);
 
 	}
+
+	void SandboxVulkan::FreeBufferMemory()
+	{
+		vkFreeMemory(
+			m_Device,
+			m_Buffer.buffer_memory,
+			nullptr
+		);
+	}
+
+	void SandboxVulkan::DestroyBuffer()
+	{
+		vkDestroyBuffer(
+			m_Device,
+			m_Buffer.buffer,
+			nullptr
+		);
+
+		FreeBufferMemory();
+	}
+
+	void SandboxVulkan::CreateDescriptorPool()
+	{
+		VkDescriptorSet descriptor_set;
+		VkWriteDescriptorSet descriptor_write_set;
+
+		{
+			VkDescriptorPoolSize pool_size = {};
+			pool_size.type = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			pool_size.descriptorCount = 1;
+
+			VkDescriptorPoolCreateInfo create_info = {};
+			create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+			create_info.poolSizeCount = 1;
+			create_info.pPoolSizes = &pool_size;
+			create_info.maxSets = 1;
+
+			VkResult result = vkCreateDescriptorPool(
+				m_Device,
+				&create_info,
+				nullptr,
+				&m_Descriptor.descriptor_pool
+			);
+
+			SS_ASSERT(result == VK_SUCCESS);
+		}
+
+		{
+			VkDescriptorSetLayoutBinding layout_binding = {};
+			layout_binding.binding = 0;
+			layout_binding.descriptorType = VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			layout_binding.descriptorCount = 1;
+			layout_binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+			VkDescriptorSetLayoutCreateInfo layout_info = {};
+			layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+			layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+			layout_info.bindingCount = 1;
+			layout_info.pBindings = &layout_binding;
+
+			VkResult result = vkCreateDescriptorSetLayout(
+				m_Device,
+				&layout_info,
+				nullptr,
+				&m_Descriptor.descriptor_set_layout
+			);
+
+			SS_ASSERT(result == VK_SUCCESS);
+		}
+
+		{
+			VkDescriptorSetAllocateInfo allocate_info = {};
+			allocate_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+			allocate_info.descriptorPool = m_Descriptor.descriptor_pool;
+			allocate_info.descriptorSetCount = 1;
+			allocate_info.pSetLayouts = &m_Descriptor.descriptor_set_layout;
+
+			VkResult result = vkAllocateDescriptorSets(
+				m_Device,
+				&allocate_info,
+				&descriptor_set
+			);
+
+			SS_ASSERT(result == VK_SUCCESS);
+		}
+
+		{
+			VkDescriptorBufferInfo buffer_info = {};
+			buffer_info.buffer = m_Buffer.buffer;
+			buffer_info.offset = 0;
+			buffer_info.range = m_Buffer.size;
+
+			descriptor_write_set = {};
+			descriptor_write_set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptor_write_set.dstSet = descriptor_set;
+			descriptor_write_set.dstBinding = 0;
+			descriptor_write_set.dstArrayElement = 0;
+			descriptor_write_set.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descriptor_write_set.descriptorCount = 1;
+			descriptor_write_set.pBufferInfo = &buffer_info;
+
+			vkUpdateDescriptorSets(
+				m_Device,
+				1,
+				&descriptor_write_set,
+				0,
+				NULL
+			);
+		}
+
+	}
+
+	void SandboxVulkan::DestroyDescriptorPool()
+	{
+		vkDestroyDescriptorSetLayout(
+			m_Device,
+			m_Descriptor.descriptor_set_layout,
+			nullptr
+		);
+
+		vkDestroyDescriptorPool(
+			m_Device,
+			m_Descriptor.descriptor_pool,
+			nullptr
+		);
+	}
+
 }

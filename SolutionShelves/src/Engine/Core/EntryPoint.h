@@ -19,6 +19,8 @@ int main(int arc, char** argv)
 	SS_PROFILE_BEGIN_SESSION("Shutdown", "SolutionShelvesProfile-Shutdown.json");
 	delete app;
 	SS_PROFILE_END_SESSION();
+
+	return 0;
 }
 
 #endif
