@@ -15,10 +15,22 @@ int main(int argc, char** argv);
 
 namespace SolutionShelves 
 {
+	struct ApplicationCommandLineArgs
+	{
+		int Count = 0;
+		char** Args = nullptr;
+
+		const char* operator[](int index) const
+		{
+			SS_CORE_ASSERT(index < Count);
+			return Args[index];
+		}
+	};
+
 	class Application
 	{
 	public:
-		Application(const std::string& name = "Solution Shelves App");
+		Application(const std::string& name = "Solution Shelves App", ApplicationCommandLineArgs args = ApplicationCommandLineArgs());
 		virtual ~Application();
 
 		void Run();
@@ -35,10 +47,13 @@ namespace SolutionShelves
 		ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
 
 		static Application& Get() { return *s_Instance; }
+
+		ApplicationCommandLineArgs GetCommandLineArgs() const { return m_CommandLineArgs; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
 	private:
+		ApplicationCommandLineArgs m_CommandLineArgs;
 		Scope<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
@@ -52,5 +67,5 @@ namespace SolutionShelves
 
 	// A ser definido no CLIENTE
 	Application* CreateApplication();
+	Application* CreateApplication(ApplicationCommandLineArgs args);
 }
-

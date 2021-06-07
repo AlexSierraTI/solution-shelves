@@ -1,6 +1,5 @@
 #include "EditorLayer.h"
-
-#include "ImGui/imgui.h"
+#include <ImGui/imgui.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -16,7 +15,7 @@
 namespace SolutionShelves
 {
 	EditorLayer::EditorLayer()
-		: Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f, true)
+		: Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f, true)
 	{
 	}
 
@@ -37,6 +36,14 @@ namespace SolutionShelves
 		m_FrameBuffer = FrameBuffer::Create(fbSpec);
 
 		m_ActiveScene = CreateRef<Scene>();
+
+		auto commandLineArgs = Application::Get().GetCommandLineArgs();
+		if (commandLineArgs.Count > 1)
+		{
+			auto sceneFilePath = commandLineArgs[1];
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Deserialize(sceneFilePath);
+		}
 
 		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 #if 0
@@ -382,25 +389,25 @@ namespace SolutionShelves
 
 	void EditorLayer::OpenScene()
 	{
-		std::optional<std::string>filepath = FileDialogs::OpenFile("Solution Shelves Scene (*.sss)\0*.sss\0");
-		if (filepath)
+		std::string filepath = FileDialogs::OpenFile("Solution Shelves Scene (*.sss)\0*.sss\0");
+		if (!filepath.empty())
 		{
 			m_ActiveScene = CreateRef<Scene>();
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
 			SceneSerializer serializer(m_ActiveScene);
-			serializer.Deserialize(*filepath);
+			serializer.Deserialize(filepath);
 		}
 	}
 
 	void EditorLayer::SaveSceneAs()
 	{
-		std::optional<std::string> filepath = FileDialogs::SaveFile("Solution Shelves Scene (*.sss)\0*.sss\0");
-		if (filepath)
+		std::string filepath = FileDialogs::SaveFile("Solution Shelves Scene (*.sss)\0*.sss\0");
+		if (!filepath.empty())
 		{
 			SceneSerializer serializer(m_ActiveScene);
-			serializer.Serialize(*filepath);
+			serializer.Serialize(filepath);
 		}
 	}
 

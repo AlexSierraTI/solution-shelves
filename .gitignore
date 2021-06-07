@@ -73,6 +73,9 @@ msbuild.wrn
 .vs/
 bin/
 bin-int/
+SolutionShelves/vendor/VulkanSDK
+SolutionShelves-Editor/assets/cache
+scripts/__pycache__
 
 # Files
 *.user

@@ -9,7 +9,8 @@
 class SandBox : public SolutionShelves::Application
 {
 public:
-	SandBox()
+	SandBox(SolutionShelves::ApplicationCommandLineArgs args)
+		: Application("SandBox", args)
 	{
 		// PushLayer(new Sandbox3D());
 		PushLayer(new Sandbox2D());
@@ -22,7 +23,7 @@ public:
 	}
 };
 
-SolutionShelves::Application* SolutionShelves::CreateApplication()
+SolutionShelves::Application* SolutionShelves::CreateApplication(SolutionShelves::ApplicationCommandLineArgs args)
 {
-	return new SandBox();
+	return new SandBox(args);
 }

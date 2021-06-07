@@ -10,8 +10,8 @@ namespace SolutionShelves
 	class SolutionShelvesEditor : public Application
 	{
 	public:
-		SolutionShelvesEditor()
-			: Application("Solution Shelves Editor")
+		SolutionShelvesEditor(ApplicationCommandLineArgs args)
+			: Application("Solution Shelves Editor", args)
 		{
 			PushLayer(new EditorLayer());
 		}
@@ -22,8 +22,8 @@ namespace SolutionShelves
 		}
 	};
 
-	Application* CreateApplication()
+	Application* CreateApplication(ApplicationCommandLineArgs args)
 	{
-		return new SolutionShelvesEditor();
+		return new SolutionShelvesEditor(args);
 	}
 }
