@@ -1,5 +1,5 @@
 #include "sspch.h"
-#include "OpenGLFrameBuffer.h"
+#include "Platform/OpenGL/OpenGLFrameBuffer.h"
 
 #include <glad/glad.h>
 
@@ -112,10 +112,6 @@ namespace SolutionShelves
 
 	void OpenGLFrameBuffer::Invalidate()
 	{
-
-		if (m_Specification.Width > 3000) m_Specification.Width = 1280;
-		if (m_Specification.Height > 3000) m_Specification.Height = 720;
-
 		if (m_RendererID)
 		{
 			glDeleteFramebuffers(1, &m_RendererID);
@@ -222,5 +218,4 @@ namespace SolutionShelves
 		glClearTexImage(m_ColorAttachments[attachmentIndex], 0, 
 			Utils::SolutionShelvesFBTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
 	}
-
 }

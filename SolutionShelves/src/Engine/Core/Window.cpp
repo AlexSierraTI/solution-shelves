@@ -1,5 +1,5 @@
 #include "sspch.h"
-#include "Window.h"
+#include "Engine/Core/Window.h"
 
 #ifdef SS_PLATFORM_WINDOWS
 	#include "Platform/Windows/WindowsWindow.h"

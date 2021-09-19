@@ -1,5 +1,5 @@
 #include "sspch.h"
-#include "ImGuiLayer.h"
+#include "Engine/ImGui/ImGuiLayer.h"
 
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
@@ -138,6 +138,4 @@ namespace SolutionShelves
 		colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 	}
-
-
 }

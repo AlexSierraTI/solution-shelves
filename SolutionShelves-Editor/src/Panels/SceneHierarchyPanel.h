@@ -1,6 +1,8 @@
 #pragma once
 
-#include <SolutionShelves.h>
+#include "Engine/Core/Base.h"
+#include "Engine/Scene/Scene.h"
+#include "Engine/Scene/Entity.h"
 
 namespace SolutionShelves
 {

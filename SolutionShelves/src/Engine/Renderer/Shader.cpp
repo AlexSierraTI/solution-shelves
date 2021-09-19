@@ -1,8 +1,7 @@
 #include "sspch.h"
-#include "Shader.h"
+#include "Engine/Renderer/Shader.h"
 
-#include "Renderer.h"
-
+#include "Engine/Renderer/Renderer.h"
 #include "Platform/OpenGL/OpenGLShader.h"
 
 namespace SolutionShelves

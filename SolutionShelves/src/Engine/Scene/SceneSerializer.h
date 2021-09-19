@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Scene.h"
+#include "Engine/Scene/Scene.h"
 
 namespace SolutionShelves
 {

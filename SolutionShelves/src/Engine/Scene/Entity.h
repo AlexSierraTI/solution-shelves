@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Scene.h"
+#include "Engine/Scene/Scene.h"
 
 // This ignores all warnings raised inside External headers
 #pragma warning(push, 0)

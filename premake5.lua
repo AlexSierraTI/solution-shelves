@@ -21,7 +21,6 @@ workspace "SolutionShelves"
 	{
 		"MultiProcessorCompile"
 	}
-	
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 

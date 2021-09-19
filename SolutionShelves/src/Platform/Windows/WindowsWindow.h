@@ -3,7 +3,7 @@
 #include "Engine/Core/Window.h"
 #include "Engine/Renderer/GraphicsContext.h"
 
-struct GLFWwindow;
+#include "GLFW/glfw3.h"
 
 namespace SolutionShelves
 {
@@ -33,14 +33,13 @@ namespace SolutionShelves
 
 		struct WindowData
 		{
-			std::string Title = "";
-			unsigned int Width = 0, Height = 0;
-			bool VSync = true;
+			std::string Title;
+			unsigned int Width, Height;
+			bool VSync;
 
-			EventCallbackFn EventCallback = 0;
+			EventCallbackFn EventCallback;
 		};
 
 		WindowData m_Data;
 	};
-
 }

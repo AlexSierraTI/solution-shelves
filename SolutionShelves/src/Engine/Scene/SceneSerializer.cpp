@@ -1,5 +1,8 @@
 #include "sspch.h"
-#include "SceneSerializer.h"
+#include "Engine/Scene/SceneSerializer.h"
+
+#include "Entity.h"
+#include "Components.h"
 
 #include <yaml-cpp/yaml.h>
 

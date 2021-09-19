@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#include "Engine/Profiling/Instrumentor.h"
+#include "Engine/Debug/Instrumentor.h"
 #include "Engine/Core/Base.h"
 
 namespace SolutionShelves
@@ -81,5 +81,4 @@ namespace SolutionShelves
 	{
 		return os << e.ToString();
 	}
-
 }

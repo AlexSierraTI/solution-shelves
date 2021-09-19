@@ -1,5 +1,5 @@
 #include "sspch.h"
-#include "SceneCamera.h"
+#include "Engine/Scene/SceneCamera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -30,7 +30,7 @@ namespace SolutionShelves
 
 	void SceneCamera::SetViewportSize(uint32_t width, uint32_t height)
 	{
-		SS_CORE_ASSERT(width > 0 && height < 0);
+		SS_CORE_ASSERT(width > 0 && height > 0);
 		m_AspectRatio = (float)width / (float)height;
 		RecalculateProjection();
 	}
@@ -52,5 +52,4 @@ namespace SolutionShelves
 				orthoBottom, orthoTop, m_OrthographicNear, m_OrthographicFar);
 		}
 	}
-
 }

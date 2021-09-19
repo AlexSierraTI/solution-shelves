@@ -20,13 +20,12 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
-#include <optional>
 
 #include "Engine/Core/Base.h"
 
 #include "Engine/Core/Log.h"
 
-#include "Engine/Profiling/Instrumentor.h"
+#include "Engine/Debug/Instrumentor.h"
 
 #ifdef SS_PLATFORM_WINDOWS
 	#include <Windows.h>

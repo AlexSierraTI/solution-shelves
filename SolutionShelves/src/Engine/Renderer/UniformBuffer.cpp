@@ -1,5 +1,5 @@
 #include "sspch.h"
-#include "UniformBuffer.h"
+#include "Engine/Renderer/UniformBuffer.h"
 
 #include "Engine/Renderer/Renderer.h"
 #include "Platform/OpenGL/OpenGLUniformBuffer.h"

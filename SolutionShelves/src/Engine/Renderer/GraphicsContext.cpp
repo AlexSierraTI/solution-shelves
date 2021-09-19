@@ -1,7 +1,7 @@
 #include "sspch.h"
-#include "GraphicsContext.h"
+#include "Engine/Renderer/GraphicsContext.h"
 
-#include "Renderer.h"
+#include "Engine/Renderer/Renderer.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 
 namespace SolutionShelves {

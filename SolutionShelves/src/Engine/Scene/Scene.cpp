@@ -1,26 +1,22 @@
 #include "sspch.h"
-#include "Scene.h"
+#include "Engine/Scene/Scene.h"
 
-#include "Components.h"
+#include "Engine/Scene/Components.h"
 #include "Engine/Renderer/Renderer2D.h"
-#include "Engine/Renderer/EditorCamera.h"
 
 #include <glm/glm.hpp>
-#include <glad/glad.h>
 
-#include "Entity.h"
+#include "Engine/Scene/Entity.h"
 
 
 namespace SolutionShelves
 {
 	Scene::Scene()
 	{
-
 	}
 
 	Scene::~Scene()
 	{
-
 	}
 
 	Entity Scene::CreateEntity(const std::string& name)
@@ -94,7 +90,7 @@ namespace SolutionShelves
 			for (auto entity : group)
 			{
 				auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
-				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+				Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 			}
 
 			Renderer2D::EndScene();
@@ -107,7 +103,7 @@ namespace SolutionShelves
 		m_ViewportWidth = width;
 		m_ViewportHeight = height;
 
-		// Redimesionar as camerares que nao tem FixedAspectRatio
+		// Redimensionar as cameras que nao tem FixedAspectRatio
 		auto view = m_Registry.view<CameraComponent>();
 		for (auto entity : view)
 		{
@@ -162,5 +158,4 @@ namespace SolutionShelves
 	void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
 	{
 	}
-
 }

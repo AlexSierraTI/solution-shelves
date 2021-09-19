@@ -1,5 +1,5 @@
 #include "sspch.h"
-#include "Entity.h"
+#include "Engine/Scene/Entity.h"
 
 namespace SolutionShelves
 {

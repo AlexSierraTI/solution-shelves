@@ -31,8 +31,8 @@ namespace SolutionShelves
 		{
 			switch (stage)
 			{
-			case GL_VERTEX_SHADER:   return shaderc_glsl_vertex_shader;
-			case GL_FRAGMENT_SHADER: return shaderc_glsl_fragment_shader;
+				case GL_VERTEX_SHADER:   return shaderc_glsl_vertex_shader;
+				case GL_FRAGMENT_SHADER: return shaderc_glsl_fragment_shader;
 			}
 			SS_CORE_ASSERT(false);
 			return (shaderc_shader_kind)0;
@@ -42,8 +42,8 @@ namespace SolutionShelves
 		{
 			switch (stage)
 			{
-			case GL_VERTEX_SHADER:   return "GL_VERTEX_SHADER";
-			case GL_FRAGMENT_SHADER: return "GL_FRAGMENT_SHADER";
+				case GL_VERTEX_SHADER:   return "GL_VERTEX_SHADER";
+				case GL_FRAGMENT_SHADER: return "GL_FRAGMENT_SHADER";
 			}
 			SS_CORE_ASSERT(false);
 			return nullptr;
@@ -59,7 +59,9 @@ namespace SolutionShelves
 		{
 			std::string cacheDirectory = GetCacheDirectory();
 			if (!std::filesystem::exists(cacheDirectory))
+			{
 				std::filesystem::create_directories(cacheDirectory);
+			}
 		}
 
 		static const char* GLShaderStageCachedOpenGLFileExtension(uint32_t stage)
@@ -89,6 +91,8 @@ namespace SolutionShelves
 		: m_FilePath(filepath)
 	{
 		SS_PROFILE_FUNCTION();
+
+		Utils::CreateCacheDirectoryIfNeeded();
 
 		std::string source = ReadFile(filepath);
 		auto shaderSources = PreProcess(source);

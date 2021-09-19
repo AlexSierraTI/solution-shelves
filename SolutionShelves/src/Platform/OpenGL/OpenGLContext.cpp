@@ -1,5 +1,8 @@
 #include "sspch.h"
-#include "OpenGLContext.h"
+#include "Platform/OpenGL/OpenGLContext.h"
+
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 namespace SolutionShelves
 {
@@ -21,6 +24,8 @@ namespace SolutionShelves
 		SS_CORE_INFO("  Vendor: {0}", glGetString(GL_VENDOR));
 		SS_CORE_INFO("  Renderer: {0}", glGetString(GL_RENDERER));
 		SS_CORE_INFO("  Version: {0}", glGetString(GL_VERSION));
+
+		SS_CORE_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 5), "Solution Shelves requires at least OpenGL version 4.5!");
 	}
 
 	void OpenGLContext::SwapBuffers()

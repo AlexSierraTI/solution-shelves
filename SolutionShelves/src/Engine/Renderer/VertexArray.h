@@ -21,4 +21,3 @@ namespace SolutionShelves
 		static Ref<VertexArray> Create();
 	};
 }
-

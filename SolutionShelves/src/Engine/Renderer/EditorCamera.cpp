@@ -1,5 +1,14 @@
 #include "sspch.h"
-#include "EditorCamera.h"
+#include "Engine/Renderer/EditorCamera.h"
+
+#include "Engine/Core/Input.h"
+#include "Engine/Core/KeyCodes.h"
+#include "Engine/Core/MouseCodes.h"
+
+#include <GLFW/glfw3.h>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 
 namespace SolutionShelves
 {

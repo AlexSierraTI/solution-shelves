@@ -7,6 +7,8 @@
 #include "Engine/Renderer/Camera.h"
 #include "Engine/Renderer/EditorCamera.h"
 
+#include "Engine/Scene/Components.h"
+
 namespace SolutionShelves
 {
 	class Renderer2D
@@ -54,4 +56,3 @@ namespace SolutionShelves
 		static void NextBatch();
 	};
 }
-

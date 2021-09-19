@@ -1,7 +1,5 @@
 #pragma once
 
-#include "sspch.h"
-
 #include "Engine/Core/Base.h"
 #include "Engine/Events/Event.h"
 
@@ -43,5 +41,4 @@ namespace SolutionShelves
 
 		static Scope<Window> Create(const WindowProps& props = WindowProps());
 	};
-
 }

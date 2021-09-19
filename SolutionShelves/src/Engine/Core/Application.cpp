@@ -22,7 +22,7 @@ namespace SolutionShelves
 		s_Instance = this;
 
 		m_Window = Window::Create(WindowProps(name));
-		m_Window->SetEventCallback(SS_BIND_EVENT_FN(OnEvent));
+		m_Window->SetEventCallback(SS_BIND_EVENT_FN(Application::OnEvent));
 		
 		Renderer::Init();
 
@@ -82,7 +82,7 @@ namespace SolutionShelves
 		{
 			SS_PROFILE_SCOPE("RunLoop");
 
-			double time = glfwGetTime(); // Platform::GetTime
+			double time = glfwGetTime();
 			Timestep timestep = (float)time - m_LastFrameTime;
 			m_LastFrameTime = (float)time;
 

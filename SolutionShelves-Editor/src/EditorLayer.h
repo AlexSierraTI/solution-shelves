@@ -1,7 +1,8 @@
 #pragma once
 
-#include <SolutionShelves.h>
+#include "SolutionShelves.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Engine/Renderer/EditorCamera.h"
 
 #include "Engine/Renderer/EditorCamera.h"
 

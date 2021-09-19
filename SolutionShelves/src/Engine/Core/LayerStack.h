@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Engine/Core/Base.h"
-#include "Layer.h"
+#include "Engine/Core/Layer.h"
 
 namespace SolutionShelves
 {
@@ -14,9 +14,6 @@ namespace SolutionShelves
 
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
-
-		bool LayerExists(Layer* layer);
-
 		void PopLayer(Layer* layer);
 		void PopOverlay(Layer* overlay);
 

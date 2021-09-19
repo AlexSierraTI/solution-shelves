@@ -98,4 +98,3 @@ project "SolutionShelves"
 			"%{Library.SPIRV_Cross_Release}",
 			"%{Library.SPIRV_Cross_GLSL_Release}"
 		}
-

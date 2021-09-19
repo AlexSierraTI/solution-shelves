@@ -1,13 +1,13 @@
 #pragma once
 
+#include "Engine/Core/Timestep.h"
+#include "Engine/Renderer/EditorCamera.h"
+
 // This ignores all warnings raised inside External headers
 #pragma warning(push, 0)
 #include "entt.hpp"
 #pragma warning(pop)
 
-#include "Engine/Core/Timestep.h"
-#include "Engine/Renderer/EditorCamera.h"
-#include "Engine/Renderer/FrameBuffer.h"
 
 namespace SolutionShelves
 {

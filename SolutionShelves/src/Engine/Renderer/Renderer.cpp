@@ -1,7 +1,7 @@
 #include "sspch.h"
-#include "Renderer.h"
+#include "Engine/Renderer/Renderer.h"
 
-#include "Renderer2D.h"
+#include "Engine/Renderer/Renderer2D.h"
 
 namespace SolutionShelves
 {

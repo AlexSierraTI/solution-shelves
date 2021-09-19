@@ -25,4 +25,3 @@ namespace SolutionShelves
 		Ref<IndexBuffer> m_IndexBuffer;
 	};
 }
-
