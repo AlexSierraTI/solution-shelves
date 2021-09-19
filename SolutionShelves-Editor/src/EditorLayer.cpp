@@ -30,7 +30,7 @@ namespace SolutionShelves
 		m_CheckerboardTexture = Texture2D::Create("assets/textures/Checkerboard.png");
 
 		FrameBufferSpecification fbSpec;
-		fbSpec.Attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::Id, FrameBufferTextureFormat::Depth };
+		fbSpec.Attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth };
 		fbSpec.Width = 1280;
 		fbSpec.Height = 720;
 		m_FrameBuffer = FrameBuffer::Create(fbSpec);
@@ -116,7 +116,7 @@ namespace SolutionShelves
 		{
 			m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
-			m_EditorCamera.SetViewPortSize(m_ViewportSize.x, m_ViewportSize.y);
+			m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
@@ -139,7 +139,7 @@ namespace SolutionShelves
 		// Update Scene
 		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
-		auto [mx, my] = ImGui::GetMousePos();
+		auto[mx, my] = ImGui::GetMousePos();
 		mx -= m_ViewportBounds[0].x;
 		my -= m_ViewportBounds[0].y;
 		glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
@@ -147,7 +147,8 @@ namespace SolutionShelves
 
 		int mouseX = (int)mx;
 		int mouseY = (int)my;
-		if (mouseX >= 0 && mouseY >= 0 && mouseX <= viewportSize.x && mouseY <= viewportSize.y)
+		
+		if (mouseX >= 0 && mouseY >= 0 && mouseX <= (int)viewportSize.x && mouseY < (int)viewportSize.y)
 		{
 			int pixelData = m_FrameBuffer->ReadPixel(1, mouseX, mouseY);
 			m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
@@ -191,7 +192,7 @@ namespace SolutionShelves
 
 		ImGuiIO& io = ImGui::GetIO();
 		ImGuiStyle& style = ImGui::GetStyle();
-		float minWinSize = style.WindowMinSize.x;
+		float minWinSizeX = style.WindowMinSize.x;
 		style.WindowMinSize.x = 370.0f;
 
 		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
@@ -200,19 +201,19 @@ namespace SolutionShelves
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 		}
 
-		style.WindowMinSize.x = minWinSize;
+		style.WindowMinSize.x = minWinSizeX;
 
 		if (ImGui::BeginMenuBar())
 		{
 			if (ImGui::BeginMenu("Arquivo"))
 			{
-				if (ImGui::MenuItem("New", "Ctrl+N"))
+				if (ImGui::MenuItem("Novo", "Ctrl+N"))
 					NewScene();
 
-				if (ImGui::MenuItem("Open...", "Ctrl+O"))
+				if (ImGui::MenuItem("Abrir...", "Ctrl+O"))
 					OpenScene();
 
-				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+				if (ImGui::MenuItem("Salvar como...", "Ctrl+Shift+S"))
 					SaveSceneAs();
 
 				if (ImGui::MenuItem("Sair")) Application::Get().Close();
@@ -227,7 +228,7 @@ namespace SolutionShelves
 		ImGui::Begin("Stats");
 
 		auto stats = Renderer2D::GetStats();
-		ImGui::Text("Renderer2D Stats: ");
+		ImGui::Text("Renderer2D Stats:");
 		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 		ImGui::Text("Quads: %d", stats.QuadCount);
 		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
@@ -282,7 +283,7 @@ namespace SolutionShelves
 
 			// Entity transform
 			auto& tc = selectedEntity.GetComponent<TransformComponent>();
-			glm::mat4& transform = tc.GetTransform();
+			glm::mat4 transform = tc.GetTransform();
 
 			// Snapping
 			bool snap = Input::IsKeyPressed(Key::LeftControl);
@@ -336,43 +337,64 @@ namespace SolutionShelves
 
 		bool control = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
 		bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+
 		switch (e.GetKeyCode())
 		{
 			case Key::N:
+			{
 				if (control)
 					NewScene();
+
 				break;
+			}
 			case Key::O:
+			{
 				if (control)
 					OpenScene();
+
 				break;
+			}
 			case Key::S:
+			{
 				if (control && shift)
 					SaveSceneAs();
+
 				break;
-			
+			}
+
 			// Gizmos
 			case Key::Q:
-				m_GizmoType = -1;
+			{
+				if (!ImGuizmo::IsUsing())
+					m_GizmoType = -1;
 				break;
+			}
 			case Key::W:
-				m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			{
+				if (!ImGuizmo::IsUsing())
+					m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 				break;
+			}
 			case Key::E:
-				m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+			{
+				if (!ImGuizmo::IsUsing())
+					m_GizmoType = ImGuizmo::OPERATION::ROTATE;
 				break;
+			}
 			case Key::R:
-				m_GizmoType = ImGuizmo::OPERATION::SCALE;
+			{
+				if (!ImGuizmo::IsUsing())
+					m_GizmoType = ImGuizmo::OPERATION::SCALE;
 				break;
-		
+			}
 		}
-		return false;
 	}
 	
 	bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 	{
 		if (e.GetMouseButton() == Mouse::ButtonLeft &&
-			!ImGuizmo::IsUsing() && !ImGuizmo::IsOver() &&
+			m_ViewportHovered &&
+			!ImGuizmo::IsOver() &&
 			!Input::IsKeyPressed(Key::LeftAlt))
 		{
 			m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);

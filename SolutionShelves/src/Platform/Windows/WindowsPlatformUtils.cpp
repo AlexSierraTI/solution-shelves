@@ -46,7 +46,7 @@ namespace SolutionShelves
 			ofn.lpstrInitialDir = currentDir;
 		ofn.lpstrFilter = filter;
 		ofn.nFilterIndex = 1;
-		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+		ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
 
 		// Sets the default extension by extracting it from the filter
 		ofn.lpstrDefExt = strchr(filter, '\0') + 1;

@@ -28,7 +28,7 @@ namespace SolutionShelves
 		FrameBufferSpecification m_Specification;
 
 		std::vector<FrameBufferTextureSpecification> m_ColorAttachmentSpecifications;
-		FrameBufferTextureSpecification m_DepthAttachmentSpecification;
+		FrameBufferTextureSpecification m_DepthAttachmentSpecification = FrameBufferTextureFormat::None;
 
 		std::vector<uint32_t> m_ColorAttachments;
 		uint32_t m_DepthAttachment = 0;

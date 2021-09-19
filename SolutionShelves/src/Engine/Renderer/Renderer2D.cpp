@@ -20,7 +20,7 @@ namespace SolutionShelves
 		float TilingFactor;
 
 		// Editor only
-		int ObjectID;
+		int EntityID;
 	};
 
 	struct Renderer2DData
@@ -100,7 +100,7 @@ namespace SolutionShelves
 		uint32_t whiteTextureData = 0xffffffff;
 		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
-		int32_t samplers[s_Data.MaxTextureSlots]{};
+		int32_t samplers[s_Data.MaxTextureSlots];
 		for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
 			samplers[i] = i;
 
@@ -110,8 +110,8 @@ namespace SolutionShelves
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 
 		s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
-		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
-		s_Data.QuadVertexPositions[2] = { 0.5f,  0.5f, 0.0f, 1.0f };
+		s_Data.QuadVertexPositions[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data.QuadVertexPositions[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 
 		s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
@@ -128,8 +128,8 @@ namespace SolutionShelves
 	{
 		SS_PROFILE_FUNCTION();
 
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+		s_Data.CameraBuffer.ViewProjection = camera.GetViewProjectionMatrix();
+		s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
 
 		StartBatch();
 	}
@@ -148,7 +148,7 @@ namespace SolutionShelves
 	{
 		SS_PROFILE_FUNCTION();
 
-		s_Data.CameraBuffer.ViewProjection = camera.GetProjection();
+		s_Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
 		s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
 
 		StartBatch();
@@ -241,7 +241,7 @@ namespace SolutionShelves
 			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-			s_Data.QuadVertexBufferPtr->ObjectID = entityID;
+			s_Data.QuadVertexBufferPtr->EntityID = entityID;
 			s_Data.QuadVertexBufferPtr++;
 		}
 
@@ -287,7 +287,7 @@ namespace SolutionShelves
 			s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 			s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
-			s_Data.QuadVertexBufferPtr->ObjectID = entityID;
+			s_Data.QuadVertexBufferPtr->EntityID = entityID;
 			s_Data.QuadVertexBufferPtr++;
 		}
 

@@ -14,7 +14,7 @@ namespace SolutionShelves
 			return multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
 		}
 
-		static void CreateTextures(bool multisampled, uint32_t count, uint32_t* outID)
+		static void CreateTextures(bool multisampled, uint32_t* outID, uint32_t count)
 		{
 			glCreateTextures(TextureTarget(multisampled), count, outID);
 		}
@@ -92,7 +92,7 @@ namespace SolutionShelves
 	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification& spec)
 		: m_Specification(spec)
 	{
-		for (auto& spec : m_Specification.Attachments.Attachments)
+		for (auto spec : m_Specification.Attachments.Attachments)
 		{
 			if (!Utils::IsDepthFormat(spec.TextureFormat))
 				m_ColorAttachmentSpecifications.emplace_back(spec);
@@ -131,7 +131,7 @@ namespace SolutionShelves
 		if (m_ColorAttachmentSpecifications.size())
 		{
 			m_ColorAttachments.resize(m_ColorAttachmentSpecifications.size());
-			Utils::CreateTextures(multisample, (GLsizei)m_ColorAttachments.size(), m_ColorAttachments.data());
+			Utils::CreateTextures(multisample, m_ColorAttachments.data(), (GLsizei)m_ColorAttachments.size());
 
 			for (size_t i = 0; i < m_ColorAttachments.size(); i++)
 			{
@@ -141,7 +141,7 @@ namespace SolutionShelves
 					case FrameBufferTextureFormat::RGBA8:
 						Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA8, GL_RGBA, m_Specification.Width, m_Specification.Height, (int)i);
 						break;
-					case FrameBufferTextureFormat::Id:
+					case FrameBufferTextureFormat::RED_INTEGER:
 						Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_R32I, GL_RED_INTEGER, m_Specification.Width, m_Specification.Height, (int)i);
 						break;
 				}
@@ -150,7 +150,7 @@ namespace SolutionShelves
 
 		if (m_DepthAttachmentSpecification.TextureFormat != FrameBufferTextureFormat::None)
 		{
-			Utils::CreateTextures(multisample, 1, &m_DepthAttachment);
+			Utils::CreateTextures(multisample, &m_DepthAttachment, 1);
 			Utils::BindTexture(multisample, m_DepthAttachment);
 			switch (m_DepthAttachmentSpecification.TextureFormat)
 			{
