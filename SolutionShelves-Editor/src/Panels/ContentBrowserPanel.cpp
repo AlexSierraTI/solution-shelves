@@ -5,11 +5,10 @@
 
 namespace SolutionShelves
 {
-	static const std::filesystem::path s_AssetsPath = "assets";
-
+	extern const std::filesystem::path g_AssetsPath = "assets";
 
 	ContentBrowserPanel::ContentBrowserPanel()
-		: m_CurrentDirectory(s_AssetsPath)
+		: m_CurrentDirectory(g_AssetsPath)
 	{
 		m_DirectoryIcon = Texture2D::Create("Resources/Icons/ContentBrowser/DirectoryIcon.png");
 		m_FileIcon = Texture2D::Create("Resources/Icons/ContentBrowser/FileIcon.png");
@@ -19,7 +18,7 @@ namespace SolutionShelves
 	{
 		ImGui::Begin("Content Browser");
 
-		if (m_CurrentDirectory != std::filesystem::path(s_AssetsPath))
+		if (m_CurrentDirectory != std::filesystem::path(g_AssetsPath))
 		{
 			if (ImGui::Button("<-"))
 			{
@@ -36,15 +35,27 @@ namespace SolutionShelves
 		if (columnCount < 1) columnCount = 1;
 		ImGui::Columns(columnCount, 0, false);
 
-		for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
+				for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
 		{
 			const auto& path = directoryEntry.path();
-			auto relativePath = std::filesystem::relative(path, s_AssetsPath);
+			auto relativePath = std::filesystem::relative(path, g_AssetsPath);
 			std::string fileNameString = relativePath.filename().string();
 			
+			ImGui::PushID(fileNameString.c_str());
+
 			Ref<Texture2D> icon = directoryEntry.is_directory() ? m_DirectoryIcon : m_FileIcon;
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 			ImGui::ImageButton((ImTextureID)icon->GetRendererID(), { thumbNailSize, thumbNailSize }, { 0, 1 }, { 1, 0 });
 
+			if (ImGui::BeginDragDropSource())
+			{
+				std::string payloadType = "CONTENT_BROWSER_ITEM" + path.extension().string();
+				std::transform(payloadType.begin(), payloadType.end(), payloadType.begin(), ::toupper);
+				const wchar_t* itemPath = relativePath.c_str();
+				ImGui::SetDragDropPayload(payloadType.c_str(), itemPath, (wcslen(itemPath) + 1)* sizeof(wchar_t), ImGuiCond_Once);
+				ImGui::EndDragDropSource();
+			}
+			ImGui::PopStyleColor();
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
 			{
 				if (directoryEntry.is_directory())
@@ -54,6 +65,7 @@ namespace SolutionShelves
 			}
 			ImGui::TextWrapped(fileNameString.c_str());
 			ImGui::NextColumn();
+			ImGui::PopID();
 		}
 
 		ImGui::Columns(1);
