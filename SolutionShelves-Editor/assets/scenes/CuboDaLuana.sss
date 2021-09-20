@@ -2,36 +2,50 @@ Scene: Untitled
 Entities:
   - Entity: 12837192831273
     TagComponent:
-      Tag: Grande Negocio Roxo
+      Tag: Quadro Branco
     TransformComponent:
-      Translation: [-2.83004785, 1.02915645, 0.263175964]
-      Rotation: [0, 0, 0]
-      Scale: [1.90584898, 1.90584898, 1.90584898]
+      Translation: [2.88219213, 1.05820072, 0]
+      Rotation: [0, 0, 0.87266463]
+      Scale: [2.49999976, 2.5, 2.49999976]
     SpriteRendererComponent:
-      Color: [0.289575279, 0, 0.280957133, 1]
+      Color: [1, 1, 1, 1]
+      Texture: assets\textures\luana.png
+      Tiling: [1, 1, 1, 1]
+    Rigidbody2DComponent:
+      Type: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.5
+      RestitutionThreshold: 0.5
   - Entity: 12837192831273
     TagComponent:
-      Tag: Quadrado Verde
+      Tag: Quadrado Rosa
     TransformComponent:
-      Translation: [0.351357847, 0.500851095, -0.347281337]
-      Rotation: [1.57079613, 0.785398245, -4.21468513e-08]
-      Scale: [0.999999881, 0.999999285, 0.99992007]
+      Translation: [0, 0, 0.000912189484]
+      Rotation: [-3.14159226, 0.785398245, -3.14159226]
+      Scale: [0.999999881, 1, 0.999999881]
     SpriteRendererComponent:
-      Color: [0.0535713434, 1, 0, 1]
-  - Entity: 12837192831273
-    TagComponent:
-      Tag: Quadrado Vermelho
-    TransformComponent:
-      Translation: [0.699999988, 0, 0]
-      Rotation: [0, 0.785398245, 0]
-      Scale: [1, 1, 1]
-    SpriteRendererComponent:
-      Color: [0.67181468, 0.0518775843, 0.110919274, 1]
+      Color: [1, 0, 0.785714149, 1]
+      Tiling: [1, 0, 0.785714149, 1]
+    Rigidbody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.5
+      RestitutionThreshold: 0.5
   - Entity: 12837192831273
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Translation: [0, 1.79999995, 7.80000019]
+      Translation: [0, 0, 7.56828928]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     CameraComponent:
@@ -47,19 +61,61 @@ Entities:
       FixedAspectRatio: false
   - Entity: 12837192831273
     TagComponent:
-      Tag: Quadrado Rosa
+      Tag: Quadrado Vermelho
     TransformComponent:
-      Translation: [0, 0, 0.000912189484]
-      Rotation: [-3.14159226, 0.785398245, -3.14159226]
-      Scale: [0.999999881, 1, 0.999999881]
+      Translation: [0.699999988, 0, 0]
+      Rotation: [0, 0.785398245, 0]
+      Scale: [1, 1, 1]
     SpriteRendererComponent:
-      Color: [1, 0, 0.785714149, 1]
+      Color: [0.67181468, 0.0518775843, 0.110919274, 1]
+      Tiling: [0.67181468, 0.0518775843, 0.110919274, 1]
+    Rigidbody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.5
+      RestitutionThreshold: 0.5
   - Entity: 12837192831273
     TagComponent:
-      Tag: Quadro Branco
+      Tag: Quadrado Verde
     TransformComponent:
-      Translation: [2.87868786, 0.619513988, -0.0798411369]
-      Rotation: [0, -0.798701406, 0]
-      Scale: [2.49999976, 2.5, 2.49999976]
+      Translation: [0.351357847, 0.500851095, -0.347281337]
+      Rotation: [1.57079613, 0.785398245, -4.21468513e-08]
+      Scale: [0.999999881, 0.999999285, 0.999919951]
     SpriteRendererComponent:
-      Color: [1, 1, 1, 1]
+      Color: [0.0535713434, 1, 0, 1]
+      Tiling: [0.0535713434, 1, 0, 1]
+    Rigidbody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.5
+      RestitutionThreshold: 0.5
+  - Entity: 12837192831273
+    TagComponent:
+      Tag: Grande Negocio Roxo
+    TransformComponent:
+      Translation: [2.6973958, -2.01440573, 0]
+      Rotation: [0, 0, 0]
+      Scale: [16.0247116, 0.458563238, 1.90584886]
+    SpriteRendererComponent:
+      Color: [0.289575279, 0, 0.280957133, 1]
+      Tiling: [0.289575279, 0, 0.280957133, 1]
+    Rigidbody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.5
+      RestitutionThreshold: 0.5
