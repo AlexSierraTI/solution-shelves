@@ -2,6 +2,7 @@
 
 #include "SolutionShelves.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
 #include "Engine/Renderer/EditorCamera.h"
 
 #include "Engine/Renderer/EditorCamera.h"
@@ -54,6 +55,7 @@ namespace SolutionShelves
 
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+		ContentBrowserPanel m_ContentBrowserPanel;
 	};
 }
 

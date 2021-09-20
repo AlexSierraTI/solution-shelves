@@ -148,7 +148,7 @@ namespace SolutionShelves
 		int mouseX = (int)mx;
 		int mouseY = (int)my;
 		
-		if (mouseX >= 0 && mouseY >= 0 && mouseX <= (int)viewportSize.x && mouseY < (int)viewportSize.y)
+		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
 		{
 			int pixelData = m_FrameBuffer->ReadPixel(1, mouseX, mouseY);
 			m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
@@ -224,6 +224,7 @@ namespace SolutionShelves
 		}
 
 		m_SceneHierarchyPanel.OnImGuiRender();
+		m_ContentBrowserPanel.OnImGuiRender();
 
 		ImGui::Begin("Stats");
 
@@ -388,6 +389,7 @@ namespace SolutionShelves
 				break;
 			}
 		}
+		return false;
 	}
 	
 	bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
