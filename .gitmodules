@@ -16,3 +16,6 @@
 [submodule "SolutionShelves/vendor/ImGuizmo"]
 	path = SolutionShelves/vendor/ImGuizmo
 	url = https://github.com/AlexSierraTI/ImGuizmo
+[submodule "SolutionShelves/vendor/Box2D"]
+	path = SolutionShelves/vendor/Box2D
+	url = https://github.com/AlexSierraTI/box2d

@@ -22,6 +22,7 @@ namespace SolutionShelves
 		virtual void Bind(uint32_t slot = 0) const override;
 
 		virtual bool IsLoaded() const override { return m_IsLoaded; }
+		virtual std::string GetTexturePath() const override { return m_Path; };
 
 		virtual bool operator==(const Texture& other) const override
 		{
