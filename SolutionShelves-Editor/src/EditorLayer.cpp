@@ -230,6 +230,9 @@ namespace SolutionShelves
 				if (ImGui::MenuItem("Abrir...", "Ctrl+O"))
 					OpenScene();
 
+				if (ImGui::MenuItem("Salvar", "Ctrl+S", nullptr, !m_ActiveScenePath.empty()))
+					SaveScene();
+
 				if (ImGui::MenuItem("Salvar como...", "Ctrl+Shift+S"))
 					SaveSceneAs();
 
@@ -256,6 +259,12 @@ namespace SolutionShelves
 		if ((entt::entity)m_HoveredEntity != entt::null && !ImGuizmo::IsUsing())
 			name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
 		ImGui::Text("Hovered Entity: %s", name.c_str());
+
+		if (!m_ActiveScenePath.empty())
+		{
+			std::string sceneFileName = m_ActiveScenePath.stem().string();
+			ImGui::Text("Scene Atual: %s", sceneFileName.c_str());
+		}
 
 		ImGui::End();
 
@@ -436,7 +445,8 @@ namespace SolutionShelves
 			{
 				if (control && shift)
 					SaveSceneAs();
-
+				else if (!m_ActiveScenePath.empty()) 
+					SaveScene();
 				break;
 			}
 
@@ -484,6 +494,7 @@ namespace SolutionShelves
 	void EditorLayer::NewScene()
 	{
 		m_ActiveScene = CreateRef<Scene>();
+		m_ActiveScenePath.clear();
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
@@ -507,11 +518,22 @@ namespace SolutionShelves
 		if (!path.empty())
 		{
 			m_ActiveScene = CreateRef<Scene>();
+			m_ActiveScenePath = path;
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
 			SceneSerializer serializer(m_ActiveScene);
 			serializer.Deserialize(path.string());
+		}
+	}
+
+	void EditorLayer::SaveScene()
+	{
+		if (!m_ActiveScenePath.empty())
+		{
+			std::string path = m_ActiveScenePath.string();
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Serialize(path);
 		}
 	}
 

@@ -31,6 +31,7 @@ namespace SolutionShelves
 		void NewScene();
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& path);
+		void SaveScene();
 		void SaveSceneAs();
 
 		// UI
@@ -41,6 +42,7 @@ namespace SolutionShelves
 		Ref<FrameBuffer> m_FrameBuffer;
 
 		Ref<Scene> m_ActiveScene;
+		std::filesystem::path m_ActiveScenePath = {};
 		Entity m_SquareEntity;
 		Entity m_CameraEntity;
 		Entity m_SecondCamera;
