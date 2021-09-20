@@ -271,6 +271,22 @@ namespace SolutionShelves
 				const wchar_t* path = (const wchar_t*)payload->Data;
 				OpenScene(std::filesystem::path(g_AssetsPath / path));
 			}
+			else
+			{
+				if ((entt::entity&)m_HoveredEntity != entt::null)
+				{
+					if (m_HoveredEntity.HasComponent<SpriteRendererComponent>())
+					{
+						auto& spriteRendererComponent = m_HoveredEntity.GetComponent<SpriteRendererComponent>();
+						if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM.IMG"))
+						{
+							const wchar_t* path = (const wchar_t*)payload->Data;
+							std::filesystem::path texturePath = std::filesystem::path(g_AssetsPath / path);
+							spriteRendererComponent.Texture = Texture2D::Create(texturePath.string());
+						}
+					}
+				}
+			}
 			ImGui::EndDragDropTarget();
 		}
 

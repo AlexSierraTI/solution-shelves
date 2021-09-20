@@ -49,8 +49,14 @@ namespace SolutionShelves
 
 			if (ImGui::BeginDragDropSource())
 			{
-				std::string payloadType = "CONTENT_BROWSER_ITEM" + path.extension().string();
-				std::transform(payloadType.begin(), payloadType.end(), payloadType.begin(), ::toupper);
+				std::string extensao = path.extension().string();
+				std::transform(extensao.begin(), extensao.end(), extensao.begin(), ::toupper);
+				if (extensao == ".PNG" || extensao == ".JPG" || extensao == ".BMP" || extensao == ".GIF" || extensao == ".TIFF" || extensao == ".JPEG")
+				{
+					extensao = ".IMG";
+				}
+				std::string payloadType = "CONTENT_BROWSER_ITEM" + extensao;
+				
 				const wchar_t* itemPath = relativePath.c_str();
 				ImGui::SetDragDropPayload(payloadType.c_str(), itemPath, (wcslen(itemPath) + 1)* sizeof(wchar_t), ImGuiCond_Once);
 				ImGui::EndDragDropSource();
