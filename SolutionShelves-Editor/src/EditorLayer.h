@@ -25,10 +25,16 @@ namespace SolutionShelves
 		bool OnKeyPressed(KeyPressedEvent& e);
 		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
+		void OnScenePlay();
+		void OnSceneStop();
+
 		void NewScene();
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& path);
 		void SaveSceneAs();
+
+		// UI
+		void UI_Toolbar();
 	private:
 		OrthographicCameraController m_CameraController;
 
@@ -57,6 +63,15 @@ namespace SolutionShelves
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		ContentBrowserPanel m_ContentBrowserPanel;
+
+		enum class SceneState
+		{
+			Edit = 0, Play = 1
+		};
+
+		SceneState m_SceneState = SceneState::Edit;
+		Ref<Texture2D> m_IconPlay;
+		Ref<Texture2D> m_IconStop;
 	};
 }
 
