@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Core/UUID.h"
 #include "Engine/Core/Timestep.h"
 #include "Engine/Renderer/EditorCamera.h"
 
@@ -21,6 +22,7 @@ namespace SolutionShelves
 		~Scene();
 
 		Entity CreateEntity(const std::string& name = std::string());
+		Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
 
 		void OnRuntimeStart();

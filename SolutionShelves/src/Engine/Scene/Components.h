@@ -1,17 +1,26 @@
 #pragma once
 
+#include "Engine/Scene/SceneCamera.h"
+#include "Engine/Renderer/Texture.h"
+#include "Engine/Core/UUID.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
-#include "Engine/Scene/SceneCamera.h"
-#include "Engine/Scene/ScriptableEntity.h"
-#include "Engine/Renderer/Texture.h"
 
 namespace SolutionShelves
 {
+	struct IDComponent
+	{
+		UUID ID;
+
+		IDComponent() = default;
+		IDComponent(const IDComponent&) = default;
+	};
+
 	struct TagComponent
 	{
 		std::string Tag;
@@ -66,6 +75,8 @@ namespace SolutionShelves
 		CameraComponent(const CameraComponent&) = default;
 	};
 
+	// Forward declaration
+	class ScriptableEntity;
 	struct NativeScriptComponent
 	{
 		ScriptableEntity* Instance = nullptr;
