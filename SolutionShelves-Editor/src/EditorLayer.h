@@ -34,6 +34,8 @@ namespace SolutionShelves
 		void SaveScene();
 		void SaveSceneAs();
 
+		void OnDuplicateEntity();
+
 		// UI
 		void UI_Toolbar();
 	private:
@@ -42,6 +44,7 @@ namespace SolutionShelves
 		Ref<FrameBuffer> m_FrameBuffer;
 
 		Ref<Scene> m_ActiveScene;
+		Ref<Scene> m_EditorScene;
 		std::filesystem::path m_ActiveScenePath = {};
 		Entity m_SquareEntity;
 		Entity m_CameraEntity;

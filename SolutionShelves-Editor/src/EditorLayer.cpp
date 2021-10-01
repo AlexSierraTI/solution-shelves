@@ -449,6 +449,15 @@ namespace SolutionShelves
 					SaveScene();
 				break;
 			}
+			
+			// Commands
+
+			case Key::D:
+			{
+				if (control)
+					OnDuplicateEntity();
+				break;
+			}
 
 			// Gizmos
 			case Key::Q:
@@ -515,15 +524,24 @@ namespace SolutionShelves
 
 	void EditorLayer::OpenScene(const std::filesystem::path& path)
 	{
-		if (!path.empty())
-		{
-			m_ActiveScene = CreateRef<Scene>();
-			m_ActiveScenePath = path;
-			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		if (m_SceneState != SceneState::Edit)
+			OnSceneStop();
 
-			SceneSerializer serializer(m_ActiveScene);
-			serializer.Deserialize(path.string());
+		if (path.extension().string() != ".sss")
+		{
+			SS_WARN("Arquivo de cena invalido!");
+			return;
+		}
+
+		Ref<Scene> newScene = CreateRef<Scene>();
+		SceneSerializer serializer(newScene);
+		if (serializer.Deserialize(path.string()))
+		{
+			m_EditorScene = newScene;
+			m_ActiveScenePath = path;
+			m_EditorScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_SceneHierarchyPanel.SetContext(m_EditorScene);
+			m_ActiveScene = m_EditorScene;
 		}
 	}
 
@@ -550,6 +568,8 @@ namespace SolutionShelves
 	void EditorLayer::OnScenePlay()
 	{
 		m_SceneState = SceneState::Play;
+
+		m_ActiveScene = Scene::Copy(m_EditorScene);
 		m_ActiveScene->OnRuntimeStart();
 	}
 
@@ -557,6 +577,16 @@ namespace SolutionShelves
 	{
 		m_SceneState = SceneState::Edit;
 		m_ActiveScene->OnRuntimeStop();
+		m_ActiveScene = m_EditorScene;
 	}
 
+	void EditorLayer::OnDuplicateEntity()
+	{
+		if (m_SceneState != SceneState::Edit)
+			return;
+
+		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+		if (selectedEntity)
+			m_EditorScene->DuplicateEntity(selectedEntity);
+	}
 }
