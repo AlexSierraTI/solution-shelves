@@ -249,6 +249,8 @@ namespace SolutionShelves
 		ImGui::Begin("Stats");
 
 		auto stats = Renderer2D::GetStats();
+		ImGui::Text("Perfomance Stats:");
+		ImGui::Text("%dfps", Application::Get().GetFps());
 		ImGui::Text("Renderer2D Stats:");
 		ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 		ImGui::Text("Quads: %d", stats.QuadCount);

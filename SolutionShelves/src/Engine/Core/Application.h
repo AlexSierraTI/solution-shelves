@@ -49,6 +49,8 @@ namespace SolutionShelves
 		static Application& Get() { return *s_Instance; }
 
 		ApplicationCommandLineArgs GetCommandLineArgs() const { return m_CommandLineArgs; }
+
+		int32_t GetFps() const { return m_CurrentFps; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
@@ -60,6 +62,7 @@ namespace SolutionShelves
 		bool m_Minimized = false;
 		LayerStack m_LayerStack;
 		float m_LastFrameTime = 0.0f;
+		int32_t m_CurrentFps;
 	private:
 		static Application* s_Instance;
 		friend int ::main(int argc, char** argv);

@@ -78,6 +78,13 @@ namespace SolutionShelves
 	{
 		SS_PROFILE_FUNCTION();
 
+		LARGE_INTEGER perfCountFrequencyResult;
+		QueryPerformanceFrequency(&perfCountFrequencyResult);
+		int64_t perfCountFrequency = perfCountFrequencyResult.QuadPart;
+
+		LARGE_INTEGER lastCounter;
+		QueryPerformanceCounter(&lastCounter);
+
 		while (m_Running)
 		{
 			SS_PROFILE_SCOPE("RunLoop");
@@ -107,6 +114,12 @@ namespace SolutionShelves
 			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();
+
+			LARGE_INTEGER endCounter;
+			QueryPerformanceCounter(&endCounter);
+			int64_t counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
+			m_CurrentFps = (int32_t)(perfCountFrequency / counterElapsed);
+			lastCounter = endCounter;
 		}
 	}
 

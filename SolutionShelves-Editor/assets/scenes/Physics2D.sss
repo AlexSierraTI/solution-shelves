@@ -1,10 +1,30 @@
 Scene: Untitled
 Entities:
-  - Entity: 12317899590018985208
+  - Entity: 17827485922938752156
     TagComponent:
       Tag: Floor
     TransformComponent:
-      Translation: [2.88583755, -2.749717, -0.000129699474]
+      Translation: [-1.63243783, -5.56595564, -0.10152626]
+      Rotation: [0, 0, -0.710389912]
+      Scale: [5.06673622, 0.407209843, 0.890999973]
+    SpriteRendererComponent:
+      Color: [0.505791545, 0.492946774, 0.074208796, 1]
+      Tiling: [0.505791545, 0.492946774, 0.074208796, 1]
+    Rigidbody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.5
+      RestitutionThreshold: 0.5
+  - Entity: 12852019584047608407
+    TagComponent:
+      Tag: Floor
+    TransformComponent:
+      Translation: [3.62150979, -8.56237602, 0.0481767617]
       Rotation: [0, 0, 0.822234094]
       Scale: [5.06673098, 0.407209516, 0.890999973]
     SpriteRendererComponent:
@@ -20,38 +40,19 @@ Entities:
       Friction: 0.5
       Restitution: 0.5
       RestitutionThreshold: 0.5
-  - Entity: 3274957140131463616
+  - Entity: 10044596337313174599
     TagComponent:
-      Tag: Floor
+      Tag: Luana
     TransformComponent:
-      Translation: [-1.74040711, 0.0657197088, 0.00920677185]
-      Rotation: [0, 0, -0.710389912]
-      Scale: [5.06673622, 0.407209843, 0.890999973]
+      Translation: [0.240875274, 3.49004126, 0.257261276]
+      Rotation: [0, 0, -0.593411386]
+      Scale: [1.86690021, 1.86690021, 1.86689997]
     SpriteRendererComponent:
-      Color: [0.505791545, 0.492946774, 0.074208796, 1]
-      Tiling: [0.505791545, 0.492946774, 0.074208796, 1]
+      Color: [1, 1, 1, 1]
+      Texture: assets\textures\luana.png
+      Tiling: [1, 1, 1, 1]
     Rigidbody2DComponent:
-      Type: Static
-      FixedRotation: false
-    BoxCollider2DComponent:
-      Offset: [0, 0]
-      Size: [0.5, 0.5]
-      Density: 1
-      Friction: 0.5
-      Restitution: 0.5
-      RestitutionThreshold: 0.5
-  - Entity: 13877233720278643577
-    TagComponent:
-      Tag: Floor
-    TransformComponent:
-      Translation: [-1.81953466, -5.47513866, -0.124212265]
-      Rotation: [0, 0, -0.710389912]
-      Scale: [5.06673622, 0.407209843, 0.890999973]
-    SpriteRendererComponent:
-      Color: [0.505791545, 0.492946774, 0.074208796, 1]
-      Tiling: [0.505791545, 0.492946774, 0.074208796, 1]
-    Rigidbody2DComponent:
-      Type: Static
+      Type: Dynamic
       FixedRotation: false
     BoxCollider2DComponent:
       Offset: [0, 0]
@@ -88,19 +89,18 @@ Entities:
       Friction: 0.5
       Restitution: 0.5
       RestitutionThreshold: 0.5
-  - Entity: 10044596337313174599
+  - Entity: 13877233720278643577
     TagComponent:
-      Tag: Sprite
+      Tag: Floor
     TransformComponent:
-      Translation: [-0.935307026, 1.67999995, 0]
-      Rotation: [0, 0, -0.593411922]
-      Scale: [1, 1, 1]
+      Translation: [-1.88190687, -10.2853346, 1.077425]
+      Rotation: [0, 0, -0.710389912]
+      Scale: [5.06673622, 0.407209843, 0.890999973]
     SpriteRendererComponent:
-      Color: [1, 1, 1, 1]
-      Texture: assets\textures\luana.png
-      Tiling: [1, 1, 1, 1]
+      Color: [0.505791545, 0.492946774, 0.074208796, 1]
+      Tiling: [0.505791545, 0.492946774, 0.074208796, 1]
     Rigidbody2DComponent:
-      Type: Dynamic
+      Type: Static
       FixedRotation: false
     BoxCollider2DComponent:
       Offset: [0, 0]
@@ -109,15 +109,37 @@ Entities:
       Friction: 0.5
       Restitution: 0.5
       RestitutionThreshold: 0.5
-  - Entity: 12852019584047608407
+  - Entity: 3274957140131463616
     TagComponent:
       Tag: Floor
     TransformComponent:
-      Translation: [2.22277451, -7.85308838, -0.129010201]
+      Translation: [-1.44400775, -0.164374977, 0.0666904449]
+      Rotation: [0, 0, -0.710389912]
+      Scale: [5.06673622, 0.407209843, 0.890999973]
+    SpriteRendererComponent:
+      Color: [0.505791545, 0.492946774, 0.074208796, 1]
+      Texture: assets\textures\Checkerboard.png
+      Tiling: [0.505791545, 0.492946774, 0.074208796, 1]
+    Rigidbody2DComponent:
+      Type: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.5
+      RestitutionThreshold: 0.5
+  - Entity: 12317899590018985208
+    TagComponent:
+      Tag: Floor
+    TransformComponent:
+      Translation: [3.2805531, -2.72019196, -0.00750732422]
       Rotation: [0, 0, 0.822234094]
       Scale: [5.06673098, 0.407209516, 0.890999973]
     SpriteRendererComponent:
       Color: [0.505791545, 0.492946774, 0.074208796, 1]
+      Texture: assets\textures\Checkerboard.png
       Tiling: [0.505791545, 0.492946774, 0.074208796, 1]
     Rigidbody2DComponent:
       Type: Static
