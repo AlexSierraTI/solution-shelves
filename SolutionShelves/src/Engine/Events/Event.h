@@ -1,8 +1,8 @@
 #pragma once
 
 #include <functional>
+#include <sstream>
 
-#include "Engine/Debug/Instrumentor.h"
 #include "Engine/Core/Base.h"
 
 namespace SolutionShelves
@@ -50,7 +50,7 @@ namespace SolutionShelves
 
 		bool IsInCategory(EventCategory category)
 		{
-			return GetCategoryFlags() & category;
+			return GetCategoryFlags() & (int)category;
 		}
 	};
 

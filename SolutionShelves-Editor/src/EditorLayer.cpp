@@ -12,6 +12,8 @@
 
 #include "Engine/Math/Math.h"
 
+#include "Engine/Debug/Instrumentor.h"
+
 namespace SolutionShelves
 {
 

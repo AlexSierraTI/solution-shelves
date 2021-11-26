@@ -3,6 +3,8 @@
 #include "Engine/Core/Base.h"
 #include "Engine/Core/Application.h"
 
+#include "Engine/Debug/Instrumentor.h"
+
 #ifdef SS_PLATFORM_WINDOWS
 
 extern SolutionShelves::Application* SolutionShelves::CreateApplication(ApplicationCommandLineArgs args);
