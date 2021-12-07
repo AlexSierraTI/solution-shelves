@@ -36,6 +36,8 @@ namespace SolutionShelves
 
 		void OnDuplicateEntity();
 
+		void OnOverlayRender();
+
 		// UI
 		void UI_Toolbar();
 	private:
@@ -64,6 +66,8 @@ namespace SolutionShelves
 		glm::vec2 m_ViewportBounds[2]{};
 
 		int m_GizmoType = -1;
+
+		bool m_ShowPhysicsCollider = false;
 
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;

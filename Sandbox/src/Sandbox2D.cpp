@@ -3,6 +3,7 @@
 #include "ImGui/imgui.h"
 
 #include <glm/gtc/type_ptr.hpp>
+#include <Engine/Debug/Instrumentor.h>
 
 
 Sandbox2D::Sandbox2D()

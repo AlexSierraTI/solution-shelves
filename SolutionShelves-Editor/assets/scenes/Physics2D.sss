@@ -4,9 +4,9 @@ Entities:
     TagComponent:
       Tag: Empty Entity
     TransformComponent:
-      Translation: [0.024490336, 3.74476051, 0.111188769]
-      Rotation: [0.0565920286, -0.200351998, -0.403455317]
-      Scale: [0.999999642, 1, 1]
+      Translation: [0.309493572, 3.5695405, 0.180721164]
+      Rotation: [0, 0, 0.664970458]
+      Scale: [0.999999523, 1, 1]
     SpriteRendererComponent:
       Color: [1, 1, 1, 1]
       Texture: assets\textures\luana.png
@@ -25,15 +25,15 @@ Entities:
     TagComponent:
       Tag: Circle
     TransformComponent:
-      Translation: [1.47448206, 2.40642881, 0]
+      Translation: [1.2194792, 2.51507044, -0.0423622169]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     CircleRendererComponent:
       Color: [1, 0, 0, 1]
-      Thickness: 1
-      Fade: 0.00499999989
+      Thickness: 0.174999997
+      Fade: 0
     Rigidbody2DComponent:
-      Type: Dynamic
+      Type: Static
       FixedRotation: false
     CircleCollider2DComponent:
       Offset: [0, 0]
@@ -46,7 +46,7 @@ Entities:
     TagComponent:
       Tag: Camera
     TransformComponent:
-      Translation: [0.464207053, 2.677598, 8.9090271]
+      Translation: [0.701509476, 0.989292562, 5.74587154]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     CameraComponent:
@@ -60,16 +60,6 @@ Entities:
         OrthographicFar: 1
       Primary: true
       FixedAspectRatio: false
-    Rigidbody2DComponent:
-      Type: Dynamic
-      FixedRotation: true
-    BoxCollider2DComponent:
-      Offset: [0, 0]
-      Size: [0.100000001, 0.100000001]
-      Density: 1
-      Friction: 0.5
-      Restitution: 0.5
-      RestitutionThreshold: 0.5
   - Entity: 3274957140131463616
     TagComponent:
       Tag: Floor
